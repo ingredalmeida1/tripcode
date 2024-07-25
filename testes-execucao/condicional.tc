@@ -1,0 +1,19 @@
+-> este e um comentario <-
+
+-> este e
+outro comentario <-
+
+BAGAGEM x <-> 5;
+
+ALFANDEGA (x = 8) >>>
+    CHECKOUT('oi');
+<<< ISENTO >>>
+    CHECKOUT('tchau');
+
+ALFANDEGA (x <= 4) >>>
+    CHECKOUT('haha');
+<<< TRIBUTADO (x = 5) >>>
+    CHECKOUT('bye');
+<<< ISENTO >>>
+    CHECKOUT('hihi');
+<<<
