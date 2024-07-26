@@ -11,7 +11,7 @@ PASSAPORTE minha_struct >>>
 
 notas[1] <-> 6;
 
-BAGEGEM MILHAS x, y, x <-> 5;
+BAGEGEM MILHAS x, y, z <-> 5;
 
 BAGAGEM DOCUMENTO texto <-> "oi";
 

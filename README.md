@@ -17,13 +17,16 @@ Este projeto contém um analisador léxico para a linguagem Tripcode, desenvolvi
 Siga as etapas abaixo para compilar e executar o analisador léxico:
 
 1. **Abra um terminal.**
+
 2. **Navegue até o diretório do projeto:**
    ```bash
    cd /caminho/para/o/seu/projeto
+
 3. **Execute os seguintes comandos:**
    ```bash
    flex tripcode-lex.l
    gcc lex.yy.c
+   
 4. **Por fim, teste o analisador léxico com a entrada escrita em TripCode:**
    ```bash
    ./a.out < entrada.txt
