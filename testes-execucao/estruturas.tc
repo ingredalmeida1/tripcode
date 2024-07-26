@@ -16,3 +16,7 @@ BAGEGEM MILHAS x, y, z <-> 5;
 BAGAGEM DOCUMENTO texto <-> "oi";
 
 BAGAGEM DOCUMENTO outro_texto <-> 'tudo?';
+
+CAMBIO(DOLAR, x);
+COTACAO(DOCUMENTO);
+CLASSE(y);

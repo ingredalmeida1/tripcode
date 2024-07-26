@@ -69,6 +69,9 @@ escala                     ESCALA
 turistando                 TURISTANDO
 turistar                   TURISTAR
 durante                    DURANTE
+cambio                     CAMBIO
+cotacao                    COTACAO 
+classe                     CLASSE
 
 
 %% 
@@ -78,6 +81,9 @@ durante                    DURANTE
 {relop}              { printf("Foi encontrado um operdador relacional. LEXEMA:  %s\n", yytext); }
 {bitop}              { printf("Foi encontrado um operador lógico. LEXEMA:  %s\n", yytext); }
 {op}                 { printf("Foi encontrado um operador aritmético. LEXEMA:  %s\n", yytext); }
+{cambio}             { printf("Foi encontrado um operador cambio. LEXEMA:  %s\n", yytext); }
+{cotacao}            { printf("Foi encontrado um operador cotacao. LEXEMA:  %s\n", yytext); }
+{classe}             { printf("Foi encontrado um operador classe. LEXEMA:  %s\n", yytext); }
 {alfandega}          { printf("Foi encontrado o comando alfandega. LEXEMA: %s\n", yytext); }
 {isento}             { printf("Foi encontrado o comando isento. LEXEMA: %s\n", yytext); }
 {tributado}          { printf("Foi encontrado o comando tributado. LEXEMA: %s\n", yytext); }
@@ -101,10 +107,6 @@ durante                    DURANTE
 {mapa}               { printf("Foi encontrada a estrutura de dados mapa. LEXEMA: %s\n", yytext); }
 {passaporte}         { printf("Foi encontrada a estrutura de dados passaporte. LEXEMA: %s\n", yytext); }
 {bagagem}            { printf("Foi encontrada a estrutura de dados babagem. LEXEMA: %s\n", yytext); }
-{id}                 { printf("Foi encontrado um identificador. LEXEMA: %s\n", yytext); }
-{milhas}             { printf("Foi encontrado um tipo de dados milhas. LEXEMA:  %s\n", yytext); }
-{dolar}              { printf("Foi encontrado um tipo de dados dolar. LEXEMA:  %s\n", yytext); }
-{documento}          { printf("Foi encontrado tipo de dados documento. LEXEMA:  %s\n", yytext); }
 {comma}              { printf("Foi encontrado uma vírgula. LEXEMA:  %s\n", yytext); }
 {dot_comma}          { printf("Foi encontrado um ponto e vírgula. LEXEMA:  %s\n", yytext); }
 {colon}              { printf("Foi encontrado dois pontos. LEXEMA:  %s\n", yytext); }
@@ -114,6 +116,10 @@ durante                    DURANTE
 {close_bracket}      { printf("Foi encontrado um fechamento de colchetes. LEXEMA:  %s\n", yytext); }
 {open_codeblock}     { printf("Foi encontrado uma abertura de bloco de código. LEXEMA:  %s\n", yytext); }
 {close_codeblock}    { printf("Foi encontrado um fechamento de bloco de código. LEXEMA:  %s\n", yytext); }
+{milhas}             { printf("Foi encontrado um tipo de dados milhas. LEXEMA:  %s\n", yytext); }
+{dolar}              { printf("Foi encontrado um tipo de dados dolar. LEXEMA:  %s\n", yytext); }
+{documento}          { printf("Foi encontrado tipo de dados documento. LEXEMA:  %s\n", yytext); }
+{id}                 { printf("Foi encontrado um identificador. LEXEMA: %s\n", yytext); }
 
 
 %% 
