@@ -41,6 +41,8 @@ comma                \;
 colon                \:
 close_paren          \)
 open_paren           \(
+close_colch          \]
+open_colch           \[
 open_block           \>\>\>
 close_block          \<\<\<
 alfandega            ALFANDEGA
@@ -82,6 +84,8 @@ trabalhar            TRABALHAR
 {close_paren}        { printf("Foi encontrado um fechamento de parênteses. LEXEMA:  %s\n", yytext); }
 {open_block}         { printf("Foi encontrado uma abertura de bloco de código. LEXEMA:  %s\n", yytext); }
 {close_block}        { printf("Foi encontrado um fechamento de bloco de código. LEXEMA:  %s\n", yytext); }
+{open_colch}         { printf("Foi encontrado uma abertura de colchete. LEXEMA:  %s\n", yytext); }
+{close_colch}        { printf("Foi encontrado um fechamento de colchete. LEXEMA:  %s\n", yytext); }
 
 
 %% 
