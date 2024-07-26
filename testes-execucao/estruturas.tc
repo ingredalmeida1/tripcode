@@ -1,0 +1,18 @@
+MAPA notas [DOLAR, 10];
+
+MAPA matriz [MILHAS, 3, 3];
+
+-> este e um comentario <-
+
+PASSAPORTE minha_struct >>>
+   BAGAGEM DOLAR ricas2;
+   -> pode ter quantas quiser <-
+<<<
+
+notas[1] <-> 6;
+
+BAGEGEM MILHAS x, y, x <-> 5;
+
+BAGAGEM DOCUMENTO texto <-> "oi";
+
+BAGAGEM DOCUMENTO outro_texto <-> 'tudo?';

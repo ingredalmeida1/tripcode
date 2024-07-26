@@ -1,0 +1,14 @@
+-> protótipo <-
+ROTEIRO minha_funcao (MILHAS x,  DOLAR y) >>> <tipo_retorno> <<<
+
+-> definição <-
+ROTEIRO minha_funcao (MILHAS x,  DOLAR y) >>> 
+    MILHAS result;
+    
+    -> quaisquer outras operações ou comandos <
+
+    DESPACHAR result;
+<<< <tipo_retorno> <<<
+
+-> ativar/chamar <-
+EMBARCAR minha_funcao (MILHAS x,  DOLAR y);
