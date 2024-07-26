@@ -15,36 +15,34 @@ ws		             {delim}+
 digit                [0-9]
 letter               [A-za-z]
 comment              ->[^<]*<-
-atribuicao           <->
-eq                   =
-gt                   >
-ge                   >=
-lt                   <
-le                   <=
-diff                 #
-relop                [{eq}|{gt}|{ge}|{lt}|{le}|{diff}]
-and                  &
-or                   |
-xor                  ^
-sl                   <<
-sr                   >>
-bitop                [{and}|{or}|{xor}|{sl}|{sr}]
-id                   ({letter}|_)([{letter}|_]|{digit})*
+atribuicao           \<\-\>
+eq                   \=
+gt                   \>
+ge                   \>\=
+lt                   \<
+le                   \<\=
+diff                 \#
+relop                {eq}|{gt}|{ge}|{lt}|{le}|{diff}
+and                  \&
+or                   \|
+xor                  \^
+bitop                {and}|{or}|{xor}
+id                   (_|{letter})(_|{letter}|{digit})*
 milhas               {digit}+
 dolar                {digit}+\.{digit}+
-documento            \"([^\\\"]|\\.)*\" | \'([^\\']|\\.)*\'
+documento            \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
 som                  \+
-sub                  -
+sub                  \-
 mult                 \*
-div                  /
+div                  \/
 mod                  \%
-op                   [{som}|{sub}|{mult}|{div}|{mod}]
-comma                ;
-colon                :
+op                   {som}|{sub}|{mult}|{div}|{mod}
+comma                \;
+colon                \:
 close_paren          \)
 open_paren           \(
-open_block           >>>
-close_block          <<<
+open_block           \>\>\>
+close_block          \<\<\<
 alfandega            ALFANDEGA
 isento               ISENTO
 tributado            TRIBUTADO
@@ -56,9 +54,14 @@ imprevisto           IMPREVISTO
 descansar            DESCANSAR
 trabalhar            TRABALHAR
 
+
 %% 
-{comment}            {}
 {ws}		         {}
+{comment}            { printf("Foi encontrado um comentario: %s\n", yytext); }
+{atribuicao}         { printf("Foi encontrada a operação de atribuição. LEXEMA: %s\n", yytext); }
+{relop}              { printf("Foi encontrado um operdador relacional. LEXEMA:  %s\n", yytext); }
+{bitop}              { printf("Foi encontrado um operador lógico. LEXEMA:  %s\n", yytext); }
+{op}                 { printf("Foi encontrado um operador aritmético. LEXEMA:  %s\n", yytext); }
 {alfandega}          { printf("Foi encontrado o comando alfandega. LEXEMA: %s\n", yytext); }
 {isento}             { printf("Foi encontrado o comando isento. LEXEMA: %s\n", yytext); }
 {tributado}          { printf("Foi encontrado o comando tributado. LEXEMA: %s\n", yytext); }
@@ -73,14 +76,10 @@ trabalhar            TRABALHAR
 {milhas}             { printf("Foi encontrado um tipo de dados milhas. LEXEMA:  %s\n", yytext); }
 {dolar}              { printf("Foi encontrado um tipo de dados dolar. LEXEMA:  %s\n", yytext); }
 {documento}          { printf("Foi encontrado tipo de dados documento. LEXEMA:  %s\n", yytext); }
-{atribuicao}         { printf("Foi encontrada a operação de atribuição. LEXEMA: %s\n", yytext); }
-{relop}              { printf("Foi encontrado um operdador relacional. LEXEMA:  %s\n", yytext); }
-{bitop}              { printf("Foi encontrado um operador lógico. LEXEMA:  %s\n", yytext); }
-{op}                 { printf("Foi encontrado um operador aritmético. LEXEMA:  %s\n", yytext); }
 {comma}              { printf("Foi encontrado um ponto e vírgula. LEXEMA:  %s\n", yytext); }
 {colon}              { printf("Foi encontrado dois pontos. LEXEMA:  %s\n", yytext); }
-{close_paren}        { printf("Foi encontrada uma abertura de parênteses. LEXEMA:  %s\n", yytext); }
-{open_paren}         { printf("Foi encontrado um fechamento de parênteses. LEXEMA:  %s\n", yytext); }
+{open_paren}         { printf("Foi encontrada uma abertura de parênteses. LEXEMA:  %s\n", yytext); }
+{close_paren}        { printf("Foi encontrado um fechamento de parênteses. LEXEMA:  %s\n", yytext); }
 {open_block}         { printf("Foi encontrado uma abertura de bloco de código. LEXEMA:  %s\n", yytext); }
 {close_block}        { printf("Foi encontrado um fechamento de bloco de código. LEXEMA:  %s\n", yytext); }
 
