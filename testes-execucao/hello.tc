@@ -1,0 +1,68 @@
+-> prototipos de funcoes <-
+ROTEIRO soma (MILHAS a, MILHAS b) >>> MILHAS <<<
+
+-> declaracao de estruturas <-
+PASSAPORTE aluno >>>
+    BAGAGEM VOUCHER nome;
+    BAGAGEM MILHAS matricula;
+    MAPA notas[DOLAR, 4];
+<<<
+
+-> declaracao de constantes <-
+EXTERIOR max 50
+
+-> declaracao de variaveis globais <-
+BAGAGEM STATUS teste <-> FERIAS;
+
+-> funcao principal <-
+ROTEIRO trip()>>>
+
+    BAGAGEM MILHAS distancia;
+    BAGAGEM VOUCHER nome1, nome2, nome3, nome4; 
+    BAGAGEM DOLAR preco <-> 5.25;
+    BAGAGEM STATUS promocao <-> FERIAS;
+    BAGAGEM MILHAS x, y, z <-> 5;
+
+
+    PASSAPORTE aluno leticia;
+    leticia.nome <-> "Leticia";
+    leticia.matricula <-> 4661;
+
+    y <-> leticia.matricula;
+
+    DECOLAR(ORIGEM 0, DESTINO 3, ESCALA 1)>>>
+        BAGAGEM DOLAR nota;
+        CHECKIN([DOLAR], nota);
+        leticia.notas[ORIGEM] <-> nota;
+    <<<
+
+    STATUS negacao <-> NOT teste;
+    STATUS logic_and <-> promocao AND teste;
+    logic_and <-> negacao AND teste;
+    STATUS logic_or <-> negacao OR teste;
+
+    preco <-> preco + 10;
+
+    preco <-> soma(preco, 10);
+
+    ITINERARIO(distancia) >>>
+        ROTA 90:
+            CHECKOUT("Você chegou ao seu destino");
+            POUSAR;
+        ROTA 45:
+            CHECKOUT("Você está exatemnte na metade do caminho");
+            POUSAR;
+        IMPREVISTO:
+            CHECKOUT("Você está apenas no ínicio do caminho");
+            POUSAR;
+    <<<
+
+    DESPACHAR 0;
+
+<<< MILHAS <<<
+
+-> funcoes <-
+ROTEIRO soma (MILHAS a, MILHAS b) >>> 
+    BAGAGEM MILHAS soma <-> a + b;
+    DESPACHAR soma;
+<<< MILHAS <<<

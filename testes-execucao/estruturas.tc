@@ -13,10 +13,10 @@ notas[1] <-> 6;
 
 BAGEGEM MILHAS x, y, z <-> 5;
 
-BAGAGEM DOCUMENTO texto <-> "oi";
+BAGAGEM VOUCHER texto <-> "oi";
 
-BAGAGEM DOCUMENTO outro_texto <-> 'tudo?';
+BAGAGEM VOUCHER outro_texto <-> 'tudo?';
 
 CAMBIO(DOLAR, x);
-COTACAO(DOCUMENTO);
+COTACAO(VOUCHER);
 CLASSE(y);
