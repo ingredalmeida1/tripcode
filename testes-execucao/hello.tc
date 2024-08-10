@@ -63,6 +63,6 @@ ROTEIRO trip()>>>
 
 -> funcoes <-
 ROTEIRO soma (MILHAS a, MILHAS b) >>> 
-    BAGAGEM MILHAS soma <-> a + b;
-    DESPACHAR soma;
+    BAGAGEM MILHAS s <-> a + b;
+    DESPACHAR s;
 <<< MILHAS <<<
