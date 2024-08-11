@@ -1,4 +1,4 @@
-# Analisador Léxico da Linguagem Tripcode
+# Compilador da Linguagem Tripcode
 
 Este projeto contém um compilador para a linguagem Tripcode, desenvolvido com Flex, Bison e C. Até o momento temos o analisador léxico e o analisador sintático desenvolvidos, o restante do compilador ainda está em produção.
 
@@ -11,7 +11,7 @@ Este projeto contém um compilador para a linguagem Tripcode, desenvolvido com F
 ## Estrutura do Projeto
 
 - `lex.l`: Arquivo de definições do analisador léxico.
-- `translate.y`: Arquivode regras e ações do analisador sintático.
+- `translate.y`: Arquivo de regras e ações do analisador sintático.
 - `TAD`: Diretório com os Tipos de Dados Abstratos utilizados no compilador.
 - `testes-flex e testes-yacc`: Diretório com os códigos de teste para avaliar o compilador.
 
