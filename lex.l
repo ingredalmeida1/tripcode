@@ -35,6 +35,7 @@ inteiro_neg                \-{digit}+
 inteiro                    {inteiro_pos}|{inteiro_neg}
 float                      {inteiro}+\.{digit}+
 string                     \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
+erro                       {[a-zA-Z1-9]}+|.
 som                        \+
 sub                        \-
 mult                       \*
@@ -89,8 +90,8 @@ feriado                    FERIADO
 
 
 %% 
-{ws}		         {}
-{comment}            { /* Ignora comentários */ }
+{ws}		             {}
+{comment}                { /* Ignora comentários */ }
 
 {cambio}                 { return CAMBIO; }
 {cotacao}                { return COTACAO; }
@@ -130,29 +131,30 @@ feriado                    FERIADO
 {feriado}                { return FERIADO; }
 
 
-{comma}              { return COMMA; }
-{dot_comma}          { return DOT_COMMA; }
-{dot}                { return DOT; }
-{open_parentheses}   { return OPEN_PARENTHESES; }
-{close_parentheses}  { return CLOSE_PARENTHESES; }
-{open_bracket}       { return OPEN_BRACKET; }
-{close_bracket}      { return CLOSE_BRACKET; }
-{open_codeblock}     { return OPEN_CODEBLOCK; }
-{close_codeblock}    { return CLOSE_CODEBLOCK; }
+{comma}                  { return COMMA; }
+{dot_comma}              { return DOT_COMMA; }
+{dot}                    { return DOT; }
+{open_parentheses}       { return OPEN_PARENTHESES; }
+{close_parentheses}      { return CLOSE_PARENTHESES; }
+{open_bracket}           { return OPEN_BRACKET; }
+{close_bracket}          { return CLOSE_BRACKET; }
+{open_codeblock}         { return OPEN_CODEBLOCK; }
+{close_codeblock}        { return CLOSE_CODEBLOCK; }
 
-{atribuicao}         { return ATRIBUICAO; }
+{atribuicao}             { return ATRIBUICAO; }
 
-{relop}              { yylval.str = strdup(yytext); return RELOP; }
-{logicop}            { yylval.str = strdup(yytext); return LOGICOP; }
-{op}                 { yylval.str = strdup(yytext); return OP; }
+{relop}                  { yylval.str = strdup(yytext); return RELOP; }
+{logicop}                { yylval.str = strdup(yytext); return LOGICOP; }
+{op}                     { yylval.str = strdup(yytext); return OP; }
 
-{inteiro}            { yylval.iValue = atoi(yytext); return INTEIRO; }
-{float}              { yylval.real = atof(yytext); return DECIMAL; }
-{string}             { yylval.str = strdup(yytext); return STRING; }
+{inteiro}                { yylval.iValue = atoi(yytext); return INTEIRO; }
+{float}                  { yylval.real = atof(yytext); return FLOAT; }
+{string}                 { yylval.str = strdup(yytext); return STRING; }
 
-{id}                 { yylval.str = strdup(yytext); return ID; }
+{id}                     { yylval.str = strdup(yytext); return ID; }
 
-{lexema_error}        {char message[200] = "Lexema inválido: '"; strcat(message, yytext); strcat(message, "'"); strcpy(error_message, message); yyerror(message);}
+{erro}                   {char message[200] = "Lexema inválido: '"; strcat(message, yytext); strcat(message, "'"); strcpy(error_message, message); yyerror(message);}
+
 
 %% 
 int main(void) 
