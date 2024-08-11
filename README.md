@@ -25,12 +25,16 @@ Siga as etapas abaixo para compilar e executar o compilador:
    ```bash
    cd /caminho/para/o/seu/projeto
 
-3. **Execute os seguintes comandos:**
+4. **Instale o Bison, caso ainda não tenha:**
+   ```bash
+   sudo apt install bison
+
+5. **Execute os seguintes comandos:**
    ```bash
    yacc -d translate.y
    flex lex.l
    gcc y.tab.c lex.yy.c -lfl
    
-4. **Por fim, teste o analisador léxico com a entrada escrita em TripCode:**
+6. **Por fim, teste o analisador léxico com a entrada escrita em TripCode:**
    ```bash
    ./a.out < <seu_arquivo_de_teste>.tc
