@@ -58,9 +58,7 @@ p : {
     ;
 
 main:
-    ROTEIRO trip '(' list_params_form ')' stmts MILHAS consts {
-        // ação semântica para o main (todas as regras tem esse {} no fim)
-    }
+    ROTEIRO trip (list_params_form) stmts MILHAS consts {} // essas chaves são ação semântica para o main (todas as regras tem esse {}, igual na p)
     ;
 
 consts:
