@@ -8,6 +8,10 @@ void inicializar_tabela(int capacidade_inicial) {
         fprintf(stderr, "Erro ao alocar memória para a tabela de símbolos.\n");
         exit(EXIT_FAILURE);
     }
+
+    printf("\033[0;32m"); 
+    printf("Tabela inicializada com sucesso!\n");
+    printf("\033[0m");
 }
 
 void liberar_tabela() {

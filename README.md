@@ -1,20 +1,23 @@
 # Analisador Léxico da Linguagem Tripcode
 
-Este projeto contém um analisador léxico para a linguagem Tripcode, desenvolvido com Flex e C.
+Este projeto contém um compilador para a linguagem Tripcode, desenvolvido com Flex, Bison e C. Até o momento temos o analisador léxico e o analisador sintático desenvolvidos, o restante do compilador ainda está em produção.
 
 ## Pré-requisitos
 
 - **Flex**: Um gerador de analisadores léxicos.
+- **Bison**: Um gerador de analisadores sintáticos.
 - **GCC**: Um compilador para a linguagem C.
 
 ## Estrutura do Projeto
 
-- `tripcode-lex.l`: Arquivo de definições do analisador léxico.
-- `entrada.txt`: Arquivos de entradas com os dados a serem analisados (*entrada.txt é apenas um exemplo*).
+- `lex.l`: Arquivo de definições do analisador léxico.
+- `translate.y`: Arquivode regras e ações do analisador sintático.
+- `TAD`: Diretório com os Tipos de Dados Abstratos utilizados no compilador.
+- `testes-flex e testes-yacc`: Diretório com os códigos de teste para avaliar o compilador.
 
 ## Como Executar o Analisador Léxico
 
-Siga as etapas abaixo para compilar e executar o analisador léxico:
+Siga as etapas abaixo para compilar e executar o compilador:
 
 1. **Abra um terminal.**
 
@@ -24,9 +27,10 @@ Siga as etapas abaixo para compilar e executar o analisador léxico:
 
 3. **Execute os seguintes comandos:**
    ```bash
-   flex tripcode-lex.l
-   gcc lex.yy.c
+   yacc -d translate.y
+   flex lex.l
+   gcc y.tab.c lex.yy.c -lfl
    
 4. **Por fim, teste o analisador léxico com a entrada escrita em TripCode:**
    ```bash
-   ./a.out < entrada.txt
+   ./a.out < <seu_arquivo_de_teste>.tc

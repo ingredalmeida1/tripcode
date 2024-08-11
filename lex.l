@@ -10,8 +10,9 @@
 %option noyywrap
 
 /* definicoes regulares */
-delim		               [ \t\n] 
+delim		               [ \t] 
 ws		                   {delim}+
+linha                      \n
 digit                      [0-9]
 lower_letter               [a-z]
 upper_letter               [A-Z]
@@ -90,6 +91,7 @@ feriado                    FERIADO
 
 
 %% 
+{linha}                  { printf("\n%d\t", yylineno); yylineno++; }
 {ws}		             {}
 {comment}                { /* Ignora comentários */ }
 
