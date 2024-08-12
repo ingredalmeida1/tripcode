@@ -31,7 +31,7 @@ Siga as etapas abaixo para compilar e executar o compilador:
 
 5. **Execute os seguintes comandos:**
    ```bash
-   yacc -d translate.y
+   bison -d translate.y
    flex lex.l
    gcc y.tab.c lex.yy.c -lfl
    
