@@ -45,20 +45,22 @@ void yyerror(const char *s); // imprimir erro
 
 // Regras da gramática
 
-p : {
-    yylineno++;
-    printf("1/t");
-    inicializar_tabela(100); }
-    consts |
-    variaveis |
-    decl_structs |
-    functions_header |
-    main |
-    functions
+p : 
+    main
+    | consts 
+    | variaveis 
+    | decl_structs 
+    | functions_header 
+    | functions
+    {
+        yylineno++;
+        printf("1/t");
+        inicializar_tabela(100); 
+    }
     ;
 
 main:
-    ROTEIRO trip (list_params_form) stmts MILHAS consts {} // essas chaves são ação semântica para o main (todas as regras tem esse {}, igual na p)
+    ROTEIRO TRIP OPEN_PARENTHESES list_params_form CLOSE_PARENTHESES stmts MILHAS consts {} // essas chaves são ação semântica para o main (todas as regras tem esse {}, igual na p)
     ;
 
 consts:
@@ -69,6 +71,15 @@ consts:
 const:
     EXTERIOR ID term {}
     ;
+
+term:
+    number
+    | float
+    | string
+    | bool
+    | variavel
+
+
 
 decl_structs:
     decl_struct decl_structs {}
