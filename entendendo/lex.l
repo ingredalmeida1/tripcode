@@ -5,7 +5,7 @@
     #include <errno.h>
     #include <stdlib.h>
 
-    int yylineno; /* variavel para contar linhas*/
+    int nchar, nword, nline; /* contadores */
 
 %} 
 
@@ -92,12 +92,13 @@ diautil                    DIAUTIL
 
 
 %% 
-^(.*)\n              {printf("%4d\t%s", yylineno++, yytext);}
-
+^(.*)\n         {nchar++, printf("%4d\t%s", nline++, yytext);}
+[^ \t\n]+       {nword++, nchar += yyleng;}
 %% 
 
 int main(void) 
 { 
     yylex(); 
+    printf("%d\t%d\t%d\n", nchar, nword, nline);
     return 0; 
 }

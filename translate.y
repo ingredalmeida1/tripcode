@@ -46,80 +46,11 @@ void yyerror(const char *s); // imprimir erro
 // Regras da gramática
 
 p : 
-    main
-    | consts 
-    | variaveis 
-    | decl_structs 
-    | functions_header 
-    | functions
-    {
-        yylineno++;
-        printf("1/t");
-        inicializar_tabela(100); 
-    }
+    main { yylineno++; printf("1/t"); }
     ;
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES list_params_form CLOSE_PARENTHESES stmts MILHAS consts {} // essas chaves são ação semântica para o main (todas as regras tem esse {}, igual na p)
-    ;
-
-consts:
-    const consts {}
-    | /* ε - palavra vazia */
-    ;
-
-const:
-    EXTERIOR ID term {}
-    ;
-
-term:
-    number
-    | float
-    | string
-    | bool
-    | variavel
-
-
-
-decl_structs:
-    decl_struct decl_structs {}
-    | /* ε - palavra vazia */
-    ;
-
-decl_struct:
-    PASSAPORTE ID {}
-    ;
-
-functions_header:
-    function_header functions_header {}
-    | /* ε - palavra vazia */
-    ;
-
-function_header:
-    ROTEIRO ID '(' list_params_form ')' type {}
-    ;
-
-functions:
-    function functions {}
-    | /* ε - palavra vazia */
-    ;
-
-function:
-    ROTEIRO ID '(' list_params_form ')' stmts type {}
-    ;
-
-list_params_form:
-    param_form params_form {}
-    | /* ε - palavra vazia */
-    ;
-
-params_form:
-    param_form params_form {}
-    | /* ε - palavra vazia */
-    ;
-
-param_form:
-    type id {}
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES 
     ;
 
 
