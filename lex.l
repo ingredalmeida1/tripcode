@@ -1,99 +1,136 @@
-%{
+%{ /* Codigo C */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "translate.tab.h"  /* Inclua o cabeçalho gerado pelo Bison */
+#include "translate.tab.h"  /* Incluir o cabeçalho gerado pelo Bison */
 
 extern int yylineno; /* Variável para contar linhas */
 %}
 
-%option noyywrap
+/* This tells flex to read only one input file */
+%option noyywrap 
 
 /* Definições regulares */
-delim            [ \t] 
+delim             [ \t] 
 ws                {delim}+
-linha             \n
-digit             [0-9]
-lower_letter      [a-z]
-upper_letter      [A-Z]
-letter            {lower_letter}|{upper_letter}
+line              \n
 comment           ->[^<]*<-
-atribuicao        \<\-\>
+
+trip              trip
+
+/* --- valores booleanos: */
+ferias            FERIAS
+diautil           DIAUTIL
+
+/* --- tipos de dados: */
+status            STATUS
+dolar             DOLAR
+milhas            MILHAS
+voucher           VOUCHER
+
+mapa              MAPA
+passaporte        PASSAPORTE
+
+/* --- operadores relacionados aos tipos */
+cambio            CAMBIO
+cotacao           COTACAO 
+classe            CLASSE
+
+/* --- declarar variavel */
+bagagem           BAGAGEM
+exterior          EXTERIOR
+
+/* --- comandos de entrada/saida */
+checkin           CHECKIN
+checkout          CHECKOUT
+
+/* --- comando condicional */
+alfandega         ALFANDEGA
+isento            ISENTO
+tributado         TRIBUTADO
+
+/* --- comando switch */
+itinerario        ITINERARIO
+rota              ROTA
+imprevisto        IMPREVISTO
+
+pousar            POUSAR
+feriado           FERIADO
+
+/* --- comando repeticao */
+decolar           DECOLAR
+origem            ORIGEM
+destino           DESTINO
+escala            ESCALA 
+
+turistando        TURISTANDO
+turistar          TURISTAR
+durante           DURANTE
+
+/* --- definicao de funcao */
+roteiro           ROTEIRO
+despachar         DESPACHAR
+embarcar          EMBARCAR
+
+/* --- operadores */
+and               AND
+or                OR
+
+not               NOT
+descansar         DESCANSAR
+trabalhar         TRABALHAR
+
+som               \+
+sub               \-
+mult              \*
+div               \/
+mod               \%
+
 eq                \=
 gt                \>
 ge                \>\=
 lt                \<
 le                \<\=
 diff              \#
-relop             {eq}|{gt}|{ge}|{lt}|{le}|{diff}
-and               AND
-or                OR
-not               NOT
-logicop           {and}|{or}|{not}
-id                ({lower_letter})(_|{letter}|{digit})*
+
+atribuicao        \<\-\>
+
+/* --- */
+
+digit             [0-9]
+lower_letter      [a-z]
+upper_letter      [A-Z]
+letter            {lower_letter}|{upper_letter}
 inteiro_pos       \+?{digit}+
 inteiro_neg       \-{digit}+
+
+op                {som}|{sub}|{mult}|{div}|{mod}
+relop             {eq}|{gt}|{ge}|{lt}|{le}|{diff}
+logicop           {and}|{or}|{not}
+
 inteiro           {inteiro_pos}|{inteiro_neg}
 float             {inteiro}+\.{digit}+
 string            \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
-som               \+
-sub               \-
-mult              \*
-div               \/
-mod               \%
-op                {som}|{sub}|{mult}|{div}|{mod}
+
+type              ({milhas})|({dolar})|({voucher})|({bool})|({mapa})|({passaporte})
+
+id                ({lower_letter})(_|{letter}|{digit})*
+
 dot_comma         \;
 dot               \.
 comma             \,
 open_bracket      \[
 close_bracket     \]
-close_parentheses \)
 open_parentheses  \(
+close_parentheses \)
 open_codeblock    \>\>\>
 close_codeblock   \<\<\<
 colon             \:
-alfandega         ALFANDEGA
-isento            ISENTO
-tributado         TRIBUTADO
-checkout          CHECKOUT
-checkin           CHECKIN
-itinerario        ITINERARIO
-rota              ROTA
-pousar            POUSAR
-imprevisto        IMPREVISTO
-descansar         DESCANSAR
-trabalhar         TRABALHAR
-mapa              MAPA
-passaporte        PASSAPORTE
-bagagem           BAGAGEM
-roteiro           ROTEIRO
-despachar         DESPACHAR
-embarcar          EMBARCAR
-decolar           DECOLAR
-origem            ORIGEM
-destino           DESTINO
-escala            ESCALA 
-turistando        TURISTANDO
-turistar          TURISTAR
-durante           DURANTE
-cambio            CAMBIO
-cotacao           COTACAO 
-classe            CLASSE
-dolar             DOLAR
-milhas            MILHAS
-voucher           VOUCHER
-trip              trip
-status            STATUS
-exterior          EXTERIOR
-ferias            FERIAS
-diautil           DIAUTIL
-feriado           FERIADO
-bool              ({ferias})|({diautil})
-type              ({milhas})|({dolar})|({voucher})|({bool})
 
 %%
+
 {comment}                { printf("%s", yytext); }
-{linha}                  { printf("\n%d\t", yylineno++); }
+{line}                   { printf("\n%d\t", yylineno++); }
 {ws}                     { }
 
 {roteiro}                { return ROTEIRO; }
