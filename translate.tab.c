@@ -73,13 +73,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int yylineno;
-
 int yylex(void);
+
+extern int yylineno;
+extern char *yytext; /* Para acessar o texto reconhecido pelo scanner */
+
 void yyerror(const char *s);
 
 
-#line 83 "translate.tab.c"
+#line 85 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -112,11 +114,20 @@ enum yysymbol_kind_t
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_ROTEIRO = 3,                    /* ROTEIRO  */
   YYSYMBOL_TRIP = 4,                       /* TRIP  */
-  YYSYMBOL_OPEN_PARENTHESES = 5,           /* OPEN_PARENTHESES  */
-  YYSYMBOL_CLOSE_PARENTHESES = 6,          /* CLOSE_PARENTHESES  */
-  YYSYMBOL_YYACCEPT = 7,                   /* $accept  */
-  YYSYMBOL_p = 8,                          /* p  */
-  YYSYMBOL_trip = 9                        /* trip  */
+  YYSYMBOL_MILHAS = 5,                     /* MILHAS  */
+  YYSYMBOL_OPEN_PARENTHESES = 6,           /* OPEN_PARENTHESES  */
+  YYSYMBOL_CLOSE_PARENTHESES = 7,          /* CLOSE_PARENTHESES  */
+  YYSYMBOL_OPEN_CODEBLOCK = 8,             /* OPEN_CODEBLOCK  */
+  YYSYMBOL_CLOSE_CODEBLOCK = 9,            /* CLOSE_CODEBLOCK  */
+  YYSYMBOL_ID = 10,                        /* ID  */
+  YYSYMBOL_YYACCEPT = 11,                  /* $accept  */
+  YYSYMBOL_p = 12,                         /* p  */
+  YYSYMBOL_13_1 = 13,                      /* $@1  */
+  YYSYMBOL_main = 14,                      /* main  */
+  YYSYMBOL_15_2 = 15,                      /* $@2  */
+  YYSYMBOL_open = 16,                      /* open  */
+  YYSYMBOL_close = 17,                     /* close  */
+  YYSYMBOL_bloco = 18                      /* bloco  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -442,21 +453,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  5
+#define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   6
+#define YYLAST   13
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  7
+#define YYNTOKENS  11
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  3
+#define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  3
+#define YYNRULES  8
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  8
+#define YYNSTATES  18
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   261
+#define YYMAXUTOK   265
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -496,14 +507,14 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6
+       5,     6,     7,     8,     9,    10
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    22,    22,    26
+       0,    25,    25,    25,    29,    29,    32,    34,    36
 };
 #endif
 
@@ -520,7 +531,9 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "ROTEIRO", "TRIP",
-  "OPEN_PARENTHESES", "CLOSE_PARENTHESES", "$accept", "p", "trip", YY_NULLPTR
+  "MILHAS", "OPEN_PARENTHESES", "CLOSE_PARENTHESES", "OPEN_CODEBLOCK",
+  "CLOSE_CODEBLOCK", "ID", "$accept", "p", "$@1", "main", "$@2", "open",
+  "close", "bloco", YY_NULLPTR
 };
 
 static const char *
@@ -530,7 +543,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-6)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -544,7 +557,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -3,    -2,     1,    -4,    -1,    -4,     0,    -4
+      -6,     0,    -2,    -6,    -1,    -6,    -4,    -3,    -6,     1,
+      -6,    -5,    -6,     2,    -6,     3,     4,    -6
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -552,19 +566,20 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     2,     0,     1,     0,     3
+       2,     0,     0,     1,     0,     3,     0,     0,     4,     0,
+       6,     0,     8,     0,     7,     0,     0,     5
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,    -4
+      -6,    -6,    -6,    -6,    -6,    -6,    -6,    -6
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     3
+       0,     1,     2,     5,     9,    11,    15,    13
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -572,31 +587,34 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     5,     4,     0,     6,     0,     7
+       3,     4,     7,     6,     8,    12,     0,     0,    16,    10,
+       0,    14,     0,    17
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     0,     4,    -1,     5,    -1,     6
+       0,     3,     6,     4,     7,    10,    -1,    -1,     5,     8,
+      -1,     9,    -1,     9
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     8,     9,     4,     0,     5,     6
+       0,    12,    13,     0,     3,    14,     4,     6,     7,    15,
+       8,    16,    10,    18,     9,    17,     5,     9
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,     7,     8,     9
+       0,    11,    13,    12,    15,    14,    16,    17,    18
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     4
+       0,     2,     0,     2,     0,    10,     1,     1,     1
 };
 
 
@@ -1059,14 +1077,44 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 2: /* p: trip  */
-#line 22 "translate.y"
-         { yylineno++; printf("1/t"); }
-#line 1066 "translate.tab.c"
+  case 2: /* $@1: %empty  */
+#line 25 "translate.y"
+   {printf("%d\t", yylineno++);}
+#line 1084 "translate.tab.c"
+    break;
+
+  case 4: /* $@2: %empty  */
+#line 29 "translate.y"
+                                                    {printf("ROTEIRO trip()");}
+#line 1090 "translate.tab.c"
+    break;
+
+  case 5: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES $@2 open bloco close MILHAS CLOSE_CODEBLOCK  */
+#line 29 "translate.y"
+                                                                                                                        {printf("MILHAS <<<");}
+#line 1096 "translate.tab.c"
+    break;
+
+  case 6: /* open: OPEN_CODEBLOCK  */
+#line 32 "translate.y"
+                     {printf(">>>");}
+#line 1102 "translate.tab.c"
+    break;
+
+  case 7: /* close: CLOSE_CODEBLOCK  */
+#line 34 "translate.y"
+                       {printf("<<<");}
+#line 1108 "translate.tab.c"
+    break;
+
+  case 8: /* bloco: ID  */
+#line 36 "translate.y"
+          {printf("valor_id");}
+#line 1114 "translate.tab.c"
     break;
 
 
-#line 1070 "translate.tab.c"
+#line 1118 "translate.tab.c"
 
       default: break;
     }
@@ -1259,11 +1307,11 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 29 "translate.y"
+#line 39 "translate.y"
 
 
 int main(void) {
-    printf("Resultado da Analise Lexica:");
+    printf("Resultado da Analise Lexica:\n");
     yyparse();
     printf("\n");
     return 0;

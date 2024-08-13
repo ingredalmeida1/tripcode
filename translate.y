@@ -3,27 +3,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int yylineno;
-
 int yylex(void);
+
+extern int yylineno;
+extern char *yytext; /* Para acessar o texto reconhecido pelo scanner */
+
 void yyerror(const char *s);
 
 %}
 
-%token ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES
+%token ROTEIRO TRIP MILHAS 
+%token OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK CLOSE_CODEBLOCK
+
+%token ID
 
 %start p
 
 %%
 
 // Regras da gramática
-
-p : 
-    trip { yylineno++; printf("1/t"); }
+p: {printf("%d\t", yylineno++);} main 
     ;
 
-trip:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES 
+main:
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip()");} open bloco close MILHAS CLOSE_CODEBLOCK {printf("MILHAS <<<");}
+    ;
+
+open: OPEN_CODEBLOCK {printf(">>>");}
+
+close: CLOSE_CODEBLOCK {printf("<<<");}
+
+bloco: ID {printf("valor_id");}
     ;
 
 %%

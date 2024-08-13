@@ -56,8 +56,12 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     ROTEIRO = 258,                 /* ROTEIRO  */
     TRIP = 259,                    /* TRIP  */
-    OPEN_PARENTHESES = 260,        /* OPEN_PARENTHESES  */
-    CLOSE_PARENTHESES = 261        /* CLOSE_PARENTHESES  */
+    MILHAS = 260,                  /* MILHAS  */
+    OPEN_PARENTHESES = 261,        /* OPEN_PARENTHESES  */
+    CLOSE_PARENTHESES = 262,       /* CLOSE_PARENTHESES  */
+    OPEN_CODEBLOCK = 263,          /* OPEN_CODEBLOCK  */
+    CLOSE_CODEBLOCK = 264,         /* CLOSE_CODEBLOCK  */
+    ID = 265                       /* ID  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
