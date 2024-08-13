@@ -1,12 +1,13 @@
-%{ 
-/* cabecalho C */
-
+%{
+/* Cabeçalho C */
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include "translate.tab.h"  /* Inclua o cabeçalho gerado pelo Bison */
 
 %} 
+
 %option noyywrap
 
 /* definicoes regulares */
@@ -36,7 +37,6 @@ inteiro_neg                \-{digit}+
 inteiro                    {inteiro_pos}|{inteiro_neg}
 float                      {inteiro}+\.{digit}+
 string                     \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
-erro                       {[a-zA-Z1-9]}+|.
 som                        \+
 sub                        \-
 mult                       \*
@@ -52,6 +52,7 @@ close_parentheses          \)
 open_parentheses           \(
 open_codeblock             \>\>\>
 close_codeblock            \<\<\<
+colon                      \:
 alfandega                  ALFANDEGA
 isento                     ISENTO
 tributado                  TRIBUTADO
@@ -88,79 +89,18 @@ exterior                   EXTERIOR
 ferias                     FERIAS
 diautil                    DIAUTIL
 feriado                    FERIADO
-
+bool                       ({ferias})|({diautil})
+type                       ({milhas})|({dolar})|({voucher})|({bool})
 
 %% 
 {linha}                  { printf("\n%d\t", yylineno); yylineno++; }
 {ws}		             {}
 {comment}                { /* Ignora comentários */ }
 
-{cambio}                 { return CAMBIO; }
-{cotacao}                { return COTACAO; }
-{classe}                 { return CLASSE; }
-{alfandega}              { return ALFANDEGA; }
-{isento}                 { return ISENTO; }
-{tributado}              { return TRIBUTADO; }
-{checkout}               { return CHECKOUT; }
-{checkin}                { return CHECKIN; }
-{itinerario}             { return ITINERARIO; }
-{rota}                   { return ROTA; }
-{pousar}                 { return POUSAR; }
-{imprevisto}             { return IMPREVISTO; }
-{descansar}              { return DESCANSAR; }
-{trabalhar}              { return TRABALHAR; }
 {roteiro}                { return ROTEIRO; }
-{embarcar}               { return EMBARCAR; }
-{despachar}              { return DESPACHAR; }
-{decolar}                { return DECOLAR; }
-{origem}                 { return ORIGEM; }
-{destino}                { return DESTINO; }
-{escala}                 { return ESCALA; }
-{turistando}             { return TURISTANDO; }
-{turistar}               { return TURISTAR; }
-{durante}                { return DURANTE; }
-{mapa}                   { return MAPA; }
-{passaporte}             { return PASSAPORTE; }
-{bagagem}                { return BAGAGEM; }
-{milhas}                 { return MILHAS; }
-{dolar}                  { return DOLAR; }
-{voucher}                { return VOUCHER; }
 {trip}                   { return TRIP; }
-{status}                 { return STATUS; }
-{exterior}               { return EXTERIOR; }
-{ferias}                 { return FERIAS; }
-{diautil}                { return DIAUTIL; }
-{feriado}                { return FERIADO; }
-
-
-{comma}                  { return COMMA; }
-{dot_comma}              { return DOT_COMMA; }
-{dot}                    { return DOT; }
 {open_parentheses}       { return OPEN_PARENTHESES; }
 {close_parentheses}      { return CLOSE_PARENTHESES; }
-{open_bracket}           { return OPEN_BRACKET; }
-{close_bracket}          { return CLOSE_BRACKET; }
-{open_codeblock}         { return OPEN_CODEBLOCK; }
-{close_codeblock}        { return CLOSE_CODEBLOCK; }
-
-{atribuicao}             { return ATRIBUICAO; }
-
-{relop}                  { yylval.str = strdup(yytext); return RELOP; }
-{logicop}                { yylval.str = strdup(yytext); return LOGICOP; }
-{op}                     { yylval.str = strdup(yytext); return OP; }
-
-{inteiro}                { yylval.iValue = atoi(yytext); return INTEIRO; }
-{float}                  { yylval.real = atof(yytext); return FLOAT; }
-{string}                 { yylval.str = strdup(yytext); return STRING; }
-
-{id}                     { yylval.str = strdup(yytext); return ID; }
-
-{erro}                   {char message[200] = "Lexema inválido: '"; strcat(message, yytext); strcat(message, "'"); strcpy(error_message, message); yyerror(message);}
 
 
 %% 
-int main(void) 
-{ 
-    yylex(); 
-    return 0; 
-}

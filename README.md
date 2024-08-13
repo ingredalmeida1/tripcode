@@ -33,7 +33,7 @@ Siga as etapas abaixo para compilar e executar o compilador:
    ```bash
    bison -d translate.y
    flex lex.l
-   gcc y.tab.c lex.yy.c -lfl
+   gcc translate.tab.c lex.yy.c -lfl
    
 6. **Por fim, teste o analisador léxico com a entrada escrita em TripCode:**
    ```bash
