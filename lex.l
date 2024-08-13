@@ -5,6 +5,10 @@
 #include "translate.tab.h"  /* Incluir o cabeçalho gerado pelo Bison */
 
 extern int yylineno; /* Variável para contar linhas */
+extern char error_message[200];  
+
+void yyerror(char*);
+
 %}
 
 /* This tells flex to read only one input file */
@@ -28,13 +32,15 @@ dolar             DOLAR
 milhas            MILHAS
 voucher           VOUCHER
 
-mapa              MAPA
-passaporte        PASSAPORTE
+/* mapa              MAPA */
+/* passaporte        PASSAPORTE */
+
+type              {status}|{dolar}|{milhas}|{voucher}
 
 /* --- operadores relacionados aos tipos */
-cambio            CAMBIO
-cotacao           COTACAO 
-classe            CLASSE
+/* cambio            CAMBIO */
+/* cotacao           COTACAO */
+/* classe            CLASSE */
 
 /* --- declarar variavel */
 bagagem           BAGAGEM
@@ -77,8 +83,8 @@ and               AND
 or                OR
 
 not               NOT
-descansar         DESCANSAR
-trabalhar         TRABALHAR
+/* descansar         DESCANSAR */
+/* trabalhar         TRABALHAR */
 
 som               \+
 sub               \-
@@ -95,8 +101,12 @@ diff              \#
 
 atribuicao        \<\-\>
 
-/* --- */
+op                {som}|{sub}|{mult}|{div}|{mod}
+relop             {eq}|{gt}|{ge}|{lt}|{le}|{diff}
+logicop           {and}|{or}
+logicop_unary     {not}
 
+/* --- valores */
 digit             [0-9]
 lower_letter      [a-z]
 upper_letter      [A-Z]
@@ -104,18 +114,14 @@ letter            {lower_letter}|{upper_letter}
 inteiro_pos       \+?{digit}+
 inteiro_neg       \-{digit}+
 
-op                {som}|{sub}|{mult}|{div}|{mod}
-relop             {eq}|{gt}|{ge}|{lt}|{le}|{diff}
-logicop           {and}|{or}|{not}
-
 inteiro           {inteiro_pos}|{inteiro_neg}
 float             {inteiro}+\.{digit}+
 string            \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
-
-type              ({milhas})|({dolar})|({voucher})|({bool})|({mapa})|({passaporte})
+boolean           {ferias}|{diautil}
 
 id                ({lower_letter})(_|{letter}|{digit})*
 
+/* --- estrutura do codigo */
 dot_comma         \;
 dot               \.
 comma             \,
@@ -127,20 +133,75 @@ open_codeblock    \>\>\>
 close_codeblock   \<\<\<
 colon             \:
 
+/* --- erros lexicos */
+all_characters     [a-zA-Z1-9]
+lexema_error      {all_characters}+|.
+
 %%
 
 {comment}                { printf("%s", yytext); }
 {line}                   { printf("\n%d\t", yylineno++); }
 {ws}                     { }
 
-{roteiro}                { return ROTEIRO; }
 {trip}                   { return TRIP; }
-{milhas}                 { return MILHAS; }
-{open_codeblock}         { return OPEN_CODEBLOCK; }
-{close_codeblock}        { return CLOSE_CODEBLOCK; }
+
+{bagagem}                { return BAGAGEM; }
+{exterior}               { return EXTERIOR; }
+
+{checkin}                { return CHECKIN; }
+{checkout}               { return CHECKOUT; }
+
+{alfandega}              { return ALFANDEGA; }
+{isento}                 { return ISENTO; }
+{tributado}              { return TRIBUTADO; }
+
+{itinerario}             { return ITINERARIO; }
+{rota}                   { return ROTA; }
+{imprevisto}             { return IMPREVISTO; }
+
+{pousar}                 { return POUSAR; }
+{feriado}                { return FERIADO; }
+
+{decolar}                { return DECOLAR; }
+{origem}                 { return ORIGEM; }
+{destino}                { return DESTINO; }
+{escala}                 { return ESCALA; }
+
+{turistando}             { return TURISTANDO; }
+{turistar}               { return TURISTAR; }
+{durante}                { return DURANTE; }
+
+{roteiro}                { return ROTEIRO; }
+{embarcar}               { return EMBARCAR; }
+{despachar}              { return DESPACHAR; }
+
+{comma}                  { return COMMA; }
+{dot_comma}              { return DOT_COMMA; }
+{dot}                    { return DOT; }
+{colon}                  { return COLON; }
 {open_parentheses}       { return OPEN_PARENTHESES; }
 {close_parentheses}      { return CLOSE_PARENTHESES; }
+{open_bracket}           { return OPEN_BRACKET; }
+{close_bracket}          { return CLOSE_BRACKET; }
+{open_codeblock}         { return OPEN_BLOCK; }
+{close_codeblock}        { return CLOSE_BLOCK; }
 
-{id}                     { return ID; }
+{atribuicao}             {return ASSIGN;}
+
+{op}                     {yylval.str = strdup(yytext); return OP;}
+{relop}                  {yylval.str = strdup(yytext); return RELOP;}
+{logicop}                {yylval.str = strdup(yytext); return LOGIC;}
+{logicop_unary}          {yylval.str = strdup(yytext); return LOGIC_UNARY;}
+
+{type}                   {yylval.str = strdup(yytext); return TYPE;}
+
+{inteiro}                {yylval.iValue = atoi(yytext); return INT;}
+{float}                  {yylval.real = atof(yytext); return FLOAT;}
+{string}                 {yylval.str = strdup(yytext); return STRING;}
+{boolean}                {yylval.str = strdup(yytext); return BOOL;}
+
+{id}                     {yylval.str = strdup(yytext); return ID;}
+
+{lexema_error}           {char message[200] = "Erro Léxico: '"; strcat(message, yytext); strcat(message, "'"); strcpy(error_message, message); yyerror(message);}
 
 %%
