@@ -3,10 +3,14 @@ EXTERIOR teste testte3
 BAGAGEM VOUCHER variavel <-> "leticia"
 BAGAGEM VOUCHER julia;
 
-ROTEIRO soma(MILHAS a, MILHAS b) >>> MILHAS <<<
+ROTEIRO soma(MILHAS a) >>> MILHAS <<<
 
 ROTEIRO trip() >>> 
     leticia 
     -> testando outro comentario <-
 <<< MILHAS <<<
 -> testando mais um comentario <-
+
+ROTEIRO somo(MILHAS a, MILHAS b) >>>
+    teste
+<<< MILHAS <<<
