@@ -149,8 +149,12 @@ if:
 command:
     def_variavel
     | dec_variavel
+    | atribuicao
     ;
 
+atribuicao:
+    ID ASSIGN expr DOT_COMMA
+    ;
 
 %%
 
