@@ -166,12 +166,19 @@ enum yysymbol_kind_t
   YYSYMBOL_def_variavel = 54,              /* def_variavel  */
   YYSYMBOL_55_3 = 55,                      /* $@3  */
   YYSYMBOL_dec_variavel = 56,              /* dec_variavel  */
-  YYSYMBOL_term = 57,                      /* term  */
-  YYSYMBOL_main = 58,                      /* main  */
+  YYSYMBOL_functions_header = 57,          /* functions_header  */
+  YYSYMBOL_function_header = 58,           /* function_header  */
   YYSYMBOL_59_4 = 59,                      /* $@4  */
-  YYSYMBOL_open = 60,                      /* open  */
-  YYSYMBOL_close = 61,                     /* close  */
-  YYSYMBOL_bloco = 62                      /* bloco  */
+  YYSYMBOL_params_form = 60,               /* params_form  */
+  YYSYMBOL_list_params_form = 61,          /* list_params_form  */
+  YYSYMBOL_62_5 = 62,                      /* $@5  */
+  YYSYMBOL_param_form = 63,                /* param_form  */
+  YYSYMBOL_term = 64,                      /* term  */
+  YYSYMBOL_main = 65,                      /* main  */
+  YYSYMBOL_66_6 = 66,                      /* $@6  */
+  YYSYMBOL_open = 67,                      /* open  */
+  YYSYMBOL_close = 68,                     /* close  */
+  YYSYMBOL_bloco = 69                      /* bloco  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -499,16 +506,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   23
+#define YYLAST   43
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  47
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  16
+#define YYNNTS  23
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  23
+#define YYNRULES  33
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  39
+#define YYNSTATES  56
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   301
@@ -563,8 +570,9 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int8 yyrline[] =
 {
        0,    56,    56,    56,    60,    61,    65,    65,    69,    70,
-      71,    75,    75,    79,    82,    83,    84,    85,    86,    90,
-      90,    93,    95,    97
+      71,    75,    75,    79,    82,    83,    87,    87,    90,    91,
+      95,    95,    96,   100,   104,   105,   106,   107,   108,   112,
+     112,   115,   117,   119
 };
 #endif
 
@@ -589,8 +597,9 @@ static const char *const yytname[] =
   "OPEN_CODEBLOCK", "CLOSE_CODEBLOCK", "ASSIGN", "TYPE", "OP", "RELOP",
   "LOGICOP", "LOGICOP_UNARY", "INT", "FLOAT", "STRING", "BOOL", "ID",
   "$accept", "p", "$@1", "consts", "const", "$@2", "variaveis",
-  "def_variavel", "$@3", "dec_variavel", "term", "main", "$@4", "open",
-  "close", "bloco", YY_NULLPTR
+  "def_variavel", "$@3", "dec_variavel", "functions_header",
+  "function_header", "$@4", "params_form", "list_params_form", "$@5",
+  "param_form", "term", "main", "$@6", "open", "close", "bloco", YY_NULLPTR
 };
 
 static const char *
@@ -614,10 +623,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -41,     7,   -41,   -41,     3,   -37,   -41,    -4,   -41,   -25,
-       8,   -41,   -41,   -41,   -40,   -33,   -16,   -41,   -41,   -41,
-     -41,   -41,   -41,   -26,   -15,   -41,   -41,   -41,   -40,   -19,
-     -41,   -41,   -29,   -41,   -17,   -41,   -14,   -13,   -41
+     -41,     7,   -41,   -41,     3,   -37,   -41,     8,   -41,   -24,
+     -41,   -41,   -12,   -40,   -32,    -3,   -41,   -41,   -41,   -41,
+     -41,   -41,   -41,   -41,   -26,   -15,   -14,   -41,   -41,   -13,
+     -41,   -40,   -41,   -20,   -41,   -11,   -27,   -10,   -41,   -41,
+     -22,   -41,    -9,    -6,   -41,    -8,    -7,   -41,   -41,    -5,
+      -4,   -20,    -2,   -41,   -41,   -41
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -625,24 +636,28 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     5,     1,    10,     0,     4,     0,     6,     0,
-       0,     8,     9,     3,     0,     0,     0,    14,    15,    16,
-      17,    18,     7,     0,     0,    13,    11,    19,     0,     0,
-      12,    21,     0,    23,     0,    22,     0,     0,    20
+       2,     0,     5,     1,    10,     0,     4,    15,     6,     0,
+       8,     9,     0,     0,     0,     0,    14,     3,    24,    25,
+      26,    27,    28,     7,     0,     0,     0,    13,    11,     0,
+      16,     0,    29,    19,    12,     0,     0,     0,    22,    31,
+       0,    23,     0,    18,    33,     0,     0,    20,    32,     0,
+       0,     0,     0,    17,    21,    30
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
      -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
-      -8,   -41,   -41,   -41,   -41,   -41
+     -41,   -41,   -41,   -41,   -41,   -41,   -29,     4,   -41,   -41,
+     -41,   -41,   -41
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     2,     4,     6,    14,     7,    11,    28,    12,
-      22,    13,    29,    32,    36,    34
+       0,     1,     2,     4,     6,    13,     7,    10,    31,    11,
+      12,    16,    33,    37,    43,    51,    38,    23,    17,    35,
+      40,    49,    45
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -650,16 +665,20 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       9,    25,    17,    18,    19,    20,    21,     3,     5,     8,
-      26,    16,    15,    23,    24,    31,    27,    33,    35,    10,
-      30,     0,    38,    37
+      25,    27,    18,    19,    20,    21,    22,     3,     5,     8,
+      28,    15,     9,    14,    24,    29,    30,    36,    32,    41,
+      47,    42,    54,    39,    44,    46,     0,    48,     0,     0,
+      50,    53,    52,    55,     0,    34,     0,     0,     0,     0,
+       0,     0,     0,    26
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,    27,    42,    43,    44,    45,    46,     0,     5,    46,
-      36,     3,    37,    46,    30,    34,    31,    46,    35,    23,
-      28,    -1,    35,    37
+       3,    27,    42,    43,    44,    45,    46,     0,     5,    46,
+      36,    23,     4,    37,    46,    30,    30,    37,    31,    46,
+      26,    31,    51,    34,    46,    34,    -1,    35,    -1,    -1,
+      37,    35,    37,    35,    -1,    31,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    46
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -667,24 +686,28 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,    48,    49,     0,    50,     5,    51,    53,    46,     4,
-      23,    54,    56,    58,    52,    37,     3,    42,    43,    44,
-      45,    46,    57,    46,    30,    27,    36,    31,    55,    59,
-      57,    34,    60,    46,    62,    35,    61,    37,    35
+      54,    56,    57,    52,    37,    23,    58,    65,    42,    43,
+      44,    45,    46,    64,    46,     3,    46,    27,    36,    30,
+      30,    55,    31,    59,    64,    66,    37,    60,    63,    34,
+      67,    46,    31,    61,    46,    69,    34,    26,    35,    68,
+      37,    62,    37,    35,    63,    35
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    47,    49,    48,    50,    50,    52,    51,    53,    53,
-      53,    55,    54,    56,    57,    57,    57,    57,    57,    59,
-      58,    60,    61,    62
+      53,    55,    54,    56,    57,    57,    59,    58,    60,    60,
+      62,    61,    61,    63,    64,    64,    64,    64,    64,    66,
+      65,    67,    68,    69
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     4,     2,     0,     0,     4,     2,     2,
-       0,     0,     6,     4,     1,     1,     1,     1,     1,     0,
+       0,     2,     0,     5,     2,     0,     0,     4,     2,     2,
+       0,     0,     6,     4,     2,     0,     0,     9,     2,     0,
+       0,     4,     0,     2,     1,     1,     1,     1,     1,     0,
       10,     1,     1,     1
 };
 
@@ -1151,83 +1174,113 @@ yyreduce:
   case 2: /* $@1: %empty  */
 #line 56 "translate.y"
    {printf("%d\t", yylineno++);}
-#line 1155 "translate.tab.c"
+#line 1178 "translate.tab.c"
     break;
 
   case 6: /* $@2: %empty  */
 #line 65 "translate.y"
                  {printf("EXTERIOR valor_ID ");}
-#line 1161 "translate.tab.c"
+#line 1184 "translate.tab.c"
     break;
 
   case 11: /* $@3: %empty  */
 #line 75 "translate.y"
                            {printf("BAGAGEM valor_TYPE valor_ID <-> ");}
-#line 1167 "translate.tab.c"
+#line 1190 "translate.tab.c"
     break;
 
-  case 14: /* term: INT  */
-#line 82 "translate.y"
-               {printf("valor_INT");}
-#line 1173 "translate.tab.c"
+  case 13: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
+#line 79 "translate.y"
+                              {printf("BAGAGEM valor_TYPE valor_ID;");}
+#line 1196 "translate.tab.c"
     break;
 
-  case 15: /* term: FLOAT  */
-#line 83 "translate.y"
-               {printf("valor_FLOAT");}
-#line 1179 "translate.tab.c"
+  case 16: /* $@4: %empty  */
+#line 87 "translate.y"
+                                {printf("ROTEIRO valor_ID (");}
+#line 1202 "translate.tab.c"
     break;
 
-  case 16: /* term: STRING  */
-#line 84 "translate.y"
-               {printf("valor_STRING");}
-#line 1185 "translate.tab.c"
+  case 17: /* function_header: ROTEIRO ID OPEN_PARENTHESES $@4 params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
+#line 87 "translate.y"
+                                                                                                                                   {printf(") >>> valor_TYPE <<< ");}
+#line 1208 "translate.tab.c"
     break;
 
-  case 17: /* term: BOOL  */
-#line 85 "translate.y"
-               {printf("valor_BOOL");}
-#line 1191 "translate.tab.c"
-    break;
-
-  case 18: /* term: ID  */
-#line 86 "translate.y"
-               {printf("valor_ID");}
-#line 1197 "translate.tab.c"
-    break;
-
-  case 19: /* $@4: %empty  */
-#line 90 "translate.y"
-                                                    {printf("ROTEIRO trip() ");}
-#line 1203 "translate.tab.c"
-    break;
-
-  case 20: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES $@4 open bloco close TYPE CLOSE_CODEBLOCK  */
-#line 90 "translate.y"
-                                                                                                                       {printf(" valor_TYPE <<<");}
-#line 1209 "translate.tab.c"
-    break;
-
-  case 21: /* open: OPEN_CODEBLOCK  */
-#line 93 "translate.y"
-                     {printf(">>> ");}
-#line 1215 "translate.tab.c"
-    break;
-
-  case 22: /* close: CLOSE_CODEBLOCK  */
+  case 20: /* $@5: %empty  */
 #line 95 "translate.y"
+                           {printf(",");}
+#line 1214 "translate.tab.c"
+    break;
+
+  case 23: /* param_form: TYPE ID  */
+#line 100 "translate.y"
+            {printf("valor_TYPE valor_ID");}
+#line 1220 "translate.tab.c"
+    break;
+
+  case 24: /* term: INT  */
+#line 104 "translate.y"
+               {printf("valor_INT");}
+#line 1226 "translate.tab.c"
+    break;
+
+  case 25: /* term: FLOAT  */
+#line 105 "translate.y"
+               {printf("valor_FLOAT");}
+#line 1232 "translate.tab.c"
+    break;
+
+  case 26: /* term: STRING  */
+#line 106 "translate.y"
+               {printf("valor_STRING");}
+#line 1238 "translate.tab.c"
+    break;
+
+  case 27: /* term: BOOL  */
+#line 107 "translate.y"
+               {printf("valor_BOOL");}
+#line 1244 "translate.tab.c"
+    break;
+
+  case 28: /* term: ID  */
+#line 108 "translate.y"
+               {printf("valor_ID");}
+#line 1250 "translate.tab.c"
+    break;
+
+  case 29: /* $@6: %empty  */
+#line 112 "translate.y"
+                                                    {printf("ROTEIRO trip() ");}
+#line 1256 "translate.tab.c"
+    break;
+
+  case 30: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES $@6 open bloco close TYPE CLOSE_CODEBLOCK  */
+#line 112 "translate.y"
+                                                                                                                       {printf(" valor_TYPE <<<");}
+#line 1262 "translate.tab.c"
+    break;
+
+  case 31: /* open: OPEN_CODEBLOCK  */
+#line 115 "translate.y"
+                     {printf(">>> ");}
+#line 1268 "translate.tab.c"
+    break;
+
+  case 32: /* close: CLOSE_CODEBLOCK  */
+#line 117 "translate.y"
                        {printf(" <<<");}
-#line 1221 "translate.tab.c"
+#line 1274 "translate.tab.c"
     break;
 
-  case 23: /* bloco: ID  */
-#line 97 "translate.y"
+  case 33: /* bloco: ID  */
+#line 119 "translate.y"
           {printf("%s", "valor_ID");}
-#line 1227 "translate.tab.c"
+#line 1280 "translate.tab.c"
     break;
 
 
-#line 1231 "translate.tab.c"
+#line 1284 "translate.tab.c"
 
       default: break;
     }
@@ -1420,7 +1473,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 100 "translate.y"
+#line 122 "translate.y"
 
 
 int main(void) {

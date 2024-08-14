@@ -53,7 +53,7 @@ void yyerror(const char *s); //imprimir erro
 %%
 
 // Regras da gramática
-p: {printf("%d\t", yylineno++);} consts variaveis main 
+p: {printf("%d\t", yylineno++);} consts variaveis functions_header main 
     ;
 
 consts: 
@@ -76,7 +76,29 @@ def_variavel:
     ;
 
 dec_variavel:
-    BAGAGEM TYPE ID DOT_COMMA
+    BAGAGEM TYPE ID DOT_COMMA {printf("BAGAGEM valor_TYPE valor_ID;");}
+
+functions_header:
+    functions_header function_header 
+    |
+    ;
+
+function_header:
+    ROTEIRO ID OPEN_PARENTHESES {printf("ROTEIRO valor_ID (");}  params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK {printf(") >>> valor_TYPE <<< ");}
+
+params_form: 
+    param_form list_params_form
+    |
+    ;
+
+list_params_form:
+    list_params_form COMMA {printf(",");} param_form
+    |
+    ;
+
+param_form:
+    TYPE ID {printf("valor_TYPE valor_ID");}
+    ;
 
 term: 
     INT        {printf("valor_INT");}
