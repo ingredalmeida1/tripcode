@@ -53,16 +53,46 @@ void yyerror(const char *s); //imprimir erro
 %%
 
 // Regras da gramática
-p: {printf("%d\t", yylineno++);} main 
+p: {printf("%d\t", yylineno++);} consts variaveis main 
+    ;
+
+consts: 
+    consts const
+    |
+    ;
+
+const: 
+     EXTERIOR ID {printf("EXTERIOR valor_ID ");} term 
+    ;
+
+variaveis: 
+    variaveis def_variavel
+    | variaveis dec_variavel
+    |
+    ;
+
+def_variavel: 
+    BAGAGEM TYPE ID ASSIGN {printf("BAGAGEM valor_TYPE valor_ID <-> ");} term
+    ;
+
+dec_variavel:
+    BAGAGEM TYPE ID DOT_COMMA
+
+term: 
+    INT        {printf("valor_INT");}
+    | FLOAT    {printf("valor_FLOAT");}
+    | STRING   {printf("valor_STRING");}
+    | BOOL     {printf("valor_BOOL");}
+    | ID       {printf("valor_ID");}
     ;
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip()");} open bloco close TYPE CLOSE_CODEBLOCK {printf(" valor_TYPE <<<");}
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip() ");} open bloco close TYPE CLOSE_CODEBLOCK {printf(" valor_TYPE <<<");}
     ;
 
-open: OPEN_CODEBLOCK {printf(">>>");}
+open: OPEN_CODEBLOCK {printf(">>> ");}
 
-close: CLOSE_CODEBLOCK {printf("<<<");}
+close: CLOSE_CODEBLOCK {printf(" <<<");}
 
 bloco: ID {printf("%s", "valor_ID");}
     ;
@@ -77,5 +107,5 @@ int main(void) {
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro: %s\n", s);
+    fprintf(stderr, "Erro: %s  na linha:", s); 
 }
