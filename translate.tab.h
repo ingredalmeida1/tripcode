@@ -54,21 +54,68 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    ROTEIRO = 258,                 /* ROTEIRO  */
-    TRIP = 259,                    /* TRIP  */
-    MILHAS = 260,                  /* MILHAS  */
-    OPEN_PARENTHESES = 261,        /* OPEN_PARENTHESES  */
-    CLOSE_PARENTHESES = 262,       /* CLOSE_PARENTHESES  */
-    OPEN_CODEBLOCK = 263,          /* OPEN_CODEBLOCK  */
-    CLOSE_CODEBLOCK = 264,         /* CLOSE_CODEBLOCK  */
-    ID = 265                       /* ID  */
+    TRIP = 258,                    /* TRIP  */
+    BAGAGEM = 259,                 /* BAGAGEM  */
+    EXTERIOR = 260,                /* EXTERIOR  */
+    CHECKIN = 261,                 /* CHECKIN  */
+    CHECKOUT = 262,                /* CHECKOUT  */
+    ALFANDEGA = 263,               /* ALFANDEGA  */
+    ISENTO = 264,                  /* ISENTO  */
+    TRIBUTADO = 265,               /* TRIBUTADO  */
+    ITINERARIO = 266,              /* ITINERARIO  */
+    ROTA = 267,                    /* ROTA  */
+    IMPREVISTO = 268,              /* IMPREVISTO  */
+    POUSAR = 269,                  /* POUSAR  */
+    FERIADO = 270,                 /* FERIADO  */
+    DECOLAR = 271,                 /* DECOLAR  */
+    ORIGEM = 272,                  /* ORIGEM  */
+    DESTINO = 273,                 /* DESTINO  */
+    ESCALA = 274,                  /* ESCALA  */
+    TURISTANDO = 275,              /* TURISTANDO  */
+    TURISTAR = 276,                /* TURISTAR  */
+    DURANTE = 277,                 /* DURANTE  */
+    ROTEIRO = 278,                 /* ROTEIRO  */
+    EMBARCAR = 279,                /* EMBARCAR  */
+    DESPACHAR = 280,               /* DESPACHAR  */
+    COMMA = 281,                   /* COMMA  */
+    DOT_COMMA = 282,               /* DOT_COMMA  */
+    DOT = 283,                     /* DOT  */
+    COLON = 284,                   /* COLON  */
+    OPEN_PARENTHESES = 285,        /* OPEN_PARENTHESES  */
+    CLOSE_PARENTHESES = 286,       /* CLOSE_PARENTHESES  */
+    OPEN_BRACKET = 287,            /* OPEN_BRACKET  */
+    CLOSE_BRACKET = 288,           /* CLOSE_BRACKET  */
+    OPEN_CODEBLOCK = 289,          /* OPEN_CODEBLOCK  */
+    CLOSE_CODEBLOCK = 290,         /* CLOSE_CODEBLOCK  */
+    ASSIGN = 291,                  /* ASSIGN  */
+    TYPE = 292,                    /* TYPE  */
+    OP = 293,                      /* OP  */
+    RELOP = 294,                   /* RELOP  */
+    LOGICOP = 295,                 /* LOGICOP  */
+    LOGICOP_UNARY = 296,           /* LOGICOP_UNARY  */
+    INT = 297,                     /* INT  */
+    FLOAT = 298,                   /* FLOAT  */
+    STRING = 299,                  /* STRING  */
+    BOOL = 300,                    /* BOOL  */
+    ID = 301                       /* ID  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 16 "translate.y"
+
+    char *str;
+    int iValue;
+    float real;
+
+#line 116 "translate.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

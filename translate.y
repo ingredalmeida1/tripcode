@@ -5,17 +5,48 @@
 
 int yylex(void);
 
-extern int yylineno;
-extern char *yytext; /* Para acessar o texto reconhecido pelo scanner */
+extern char *yytext; // para acessar o texto reconhecido pelo scanner/lex */
+extern int yylineno; // contar as linhas
 
-void yyerror(const char *s);
+void yyerror(const char *s); //imprimir erro
 
 %}
 
-%token ROTEIRO TRIP MILHAS 
-%token OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK CLOSE_CODEBLOCK
+// especifica os diferentes tipos de valores que os tokens podem armazenar
+%union {
+    char *str;
+    int iValue;
+    float real;
+}
 
-%token ID
+// declara os tokens que são retornados pelo Lex e especifica o tipo de valor que eles retornam
+
+%token TRIP 
+%token BAGAGEM EXTERIOR 
+%token CHECKIN CHECKOUT
+%token ALFANDEGA ISENTO TRIBUTADO
+%token ITINERARIO ROTA IMPREVISTO
+%token POUSAR FERIADO
+%token DECOLAR ORIGEM DESTINO ESCALA
+%token TURISTANDO TURISTAR DURANTE
+%token ROTEIRO EMBARCAR DESPACHAR
+%token COMMA DOT_COMMA DOT COLON
+%token OPEN_PARENTHESES CLOSE_PARENTHESES 
+%token OPEN_BRACKET CLOSE_BRACKET
+%token OPEN_CODEBLOCK CLOSE_CODEBLOCK
+%token ASSIGN
+%token TYPE
+
+%token <str> OP
+%token <str> RELOP
+%token <str> LOGICOP
+%token <str> LOGICOP_UNARY
+
+%token <iValue> INT
+%token <real> FLOAT
+%token <str>  STRING
+%token <str>  BOOL
+%token <str> ID
 
 %start p
 
@@ -26,14 +57,14 @@ p: {printf("%d\t", yylineno++);} main
     ;
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip()");} open bloco close MILHAS CLOSE_CODEBLOCK {printf("MILHAS <<<");}
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip()");} open bloco close TYPE CLOSE_CODEBLOCK {printf(" valor_TYPE <<<");}
     ;
 
 open: OPEN_CODEBLOCK {printf(">>>");}
 
 close: CLOSE_CODEBLOCK {printf("<<<");}
 
-bloco: ID {printf("valor_id");}
+bloco: ID {printf("%s", "valor_ID");}
     ;
 
 %%

@@ -5,9 +5,6 @@
 #include "translate.tab.h"  /* Incluir o cabeçalho gerado pelo Bison */
 
 extern int yylineno; /* Variável para contar linhas */
-extern char error_message[200];  
-
-void yyerror(char*);
 
 %}
 
@@ -183,15 +180,15 @@ lexema_error      {all_characters}+|.
 {close_parentheses}      { return CLOSE_PARENTHESES; }
 {open_bracket}           { return OPEN_BRACKET; }
 {close_bracket}          { return CLOSE_BRACKET; }
-{open_codeblock}         { return OPEN_BLOCK; }
-{close_codeblock}        { return CLOSE_BLOCK; }
+{open_codeblock}         { return OPEN_CODEBLOCK; }
+{close_codeblock}        { return CLOSE_CODEBLOCK; }
 
 {atribuicao}             {return ASSIGN;}
 
 {op}                     {yylval.str = strdup(yytext); return OP;}
 {relop}                  {yylval.str = strdup(yytext); return RELOP;}
-{logicop}                {yylval.str = strdup(yytext); return LOGIC;}
-{logicop_unary}          {yylval.str = strdup(yytext); return LOGIC_UNARY;}
+{logicop}                {yylval.str = strdup(yytext); return LOGICOP;}
+{logicop_unary}          {yylval.str = strdup(yytext); return LOGICOP_UNARY;}
 
 {type}                   {yylval.str = strdup(yytext); return TYPE;}
 
@@ -201,7 +198,5 @@ lexema_error      {all_characters}+|.
 {boolean}                {yylval.str = strdup(yytext); return BOOL;}
 
 {id}                     {yylval.str = strdup(yytext); return ID;}
-
-{lexema_error}           {char message[200] = "Erro Léxico: '"; strcat(message, yytext); strcat(message, "'"); strcpy(error_message, message); yyerror(message);}
 
 %%
