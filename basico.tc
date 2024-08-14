@@ -12,5 +12,5 @@ ROTEIRO trip() >>>
 -> testando mais um comentario <-
 
 ROTEIRO somo(MILHAS a, MILHAS b) >>>
-    teste
+    (teste + 10)
 <<< MILHAS <<<

@@ -106,7 +106,13 @@ functions:
     ;
 
 function:
-    ROTEIRO ID OPEN_PARENTHESES {printf("ROTEIRO valor_ID (");} params_form CLOSE_PARENTHESES OPEN_CODEBLOCK bloco CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK {printf(") >>> valor_TYPE <<< ");}
+    ROTEIRO ID OPEN_PARENTHESES {printf("ROTEIRO valor_ID (");} params_form CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK {printf(") >>> valor_TYPE <<< ");}
+
+expr: 
+    expr OP {printf(" valor_OP ");} term
+    | OPEN_PARENTHESES {printf("(");} expr CLOSE_PARENTHESES {printf(")");}
+    | term
+    ;
 
 term: 
     INT        {printf("valor_INT");}
@@ -115,6 +121,7 @@ term:
     | BOOL     {printf("valor_BOOL");}
     | ID       {printf("valor_ID");}
     ;
+
 
 main:
     ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip() ");} open bloco close TYPE CLOSE_CODEBLOCK {printf(" valor_TYPE <<<");}
