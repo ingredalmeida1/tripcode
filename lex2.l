@@ -142,68 +142,68 @@ lexema_error      {all_characters}+|.
 {line}                   { printf("\n%d\t", yylineno++); }
 {ws}                     { printf("%s", yytext); }
 
-{trip}                   { printf("%s", yytext); return TRIP; }
+{trip}                   { return TRIP; }
 
-{bagagem}                { printf("%s", yytext); return BAGAGEM; }
-{exterior}               { printf("%s", yytext); return EXTERIOR; }
+{bagagem}                { return BAGAGEM; }
+{exterior}               { return EXTERIOR; }
 
-{checkin}                { printf("%s", yytext); return CHECKIN; }
-{checkout}               { printf("%s", yytext); return CHECKOUT; }
+{checkin}                { return CHECKIN; }
+{checkout}               { return CHECKOUT; }
 
-{alfandega}              { printf("%s", yytext); return ALFANDEGA; }
-{isento}                 { printf("%s", yytext); return ISENTO; }
-{tributado}              { printf("%s", yytext); return TRIBUTADO; }
+{alfandega}              { return ALFANDEGA; }
+{isento}                 { return ISENTO; }
+{tributado}              { return TRIBUTADO; }
 
-{itinerario}             { printf("%s", yytext); return ITINERARIO; }
-{rota}                   { printf("%s", yytext); return ROTA; }
-{imprevisto}             { printf("%s", yytext); return IMPREVISTO; }
+{itinerario}             { return ITINERARIO; }
+{rota}                   { return ROTA; }
+{imprevisto}             { return IMPREVISTO; }
 
-{pousar}                 { printf("%s", yytext); return POUSAR; }
-{feriado}                { printf("%s", yytext); return FERIADO; }
+{pousar}                 { return POUSAR; }
+{feriado}                { return FERIADO; }
 
-{decolar}                { printf("%s", yytext); return DECOLAR; }
-{origem}                 { printf("%s", yytext); return ORIGEM; }
-{destino}                { printf("%s", yytext); return DESTINO; }
-{escala}                 { printf("%s", yytext); return ESCALA; }
+{decolar}                { return DECOLAR; }
+{origem}                 { return ORIGEM; }
+{destino}                { return DESTINO; }
+{escala}                 { return ESCALA; }
 
-{turistando}             { printf("%s", yytext); return TURISTANDO; }
-{turistar}               { printf("%s", yytext); return TURISTAR; }
-{durante}                { printf("%s", yytext); return DURANTE; }
+{turistando}             { return TURISTANDO; }
+{turistar}               { return TURISTAR; }
+{durante}                { return DURANTE; }
 
-{roteiro}                { printf("%s", yytext); return ROTEIRO; }
-{embarcar}               { printf("%s", yytext); return EMBARCAR; }
-{despachar}              { printf("%s", yytext); return DESPACHAR; }
+{roteiro}                { return ROTEIRO; }
+{embarcar}               { return EMBARCAR; }
+{despachar}              { return DESPACHAR; }
 
-{comma}                  { printf("%s", yytext); return COMMA; }
-{dot_comma}              { printf("%s", yytext); return DOT_COMMA; }
-{dot}                    { printf("%s", yytext); return DOT; }
-{colon}                  { printf("%s", yytext); return COLON; }
-{open_parentheses}       { printf("%s", yytext); return OPEN_PARENTHESES; }
-{close_parentheses}      { printf("%s", yytext); return CLOSE_PARENTHESES; }
-{open_bracket}           { printf("%s", yytext); return OPEN_BRACKET; }
-{close_bracket}          { printf("%s", yytext); return CLOSE_BRACKET; }
-{open_codeblock}         { printf("%s", yytext); return OPEN_CODEBLOCK; }
-{close_codeblock}        { printf("%s", yytext); return CLOSE_CODEBLOCK; }
+{comma}                  { return COMMA; }
+{dot_comma}              { return DOT_COMMA; }
+{dot}                    { return DOT; }
+{colon}                  { return COLON; }
+{open_parentheses}       { return OPEN_PARENTHESES; }
+{close_parentheses}      { return CLOSE_PARENTHESES; }
+{open_bracket}           { return OPEN_BRACKET; }
+{close_bracket}          { return CLOSE_BRACKET; }
+{open_codeblock}         { return OPEN_CODEBLOCK; }
+{close_codeblock}        { return CLOSE_CODEBLOCK; }
 
-{atribuicao}             { printf("%s", yytext); return ASSIGN;}
+{atribuicao}             { return ASSIGN;}
 
-{op}                     { printf("%s", yytext); yylval.str = strdup(yytext); return OP;}
-{relop}                  { printf("%s", yytext); yylval.str = strdup(yytext); return RELOP;}
-{logicop}                { printf("%s", yytext); yylval.str = strdup(yytext); return LOGICOP;}
-{logicop_unary}          { printf("%s", yytext); yylval.str = strdup(yytext); return LOGICOP_UNARY;}
+{op}                     { yylval.str = strdup(yytext); return OP;}
+{relop}                  { yylval.str = strdup(yytext); return RELOP;}
+{logicop}                { yylval.str = strdup(yytext); return LOGICOP;}
+{logicop_unary}          { yylval.str = strdup(yytext); return LOGICOP_UNARY;}
 
-{type}                   { printf("%s", yytext); yylval.str = strdup(yytext); return TYPE;}
+{type}                   { yylval.str = strdup(yytext); return TYPE;}
 
-{inteiro}                { printf("%s", yytext); yylval.iValue = atoi(yytext); return INT;}
-{float}                  { printf("%s", yytext); yylval.real = atof(yytext); return FLOAT;}
-{string}                 { printf("%s", yytext); yylval.str = strdup(yytext); return STRING;}
-{boolean}                { printf("%s", yytext); yylval.str = strdup(yytext); return BOOL;}
+{inteiro}                { yylval.iValue = atoi(yytext); return INT;}
+{float}                  { yylval.real = atof(yytext); return FLOAT;}
+{string}                 { yylval.str = strdup(yytext); return STRING;}
+{boolean}                { yylval.str = strdup(yytext); return BOOL;}
 
-{id}                     { printf("%s", yytext); yylval.str = strdup(yytext); return ID; }
+{id}                     { yylval.str = strdup(yytext); return ID; }
 
-{lexema_error}           {  printf("%s", yytext);                       
+{lexema_error}           {                           
                             char erro_msg[100]; // Buffer para armazenar a mensagem de erro
-                            sprintf(erro_msg, "invalid character '%s'", yytext);
+                            sprintf(erro_msg, "SintaxError: invalid character '%s'", yytext);
                             yyerror(erro_msg); // Passa a mensagem formatada para a função yyerror
                         }                        
 %%

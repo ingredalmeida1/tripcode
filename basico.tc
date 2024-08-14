@@ -1,12 +1,20 @@
 -> testando comentario <-
-EXTERIOR teste testte3 
-BAGAGEM VOUCHER variavel <-> "leticia"
+EXTERIOR teste 10 
+
+BAGAGEM VOUCHER variavel <-> "leticia";
 BAGAGEM VOUCHER julia;
 
 ROTEIRO soma(MILHAS a) >>> MILHAS <<<
 
 ROTEIRO trip() >>> 
-    leticia 
+    DECOLAR (ORIGEM 0, DESTINO 10, ESCALA 2) >>>
+        teste + 20
+    <<<
+
+    ALFANDEGA (20) >>>
+        teste + -20.5
+    <<<
+
     -> testando outro comentario <-
 <<< MILHAS <<<
 -> testando mais um comentario <-

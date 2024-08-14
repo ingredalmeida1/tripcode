@@ -62,7 +62,7 @@ consts:
     ;
 
 const: 
-     EXTERIOR ID term 
+     EXTERIOR ID {printf("EXTERIOR valor_ID ");} term 
     ;
 
 variaveis: 
@@ -72,11 +72,11 @@ variaveis:
     ;
 
 def_variavel: 
-    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA
+    BAGAGEM TYPE ID ASSIGN {printf("BAGAGEM valor_TYPE valor_ID <-> ");} term
     ;
 
 dec_variavel:
-    BAGAGEM TYPE ID DOT_COMMA 
+    BAGAGEM TYPE ID DOT_COMMA {printf("BAGAGEM valor_TYPE valor_ID;");}
 
 functions_header:
     functions_header function_header 
@@ -84,7 +84,7 @@ functions_header:
     ;
 
 function_header:
-    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
+    ROTEIRO ID OPEN_PARENTHESES {printf("ROTEIRO valor_ID (");}  params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK {printf(") >>> valor_TYPE <<< ");}
 
 params_form: 
     param_form list_params_form
@@ -92,74 +92,62 @@ params_form:
     ;
 
 list_params_form:
-    list_params_form COMMA param_form
+    list_params_form COMMA {printf(",");} param_form
     |
     ;
 
 param_form:
-    TYPE ID
+    TYPE ID {printf("valor_TYPE valor_ID");}
     ;
 
 functions:
-    functions function 
+    functions function
     |
     ;
 
 function:
-    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    ROTEIRO ID OPEN_PARENTHESES {printf("ROTEIRO valor_ID (");} params_form CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK {printf(") >>> valor_TYPE <<< ");}
 
 expr: 
-    expr OP term
-    | OPEN_PARENTHESES expr CLOSE_PARENTHESES
+    expr OP {printf(" valor_OP ");} term
+    | OPEN_PARENTHESES {printf("(");} expr CLOSE_PARENTHESES {printf(")");}
     | term
     ;
 
 term: 
-    INT        
-    | FLOAT    
-    | STRING   
-    | BOOL     
-    | ID       
+    INT        {printf("valor_INT");}
+    | FLOAT    {printf("valor_FLOAT");}
+    | STRING   {printf("valor_STRING");}
+    | BOOL     {printf("valor_BOOL");}
+    | ID       {printf("valor_ID");}
     ;
 
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES {printf("ROTEIRO trip() ");} open bloco close TYPE CLOSE_CODEBLOCK {printf(" valor_TYPE <<<");}
     ;
 
-stmts:
-    stmts stmt
+open: OPEN_CODEBLOCK {printf(">>> ");}
+
+close: CLOSE_CODEBLOCK {printf(" <<<");}
+
+bloco: ID {printf("%s", "valor_ID");}
     |
     ;
-
-stmt: 
-    for
-    | if
-    ;
-
-for:
-    DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK
-    ;    
-
-if: 
-    ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK 
-    ;
-
 
 %%
 
 int main(void) {
     printf("Resultado da Analise Lexica:\n");
-    yyparse();
-    // if (yyparse()) {
-    //     fprintf(stderr, "Análise falhou.\n");
-    // } else {
-    //     fprintf(stderr, "Análise concluída com sucesso.\n");
-    // }
+    if (yyparse()) {
+        fprintf(stderr, "Análise falhou.\n");
+    } else {
+        fprintf(stderr, "Análise concluída com sucesso.\n");
+    }
     printf("\n");
     return 0;
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n------> Line ", s); 
+    fprintf(stderr, "Erro: %s\n------> Line ", s); 
 }
