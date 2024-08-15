@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "translate.tab.h"  /* Incluir o cabeçalho gerado pelo Bison */
+#include "translate.tab.h"       // Incluir o cabeçalho gerado pelo Bison 
 
 void yyerror(char *);
 
-extern int yylineno; /* Variável para contar linhas */
+extern char error_message[200];  //construir mensagem de erro
+
+extern int yylineno;             //Variável para contar linhas */
 
 %}
 
@@ -203,15 +205,20 @@ lexema_error      {all_characters}+|.
 
 {id}                     { printf("%s", yytext); yylval.str = strdup(yytext); return ID; }
 
-<<EOF>>                  {
-                            // Após reconhecer todo o arquivo de entrada
-                            printf("\nAnálise concluída com sucesso.\n");
-                            return 0;
-                        }
+{lexema_error}          {  printf("%s", yytext); 
+                           // formatar mensagem de erro                      
+                           char message[200] = "lexema '"; 
+                           strcat(message, yytext); 
+                           strcat(message, "' inválido!"); 
+                           // armazenar na variavel de mensagem de erro
+                           strcpy(error_message, message); 
+                           // chamar funcao erro  
+                           yyerror(message);
+                        }  
 
-{lexema_error}           {  printf("%s", yytext);                       
-                            char erro_msg[100]; // Buffer para armazenar a mensagem de erro
-                            sprintf(erro_msg, "invalid character '%s'", yytext);
-                            yyerror(erro_msg); // Passa a mensagem formatada para a função yyerror
-                        }                        
+<<EOF>>                 {
+                            // se chegou no fim do arquivo:
+                            printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
+                            return 0;
+                        }                      
 %%

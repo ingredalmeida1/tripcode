@@ -1,5 +1,5 @@
 -> testando comentario <-
-EXTERIOR _teste 10 
+EXTERIOR teste 10 
 
 BAGAGEM VOUCHER variavel, nome <-> "leticia";
 BAGAGEM VOUCHER julia;

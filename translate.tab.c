@@ -78,10 +78,11 @@ int yylex(void);
 extern char *yytext; // para acessar o texto reconhecido pelo scanner/lex */
 extern int yylineno; // contar as linhas
 
-void yyerror(const char *s); //imprimir erro
+char error_message[200];   //construir mensagem de erro
+void yyerror();            //imprimir erro
 
 
-#line 85 "translate.tab.c"
+#line 86 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -586,14 +587,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    56,    56,    56,    60,    61,    65,    69,    70,    71,
-      75,    79,    82,    83,    87,    90,    91,    95,    96,   100,
-     104,   108,   109,   113,   116,   117,   118,   119,   123,   124,
-     125,   129,   130,   131,   132,   133,   134,   138,   139,   143,
-     144,   145,   146,   150,   154,   157,   161,   162,   163,   167,
-     168,   169,   170,   171,   172,   173,   174,   175,   179,   182,
-     183,   187,   188,   192,   196,   200,   204,   208,   209,   213,
-     217,   218,   222,   225,   226,   230,   231
+       0,    57,    57,    57,    61,    62,    66,    70,    71,    72,
+      76,    80,    83,    84,    88,    91,    92,    96,    97,   101,
+     105,   109,   110,   114,   117,   118,   119,   120,   124,   125,
+     126,   130,   131,   132,   133,   134,   135,   139,   140,   144,
+     145,   146,   147,   151,   155,   158,   162,   163,   164,   168,
+     169,   170,   171,   172,   173,   174,   175,   176,   180,   183,
+     184,   188,   189,   193,   197,   201,   205,   209,   210,   214,
+     218,   219,   223,   226,   227,   231,   232
 };
 #endif
 
@@ -1292,13 +1293,13 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 56 "translate.y"
+#line 57 "translate.y"
    {printf("%d\t", yylineno++);}
-#line 1298 "translate.tab.c"
+#line 1299 "translate.tab.c"
     break;
 
 
-#line 1302 "translate.tab.c"
+#line 1303 "translate.tab.c"
 
       default: break;
     }
@@ -1491,19 +1492,20 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 234 "translate.y"
+#line 235 "translate.y"
 
 
-int main(void) {
-    printf("Resultado da Analise Lexica:\n");
-    if (yyparse()) {
-        fprintf(stderr, "Análise falhou.\n ---> Line ");
-    }
-    printf("\n");
-    return 0;
+void yyerror() {
+    // printar mensagem de erro na cor vermelha
+    fprintf(stderr, "\n\033[1;31mErro de sintaxe próximo à linha %d: %s\033[0m\n\n", yylineno-1, error_message);
+     
+    printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
+
+    // encerrar analise prematuramente:
+    exit(0);
 }
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s => ", s); 
-    fflush(stderr);  // Garante que a saída seja imediatamente exibida
+int main(void) {
+     yyparse();     
+     return 0;
 }

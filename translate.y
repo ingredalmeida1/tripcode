@@ -8,7 +8,8 @@ int yylex(void);
 extern char *yytext; // para acessar o texto reconhecido pelo scanner/lex */
 extern int yylineno; // contar as linhas
 
-void yyerror(const char *s); //imprimir erro
+char error_message[200];   //construir mensagem de erro
+void yyerror();            //imprimir erro
 
 %}
 
@@ -233,16 +234,17 @@ result:
 
 %%
 
-int main(void) {
-    printf("Resultado da Analise Lexica:\n");
-    if (yyparse()) {
-        fprintf(stderr, "Análise falhou.\n ---> Line ");
-    }
-    printf("\n");
-    return 0;
+void yyerror() {
+    // printar mensagem de erro na cor vermelha
+    fprintf(stderr, "\n\033[1;31mErro de sintaxe próximo à linha %d: %s\033[0m\n\n", yylineno-1, error_message);
+     
+    printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
+
+    // encerrar analise prematuramente:
+    exit(0);
 }
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s => ", s); 
-    fflush(stderr);  // Garante que a saída seja imediatamente exibida
+int main(void) {
+     yyparse();     
+     return 0;
 }
