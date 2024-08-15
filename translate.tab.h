@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 21 "translate.y"
+
+     #include "TAD/tabela-simbolos/tabelaSimbolos.h"
+
+#line 53 "translate.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -107,13 +113,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "translate.y"
+#line 26 "translate.y"
 
     char *str;
     int iValue;
     float real;
 
-#line 117 "translate.tab.h"
+#line 123 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

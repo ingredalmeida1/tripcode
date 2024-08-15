@@ -43,4 +43,3 @@ ROTEIRO trip() >>>
 ROTEIRO soma(MILHAS a, MILHAS b) >>>
     teste <-> (teste + 10);
 <<< MILHAS <<<
-teste

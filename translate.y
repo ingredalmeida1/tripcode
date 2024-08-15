@@ -2,8 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "TAD/tabela-simbolos/tabelaSimbolos.h"
 
-int yylex(void);
+char* strdup(const char*);
+double atof(const char*);
+int atoi(const char*);
+
+int yylex();
 
 extern char *yytext; // para acessar o texto reconhecido pelo scanner/lex */
 extern int yylineno; // contar as linhas
@@ -12,6 +17,10 @@ char error_message[200];   //construir mensagem de erro
 void yyerror();            //imprimir erro
 
 %}
+
+%code requires {
+     #include "TAD/tabela-simbolos/tabelaSimbolos.h"
+}
 
 // especifica os diferentes tipos de valores que os tokens podem armazenar
 %union {
@@ -43,18 +52,25 @@ void yyerror();            //imprimir erro
 %token <str> LOGICOP
 %token <str> LOGICOP_UNARY
 
-%token <iValue> INT
-%token <real> FLOAT
-%token <str>  STRING
-%token <str>  BOOL
-%token <str> ID
+%token INT FLOAT STRING BOOL ID
+
+%type <iValue> INT
+%type <real> FLOAT
+%type <str>  STRING
+%type <str>  BOOL
+%type <str> ID
 
 %start p
 
 %%
 
 // Regras da gramática
-p: {printf("%d\t", yylineno++);} consts variaveis functions_header main functions
+p:  
+    { inicializar_tabela(50);    //inicializar tabela de simbolos global 
+
+      printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
+    } 
+    consts variaveis functions_header main functions 
     ;
 
 consts: 
@@ -127,9 +143,9 @@ operador:
     ;
 
 term: 
-    INT        
-    | FLOAT    
-    | STRING   
+    INT {printf("int %d", $1); }
+    | FLOAT     
+    | STRING {printf("string %s", $1); }
     | BOOL     
     | ID     
     | call_function  
@@ -202,12 +218,20 @@ atribuicao:
     ;
 
 ids:
-    ID id_list
+    id id_list
     ;
 
 id_list:
-    id_list COMMA ID
+    id_list COMMA id
     |
+    ;
+
+id : ID { Simbolo identificador;
+          printf("identificador %s", $1);
+          identificador.nome = strdup($1);  
+          printf("identificador %s", identificador.nome);
+          adicionar_simbolo(identificador);
+         }
     ;
 
 types:
@@ -245,6 +269,7 @@ void yyerror() {
 }
 
 int main(void) {
-     yyparse();     
-     return 0;
+    yyparse();     
+    imprimir_tabela_simbolos();
+    return 0;
 }
