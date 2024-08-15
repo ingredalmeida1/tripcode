@@ -203,6 +203,12 @@ lexema_error      {all_characters}+|.
 
 {id}                     { printf("%s", yytext); yylval.str = strdup(yytext); return ID; }
 
+<<EOF>>                  {
+                            // Após reconhecer todo o arquivo de entrada
+                            printf("\nAnálise concluída com sucesso.\n");
+                            return 0;
+                        }
+
 {lexema_error}           {  printf("%s", yytext);                       
                             char erro_msg[100]; // Buffer para armazenar a mensagem de erro
                             sprintf(erro_msg, "invalid character '%s'", yytext);

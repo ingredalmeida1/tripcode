@@ -1496,16 +1496,14 @@ yyreturnlab:
 
 int main(void) {
     printf("Resultado da Analise Lexica:\n");
-    yyparse();
-    // if (yyparse()) {
-    //     fprintf(stderr, "Análise falhou.\n");
-    // } else {
-    //     fprintf(stderr, "Análise concluída com sucesso.\n");
-    // }
+    if (yyparse()) {
+        fprintf(stderr, "Análise falhou.\n ---> Line ");
+    }
     printf("\n");
     return 0;
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n------> Line ", s); 
+    fprintf(stderr, "Error: %s => ", s); 
+    fflush(stderr);  // Garante que a saída seja imediatamente exibida
 }

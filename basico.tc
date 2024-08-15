@@ -1,5 +1,5 @@
 -> testando comentario <-
-EXTERIOR teste 10 
+EXTERIOR _teste 10 
 
 BAGAGEM VOUCHER variavel, nome <-> "leticia";
 BAGAGEM VOUCHER julia;
@@ -43,3 +43,4 @@ ROTEIRO trip() >>>
 ROTEIRO soma(MILHAS a, MILHAS b) >>>
     teste <-> (teste + 10);
 <<< MILHAS <<<
+teste
