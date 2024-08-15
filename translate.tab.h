@@ -88,16 +88,17 @@ extern int yydebug;
     OPEN_CODEBLOCK = 289,          /* OPEN_CODEBLOCK  */
     CLOSE_CODEBLOCK = 290,         /* CLOSE_CODEBLOCK  */
     ASSIGN = 291,                  /* ASSIGN  */
-    TYPE = 292,                    /* TYPE  */
-    OP = 293,                      /* OP  */
-    RELOP = 294,                   /* RELOP  */
-    LOGICOP = 295,                 /* LOGICOP  */
-    LOGICOP_UNARY = 296,           /* LOGICOP_UNARY  */
-    INT = 297,                     /* INT  */
-    FLOAT = 298,                   /* FLOAT  */
-    STRING = 299,                  /* STRING  */
-    BOOL = 300,                    /* BOOL  */
-    ID = 301                       /* ID  */
+    CONCAT = 292,                  /* CONCAT  */
+    TYPE = 293,                    /* TYPE  */
+    OP = 294,                      /* OP  */
+    RELOP = 295,                   /* RELOP  */
+    LOGICOP = 296,                 /* LOGICOP  */
+    LOGICOP_UNARY = 297,           /* LOGICOP_UNARY  */
+    INT = 298,                     /* INT  */
+    FLOAT = 299,                   /* FLOAT  */
+    STRING = 300,                  /* STRING  */
+    BOOL = 301,                    /* BOOL  */
+    ID = 302                       /* ID  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -112,7 +113,7 @@ union YYSTYPE
     int iValue;
     float real;
 
-#line 116 "translate.tab.h"
+#line 117 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

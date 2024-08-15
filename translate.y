@@ -34,7 +34,7 @@ void yyerror(const char *s); //imprimir erro
 %token OPEN_PARENTHESES CLOSE_PARENTHESES 
 %token OPEN_BRACKET CLOSE_BRACKET
 %token OPEN_CODEBLOCK CLOSE_CODEBLOCK
-%token ASSIGN
+%token ASSIGN CONCAT
 %token TYPE
 
 %token <str> OP
@@ -72,11 +72,11 @@ variaveis:
     ;
 
 def_variavel: 
-    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA
+    BAGAGEM TYPE ids ASSIGN expr DOT_COMMA
     ;
 
 dec_variavel:
-    BAGAGEM TYPE ID DOT_COMMA 
+    BAGAGEM TYPE ids DOT_COMMA 
 
 functions_header:
     functions_header function_header 
@@ -100,18 +100,29 @@ param_form:
     TYPE ID
     ;
 
+main:
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    ;
+
 functions:
     functions function 
     |
     ;
 
 function:
-    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK expr CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
 
 expr: 
-    expr OP term
+    expr operador term
     | OPEN_PARENTHESES expr CLOSE_PARENTHESES
     | term
+    | expr LOGICOP_UNARY
+    ;
+
+operador:
+    OP
+    | RELOP
+    | LOGICOP
     ;
 
 term: 
@@ -119,12 +130,8 @@ term:
     | FLOAT    
     | STRING   
     | BOOL     
-    | ID       
-    ;
-
-
-main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    | ID     
+    | call_function  
     ;
 
 stmts:
@@ -160,10 +167,68 @@ command:
     def_variavel
     | dec_variavel
     | atribuicao
+    | call_function DOT_COMMA
+    | return
+    | CHECKIN OPEN_PARENTHESES OPEN_BRACKET types CLOSE_BRACKET COMMA ids CLOSE_PARENTHESES DOT_COMMA
+    | CHECKOUT OPEN_PARENTHESES result_form CLOSE_PARENTHESES DOT_COMMA
+    | POUSAR DOT_COMMA
+    | FERIADO DOT_COMMA
+    ;
+
+call_function:
+    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES 
+
+params_real: 
+    param_real list_params_real
+    | 
+    ;
+
+list_params_real:
+    list_params_real COMMA param_real
+    |
+    ;
+
+param_real:
+    expr
+    ;
+
+return:
+    DESPACHAR expr DOT_COMMA
     ;
 
 atribuicao:
-    ID ASSIGN expr DOT_COMMA
+    ids ASSIGN expr DOT_COMMA
+    ;
+
+ids:
+    ID id_list
+    ;
+
+id_list:
+    id_list COMMA ID
+    |
+    ;
+
+types:
+    TYPE type_list
+    ;
+
+type_list:
+    type_list COMMA TYPE
+    |
+    ;
+
+result_form:
+    result results
+
+results: 
+    results CONCAT result 
+    | 
+    ;
+
+result:
+    STRING
+    | param_form
     ;
 
 %%

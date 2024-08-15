@@ -98,6 +98,7 @@ lt                \<
 le                \<\=
 diff              \#
 
+concat            \<\>
 atribuicao        \<\-\>
 
 op                {som}|{sub}|{mult}|{div}|{mod}
@@ -186,6 +187,7 @@ lexema_error      {all_characters}+|.
 {close_codeblock}        { printf("%s", yytext); return CLOSE_CODEBLOCK; }
 
 {atribuicao}             { printf("%s", yytext); return ASSIGN;}
+{concat}                 { printf("%s", yytext); return CONCAT;}
 
 {op}                     { printf("%s", yytext); yylval.str = strdup(yytext); return OP;}
 {relop}                  { printf("%s", yytext); yylval.str = strdup(yytext); return RELOP;}
