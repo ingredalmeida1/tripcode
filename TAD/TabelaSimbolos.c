@@ -1,7 +1,18 @@
 #include "TabelaSimbolos.h"
 
-#define TAM_MAX 100
+// Funcoes Relacionadas à Todas às Tabelas de Símblos:
+void adicionar_nova_tabela(TabelaSimbolos ***tabelas_simbolos, TabelaSimbolos *nova_tabela, int *numero_de_tabelas){
+    (*tabelas_simbolos)[*numero_de_tabelas] = nova_tabela;
+    (*numero_de_tabelas)+= 1;
+}
 
+void imprimir_todas_tabelas_simbolos(TabelaSimbolos **tabelas_simbolos, int total) {
+    for (int i = 0; i < total; i++) {
+        imprimir_tabela_simbolos((*tabelas_simbolos[i]));
+    }
+}
+
+// Funcoes Relacionadas à Tabela de Símblos:
 void inicializar_tabela(TabelaSimbolos **tabela_simbolos, TabelaSimbolos *tabela_anterior, char *nome_bloco) {
 
     (*tabela_simbolos) = (TabelaSimbolos *)malloc(sizeof(TabelaSimbolos));
@@ -15,7 +26,7 @@ void inicializar_tabela(TabelaSimbolos **tabela_simbolos, TabelaSimbolos *tabela
     (*tabela_simbolos)->tamanho = 0;
 
     // aloca memória para um array de ponteiros para simbolo:
-    (*tabela_simbolos)->simbolos = (Simbolo **)malloc(TAM_MAX * sizeof(Simbolo*));
+    (*tabela_simbolos)->simbolos = (Simbolo **)malloc(100 * sizeof(Simbolo*));
     if ((*tabela_simbolos)->simbolos == NULL) {
         fprintf(stderr, "Erro ao alocar memória para os símbolos.\n");
         free((*tabela_simbolos)->nome_bloco); 
@@ -73,3 +84,5 @@ void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
     
     printf("-------------------------------------------------------------------------------------------\n");
 }
+
+// Funcoes Relacionadas à Funcoes:

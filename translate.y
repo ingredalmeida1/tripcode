@@ -119,10 +119,18 @@ void yyerror();               // reportar erros
 
 %%
 p:  
-    { inicializar_tabela(&escopo_atual, NULL, "GLOBAL");     //inicializar tabela de simbolos global 
-      //adicionar ela na lista de tabelas
+    { //inicializar tabela de simbolos global 
+      inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
+
+      //inicializar lista para armazenar todas as tabelas de simbolos     
+      tabelas_simbolos = (TabelaSimbolos**) malloc(100 * sizeof(TabelaSimbolos*));
+     
+      //adicionar nova tabela na lista de tabelas
+      adicionar_nova_tabela(&tabelas_simbolos, escopo_atual, &numero_de_tabelas);
+
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     } 
+
     consts variaveis functions_header main functions 
     ;
 
@@ -327,7 +335,7 @@ void yyerror() {
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-    imprimir_tabela_simbolos((*escopo_atual)); // até o momento do erro
+        imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -335,6 +343,6 @@ void yyerror() {
 
 int main(void) {
     yyparse();     
-    imprimir_tabela_simbolos((*escopo_atual));
+    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
     return 0;
 }

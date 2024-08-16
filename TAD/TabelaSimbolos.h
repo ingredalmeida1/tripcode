@@ -22,9 +22,9 @@ struct TabelaSimbolos{
 };
 
 typedef struct {
+    int  indice;              //armazenar a ordem dele?
     char *tipo;               //em vez de armazenar como string podemos armazenar como enum, nao sei facilitaria                   
     char *identificador;      
-    int  indice;              //armazenar a ordem dele?
 } Parametro;
 
 typedef struct {
@@ -33,6 +33,11 @@ typedef struct {
     int qtd_parametros;       
     TabelaSimbolos* escopo;   //cada funcao tem seu proprio escopo
 } Funcao;
+
+// Funcoes Relacionadas à Todas às Tabelas de Símblos:
+void adicionar_nova_tabela(TabelaSimbolos ***tabelas_simbolos, TabelaSimbolos *nova_tabela, int *numero_de_tabelas);
+
+void imprimir_todas_tabelas_simbolos(TabelaSimbolos **tabelas_simbolos, int total);
 
 // Funcoes Relacionadas à Tabela de Símblos:
 void inicializar_tabela(TabelaSimbolos **tabela_simbolos, TabelaSimbolos *tabela_anterior, char *nome_bloco);
