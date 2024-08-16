@@ -141,6 +141,9 @@ consts:
 
 const: 
      EXTERIOR ID term 
+     {
+        adicionar_simbolo(&escopo_atual, "CONSTANTE", $2, "-");
+     }
     ;
 
 variaveis: 
@@ -151,18 +154,14 @@ variaveis:
 
 def_variavel: 
     BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
-                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
-                                               //se encontra: erro de sintaxe
-                                               //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
                                            }
     ;
 
 dec_variavel:
     BAGAGEM TYPE ID DOT_COMMA {
-                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
-                                               //se encontra: erro de sintaxe
-                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
                                            }
     ;
@@ -174,6 +173,10 @@ functions_header:
 
 function_header:
     ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
+    {
+        adicionar_simbolo(&escopo_atual, "FUNCAO", $2, $7);
+    }
+    ;
 
 params_form: 
     param_form list_params_form
@@ -190,7 +193,20 @@ param_form:
     ;
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK 
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+    stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
     ;
 
 functions:
