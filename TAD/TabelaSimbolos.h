@@ -56,10 +56,14 @@ void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_d
 
 void imprimir_todas_funcoes(Funcao **funcoes, int total);
 
-void inicializar_funcao(Funcao **funcao, char *identificador, char *tipo);
+void inicializar_funcao(Funcao **funcao, char *identificador);
 
 void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo);
 
+void set_tipo(Funcao **funcao, char *tipo);
+
 void inicializar_tabela_simbolos_funcao(Funcao **funcao);
+
+void imprimir_funcao(Funcao *funcao);
 
 #endif 

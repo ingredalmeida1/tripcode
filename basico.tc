@@ -6,6 +6,8 @@ BAGAGEM VOUCHER julia;
 
 ROTEIRO soma(MILHAS a) >>> MILHAS <<<
 
+ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>> DOLAR <<<
+
 ROTEIRO trip() >>> 
 
     BAGAGEM STATUS teste;

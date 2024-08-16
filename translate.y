@@ -197,16 +197,27 @@ functions_header:
     ;
 
 function_header:
-    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
+    ROTEIRO ID OPEN_PARENTHESES 
     {
-        adicionar_simbolo(&escopo_atual, "FUNCAO", $2, $7);
-
         //inicializar estrutura para armazenar informacoes da funcao
         Funcao *nova_funcao;
-        inicializar_funcao(&nova_funcao, $2, $7);
+        inicializar_funcao(&nova_funcao, $2);
         adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
+        funcao_atual = nova_funcao;
+
+    }
+    params_form function_header_end
+    ;
+
+function_header_end:
+    CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
+    {
+        set_tipo(&funcao_atual, $3);
+        adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, $3);
+
     }
     ;
+
 
 params_form: 
     param_form list_params_form
@@ -219,7 +230,11 @@ list_params_form:
     ;
 
 param_form:
-    TYPE ID
+    TYPE ID 
+    {
+        adicionar_parametro(&funcao_atual, $2, $1);
+
+    }
     ;
 
 main:

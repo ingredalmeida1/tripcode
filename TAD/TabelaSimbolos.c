@@ -108,21 +108,19 @@ void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_d
 }
 
 void imprimir_todas_funcoes(Funcao **funcoes, int total){
-    printf("Funcoes adicionadas: ");
+    printf("Funcoes adicionadas:\n ");
     for (int i = 0; i < total; i++) {
-        printf("%s",(*funcoes)[i].identificador);    
+        imprimir_funcao(*funcoes);    
     }
     printf("\n");
 }
 
-void inicializar_funcao(Funcao **funcao, char *identificador, char *tipo) {
+void inicializar_funcao(Funcao **funcao, char *identificador) {
     (*funcao) = (Funcao *)malloc(sizeof(Funcao));
     if (*funcao == NULL) {
         fprintf(stderr, "Erro ao alocar memória para a função.\n");
         exit(EXIT_FAILURE);
     }
-
-    (*funcao)->tipo_retorno = strdup(tipo); 
     
     (*funcao)->identificador = strdup(identificador); 
 
@@ -154,6 +152,10 @@ void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo) {
     (*funcao)->qtd_parametros += 1; 
 }
 
+void set_tipo(Funcao **funcao, char *tipo) {
+    (*funcao)->tipo_retorno = strdup(tipo); 
+}
+
 // depois ajustar pro ponteiro anterior apontar pro bloco de escopo global
 void inicializar_tabela_simbolos_funcao(Funcao **funcao) {
 
@@ -164,5 +166,38 @@ void inicializar_tabela_simbolos_funcao(Funcao **funcao) {
     inicializar_tabela(&tabela_funcao, NULL, nome_bloco) ;
 
     (*funcao)->escopo = tabela_funcao;
+}
+
+void imprimir_funcao(Funcao *funcao) {
+    if (funcao == NULL) {
+        printf("Erro: Função nula.\n");
+        return;
+    }
+
+    printf("-------------------------------------------------\n");
+    printf("Função: %s\n", funcao->identificador);
+    printf("Tipo de Retorno: %s\n", funcao->tipo_retorno);
+    printf("Quantidade de Parâmetros: %d\n", funcao->qtd_parametros);
+
+    // Imprime os parâmetros
+    if (funcao->qtd_parametros > 0) {
+        printf("Parâmetros:\n");
+        for (int i = 0; i < funcao->qtd_parametros; i++) {
+            printf("  Parâmetro %d: Tipo = %s, Identificador = %s\n", 
+                   funcao->parametros[i]->indice, 
+                   funcao->parametros[i]->tipo, 
+                   funcao->parametros[i]->identificador);
+        }
+    } else {
+        printf("Nenhum parâmetro.\n");
+    }
+
+    // Se desejar, também pode imprimir os símbolos do escopo da função
+    if (funcao->escopo != NULL) {
+        printf("Escopo da Função:\n");
+        imprimir_tabela_simbolos(*(funcao->escopo)); // Usando sua função para imprimir a tabela de símbolos
+    }
+
+    printf("-------------------------------------------------\n");
 }
 
