@@ -78,12 +78,15 @@
 
 #include "TAD/TabelaSimbolos.h"
 
-TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder printar
+TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder imprimir
 int numero_de_tabelas = 0;
 
-TabelaSimbolos* escopo_atual = NULL;
+TabelaSimbolos* escopo_atual = NULL; //variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
-//variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
+Funcao** funcoes = NULL; //armazenar todas as funcoes 
+int numero_de_funcoes = 0;
+
+Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
 
 int yylex();
 
@@ -98,7 +101,7 @@ char msg_erro[200];           //construir mensagem de erro
 void yyerror();               // reportar erros
 
 
-#line 102 "translate.tab.c"
+#line 105 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -170,7 +173,7 @@ enum yysymbol_kind_t
   YYSYMBOL_LOGICOP = 41,                   /* LOGICOP  */
   YYSYMBOL_LOGICOP_UNARY = 42,             /* LOGICOP_UNARY  */
   YYSYMBOL_YYACCEPT = 43,                  /* $accept  */
-  YYSYMBOL_p = 44,                         /* p  */
+  YYSYMBOL_tripcode = 44,                  /* tripcode  */
   YYSYMBOL_45_1 = 45,                      /* $@1  */
   YYSYMBOL_consts = 46,                    /* consts  */
   YYSYMBOL_const = 47,                     /* const  */
@@ -606,15 +609,15 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   122,   122,   122,   138,   139,   143,   150,   151,   152,
-     156,   163,   170,   171,   175,   182,   183,   187,   188,   192,
-     197,   196,   213,   214,   218,   221,   222,   223,   224,   228,
-     229,   230,   234,   235,   236,   237,   238,   239,   243,   244,
-     248,   249,   250,   251,   256,   255,   274,   273,   290,   299,
-     289,   308,   307,   323,   332,   322,   337,   341,   342,   343,
-     344,   345,   346,   347,   348,   349,   353,   356,   357,   361,
-     362,   366,   370,   374,   378,   382,   383,   386,   392,   396,
-     397,   401,   404,   405,   409,   410
+       0,   124,   124,   124,   143,   144,   148,   155,   156,   157,
+     161,   178,   195,   196,   200,   212,   213,   217,   218,   222,
+     227,   226,   243,   244,   248,   251,   252,   253,   254,   258,
+     259,   260,   264,   265,   266,   267,   268,   269,   273,   274,
+     278,   279,   280,   281,   286,   285,   304,   303,   320,   329,
+     319,   338,   337,   353,   362,   352,   367,   371,   372,   373,
+     374,   375,   376,   377,   378,   379,   383,   386,   387,   391,
+     392,   396,   400,   404,   408,   412,   413,   416,   420,   424,
+     425,   429,   432,   433,   437,   438
 };
 #endif
 
@@ -637,14 +640,15 @@ static const char *const yytname[] =
   "DOT", "COLON", "OPEN_PARENTHESES", "CLOSE_PARENTHESES", "OPEN_BRACKET",
   "CLOSE_BRACKET", "OPEN_CODEBLOCK", "CLOSE_CODEBLOCK", "ASSIGN", "CONCAT",
   "TYPE", "INT", "FLOAT", "STRING", "BOOL", "ID", "OP", "RELOP", "LOGICOP",
-  "LOGICOP_UNARY", "$accept", "p", "$@1", "consts", "const", "variaveis",
-  "def_variavel", "dec_variavel", "functions_header", "function_header",
-  "params_form", "list_params_form", "param_form", "main", "$@2",
-  "functions", "function", "expr", "operador", "term", "stmts", "stmt",
-  "for", "$@3", "while", "$@4", "if", "$@5", "$@6", "else", "$@7", "$@8",
-  "$@9", "command", "call_function", "params_real", "list_params_real",
-  "param_real", "return", "atribuicao", "ids", "id_list", "id", "types",
-  "type_list", "result_form", "results", "result", YY_NULLPTR
+  "LOGICOP_UNARY", "$accept", "tripcode", "$@1", "consts", "const",
+  "variaveis", "def_variavel", "dec_variavel", "functions_header",
+  "function_header", "params_form", "list_params_form", "param_form",
+  "main", "$@2", "functions", "function", "expr", "operador", "term",
+  "stmts", "stmt", "for", "$@3", "while", "$@4", "if", "$@5", "$@6",
+  "else", "$@7", "$@8", "$@9", "command", "call_function", "params_real",
+  "list_params_real", "param_real", "return", "atribuicao", "ids",
+  "id_list", "id", "types", "type_list", "result_form", "results",
+  "result", YY_NULLPTR
 };
 
 static const char *
@@ -1316,7 +1320,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 122 "translate.y"
+#line 124 "translate.y"
     { //inicializar tabela de simbolos global 
       inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
 
@@ -1326,47 +1330,74 @@ yyreduce:
       //adicionar nova tabela na lista de tabelas
       adicionar_nova_tabela(&tabelas_simbolos, escopo_atual, &numero_de_tabelas);
 
+      //já inicializar lista para armazenar funcoes
+      funcoes = (Funcao**) malloc(10 * sizeof(Funcao*));   
+
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     }
-#line 1332 "translate.tab.c"
+#line 1339 "translate.tab.c"
     break;
 
   case 6: /* const: EXTERIOR ID term  */
-#line 144 "translate.y"
+#line 149 "translate.y"
      {
         adicionar_simbolo(&escopo_atual, "CONSTANTE", (yyvsp[-1].string), "-");
      }
-#line 1340 "translate.tab.c"
+#line 1347 "translate.tab.c"
     break;
 
   case 10: /* def_variavel: BAGAGEM TYPE ID ASSIGN expr DOT_COMMA  */
-#line 156 "translate.y"
+#line 161 "translate.y"
                                           {
-                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
-                                           }
-#line 1349 "translate.tab.c"
-    break;
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               int resultado = adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
+                                               //if(resultado == 1){
+                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
+                                               //         strcat(msg_erro, "O identificador '"); 
+                                               //         strcat(msg_erro, $3); 
+                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
+                                               //         yyerror();
+                                               //}
 
-  case 11: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
-#line 163 "translate.y"
-                              {
-                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
                                            }
-#line 1358 "translate.tab.c"
-    break;
-
-  case 14: /* function_header: ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 176 "translate.y"
-    {
-        adicionar_simbolo(&escopo_atual, "FUNCAO", (yyvsp[-6].string), (yyvsp[-1].string));
-    }
 #line 1366 "translate.tab.c"
     break;
 
+  case 11: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
+#line 178 "translate.y"
+                              {
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               int resultado = adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
+                                               //if(resultado == 1){
+                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
+                                               //         strcat(msg_erro, "O identificador '"); 
+                                               //         strcat(msg_erro, $3); 
+                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
+                                               //         yyerror();
+                                               //}
+                                           }
+#line 1384 "translate.tab.c"
+    break;
+
+  case 14: /* function_header: ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
+#line 201 "translate.y"
+    {
+        adicionar_simbolo(&escopo_atual, "FUNCAO", (yyvsp[-6].string), (yyvsp[-1].string));
+
+        //inicializar estrutura para armazenar informacoes da funcao
+        Funcao *nova_funcao;
+        inicializar_funcao(&nova_funcao, (yyvsp[-6].string), (yyvsp[-1].string));
+        adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
+    }
+#line 1397 "translate.tab.c"
+    break;
+
   case 20: /* $@2: %empty  */
-#line 197 "translate.y"
+#line 227 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
@@ -1375,20 +1406,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1379 "translate.tab.c"
+#line 1410 "translate.tab.c"
     break;
 
   case 21: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK $@2 stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 206 "translate.y"
+#line 236 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1388 "translate.tab.c"
+#line 1419 "translate.tab.c"
     break;
 
   case 44: /* $@3: %empty  */
-#line 256 "translate.y"
+#line 286 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
@@ -1397,20 +1428,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1401 "translate.tab.c"
+#line 1432 "translate.tab.c"
     break;
 
   case 45: /* for: DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK $@3 stmt stmts CLOSE_CODEBLOCK  */
-#line 266 "translate.y"
+#line 296 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1410 "translate.tab.c"
+#line 1441 "translate.tab.c"
     break;
 
   case 46: /* $@4: %empty  */
-#line 274 "translate.y"
+#line 304 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "WHILE");
@@ -1419,20 +1450,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1423 "translate.tab.c"
+#line 1454 "translate.tab.c"
     break;
 
   case 47: /* while: TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK $@4 stmt stmts CLOSE_CODEBLOCK  */
-#line 283 "translate.y"
+#line 313 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1432 "translate.tab.c"
+#line 1463 "translate.tab.c"
     break;
 
   case 48: /* $@5: %empty  */
-#line 290 "translate.y"
+#line 320 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
@@ -1441,20 +1472,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1445 "translate.tab.c"
+#line 1476 "translate.tab.c"
     break;
 
   case 49: /* $@6: %empty  */
-#line 299 "translate.y"
+#line 329 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1454 "translate.tab.c"
+#line 1485 "translate.tab.c"
     break;
 
   case 51: /* $@7: %empty  */
-#line 308 "translate.y"
+#line 338 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
@@ -1463,20 +1494,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1467 "translate.tab.c"
+#line 1498 "translate.tab.c"
     break;
 
   case 52: /* else: ISENTO OPEN_CODEBLOCK $@7 stmt stmts CLOSE_CODEBLOCK  */
-#line 317 "translate.y"
+#line 347 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1476 "translate.tab.c"
+#line 1507 "translate.tab.c"
     break;
 
   case 53: /* $@8: %empty  */
-#line 323 "translate.y"
+#line 353 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "TRIBUTADO");
@@ -1485,28 +1516,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1489 "translate.tab.c"
+#line 1520 "translate.tab.c"
     break;
 
   case 54: /* $@9: %empty  */
-#line 332 "translate.y"
+#line 362 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1498 "translate.tab.c"
-    break;
-
-  case 77: /* id: ID  */
-#line 386 "translate.y"
-        { 
-            //conferir se já foi definido ou declarado (sintatico ou semantico ?)
-        }
-#line 1506 "translate.tab.c"
+#line 1529 "translate.tab.c"
     break;
 
 
-#line 1510 "translate.tab.c"
+#line 1533 "translate.tab.c"
 
       default: break;
     }
@@ -1699,7 +1722,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 413 "translate.y"
+#line 441 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C
@@ -1710,7 +1733,8 @@ void yyerror() {
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-        imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
+    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
+    imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -1719,5 +1743,7 @@ void yyerror() {
 int main(void) {
     yyparse();     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
+    imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+
     return 0;
 }

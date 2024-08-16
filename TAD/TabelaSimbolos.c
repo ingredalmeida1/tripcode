@@ -41,7 +41,21 @@ void liberar_tabela(TabelaSimbolos *tabela_simbolos) {
     free(tabela_simbolos);
 }
 
-void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
+int verificar_simbolo_existente(TabelaSimbolos *tabela_simbolos, char *identificador) {
+    for (int i = 0; i < tabela_simbolos->tamanho; i++) {
+        if (strcmp(tabela_simbolos->simbolos[i]->identificador, identificador) == 0) {
+            return 1; // símbolo já existe
+        }
+    }
+    return 0; // símbolo ainda não existe
+}
+
+int adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
+    // verificar se o símbolo já existe na tabela
+    // if (verificar_simbolo_existente(*tabela_simbolos, nome_identificador)) {
+    //     // printf("Erro: O símbolo '%s' já existe na tabela.\n", nome_identificador);
+    //     return 1;
+    // }
 
     int indice = (*tabela_simbolos)->tamanho;
 
@@ -57,6 +71,7 @@ void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_
     (*tabela_simbolos)->tamanho += 1;
 
     // printf("Símbolo '%s' adicionado na posição %d da tabela '%s'.\n", nome_identificador, indice, (*tabela_simbolos)->nome_bloco);
+    return 0;
 }
 
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
@@ -86,3 +101,68 @@ void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
 }
 
 // Funcoes Relacionadas à Funcoes:
+void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_de_funcoes){
+    printf("adicionar funcao %s", nova_funcao->identificador); 
+    (*funcoes)[*numero_de_funcoes] = nova_funcao;
+    (*numero_de_funcoes)+= 1;
+}
+
+void imprimir_todas_funcoes(Funcao **funcoes, int total){
+    printf("Funcoes adicionadas: ");
+    for (int i = 0; i < total; i++) {
+        printf("%s",(*funcoes)[i].identificador);    
+    }
+    printf("\n");
+}
+
+void inicializar_funcao(Funcao **funcao, char *identificador, char *tipo) {
+    (*funcao) = (Funcao *)malloc(sizeof(Funcao));
+    if (*funcao == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para a função.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    (*funcao)->tipo_retorno = strdup(tipo); 
+    
+    (*funcao)->identificador = strdup(identificador); 
+
+    (*funcao)->parametros = NULL; // Inicialmente não há parâmetros
+    // aloca memória para um array de ponteiros para parametros:
+    (*funcao)->parametros = (Parametro **)malloc(10 * sizeof(Parametro*));
+    if ((*funcao)->parametros == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para os símbolos.\n");
+
+        exit(EXIT_FAILURE);
+    }
+
+    (*funcao)->qtd_parametros = 0; 
+
+    (*funcao)->escopo = NULL; //vai iniciar a funcao quando declarar o prototipo, entao ainda nao tem escopo
+}
+
+void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo) {
+
+    int indice = (*funcao)->qtd_parametros;
+
+    Parametro *novo_parametro = (Parametro *)malloc(sizeof(Parametro));
+
+    novo_parametro->indice = indice; 
+    novo_parametro->tipo = strdup(tipo); 
+    novo_parametro->identificador = strdup(identificador); 
+
+    (*funcao)->parametros[indice] = novo_parametro;
+    (*funcao)->qtd_parametros += 1; 
+}
+
+// depois ajustar pro ponteiro anterior apontar pro bloco de escopo global
+void inicializar_tabela_simbolos_funcao(Funcao **funcao) {
+
+    char nome_bloco[200] = "FUNCAO ";
+    strcat(nome_bloco, (*funcao)->identificador);
+
+    TabelaSimbolos *tabela_funcao = NULL;
+    inicializar_tabela(&tabela_funcao, NULL, nome_bloco) ;
+
+    (*funcao)->escopo = tabela_funcao;
+}
+

@@ -11,12 +11,15 @@
 
 #include "TAD/TabelaSimbolos.h"
 
-TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder printar
+TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder imprimir
 int numero_de_tabelas = 0;
 
-TabelaSimbolos* escopo_atual = NULL;
+TabelaSimbolos* escopo_atual = NULL; //variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
-//variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
+Funcao** funcoes = NULL; //armazenar todas as funcoes 
+int numero_de_funcoes = 0;
+
+Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
 
 int yylex();
 
@@ -84,7 +87,7 @@ void yyerror();               // reportar erros
 %type <string> LOGICOP_UNARY
 
 /* definir variavel de partida da gramatica                                                        */
-%start p
+%start tripcode
 
 /*----------------------------------------------------------------------------------------------------
         Associatividade e Precedência dos Operadores
@@ -114,11 +117,10 @@ void yyerror();               // reportar erros
  * sempre que definiu um prototipo de funcao tem que conferir se ja nao tem variavel global com o mesmo identificador
  * sempre que definir ou declarar variavel, tem que conferir se ja nao existe funcao ou outra variavel global ou no mesmo bloco com mesmo identificador 
  
- * 
 */
 
 %%
-p:  
+tripcode:  
     { //inicializar tabela de simbolos global 
       inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
 
@@ -127,6 +129,9 @@ p:
      
       //adicionar nova tabela na lista de tabelas
       adicionar_nova_tabela(&tabelas_simbolos, escopo_atual, &numero_de_tabelas);
+
+      //já inicializar lista para armazenar funcoes
+      funcoes = (Funcao**) malloc(10 * sizeof(Funcao*));   
 
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     } 
@@ -154,17 +159,37 @@ variaveis:
 
 def_variavel: 
     BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
-                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               //if(resultado == 1){
+                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
+                                               //         strcat(msg_erro, "O identificador '"); 
+                                               //         strcat(msg_erro, $3); 
+                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
+                                               //         yyerror();
+                                               //}
+
                                            }
     ;
 
 dec_variavel:
     BAGAGEM TYPE ID DOT_COMMA {
-                                               // inserir na tabela de simbolos do escopo atual o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               //if(resultado == 1){
+                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
+                                               //         strcat(msg_erro, "O identificador '"); 
+                                               //         strcat(msg_erro, $3); 
+                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
+                                               //         yyerror();
+                                               //}
                                            }
     ;
+
 
 functions_header:
     functions_header function_header 
@@ -175,6 +200,11 @@ function_header:
     ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
     {
         adicionar_simbolo(&escopo_atual, "FUNCAO", $2, $7);
+
+        //inicializar estrutura para armazenar informacoes da funcao
+        Funcao *nova_funcao;
+        inicializar_funcao(&nova_funcao, $2, $7);
+        adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
     }
     ;
 
@@ -383,9 +413,7 @@ id_list:
     |
     ;
 
-id : ID { 
-            //conferir se já foi definido ou declarado (sintatico ou semantico ?)
-        }
+id : ID 
     ;
 
 types:
@@ -420,7 +448,8 @@ void yyerror() {
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-        imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
+    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
+    imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -429,5 +458,7 @@ void yyerror() {
 int main(void) {
     yyparse();     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
+    imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+
     return 0;
 }

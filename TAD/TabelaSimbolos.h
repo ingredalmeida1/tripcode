@@ -9,7 +9,7 @@ typedef struct {
     int  indice;          //armazenar o indice na tabela de simbolos para otimizar o acesso interno e a manipulação das informações.   
     char *tipo;           //em vez de armazenar como string podemos armazenar como enum, nao sei facilitaria                   
     char *identificador;  
-    char *valor;          //por enquanto valor temporario para armazenar valor de contantes e tipos de funcoes    
+    char *valor;          //por enquanto valor temporario para armazenar tipos de funcoes    
 } Simbolo; //cada simbolo possui um identificador e um tipo associado (o valor será adicionado na próximata etapa)
 
 typedef struct TabelaSimbolos TabelaSimbolos;
@@ -29,6 +29,7 @@ typedef struct {
 
 typedef struct {
     char *tipo_retorno;
+    char *identificador;
     Parametro** parametros;   //lista de parametros da funcao
     int qtd_parametros;       
     TabelaSimbolos* escopo;   //cada funcao tem seu proprio escopo
@@ -44,10 +45,21 @@ void inicializar_tabela(TabelaSimbolos **tabela_simbolos, TabelaSimbolos *tabela
 
 void liberar_tabela(TabelaSimbolos *tabela_simbolos);
 
-void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial);
+int verificar_simbolo_existente(TabelaSimbolos *tabela_simbolos, char *identificador);
+
+int adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial);
 
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos);
 
 // Funcoes Relacionadas à Funcoes:
+void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_de_funcoes);
+
+void imprimir_todas_funcoes(Funcao **funcoes, int total);
+
+void inicializar_funcao(Funcao **funcao, char *identificador, char *tipo);
+
+void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo);
+
+void inicializar_tabela_simbolos_funcao(Funcao **funcao);
 
 #endif 

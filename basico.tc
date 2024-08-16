@@ -8,6 +8,10 @@ ROTEIRO soma(MILHAS a) >>> MILHAS <<<
 
 ROTEIRO trip() >>> 
 
+    BAGAGEM STATUS teste;
+
+    BAGAGEM STATUS teste;
+
     CHECKIN([MILHAS, DOLAR], teste, valor);
 
     TURISTANDO (FERIAS) >>>
