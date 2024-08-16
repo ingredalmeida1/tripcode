@@ -599,13 +599,13 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,   122,   122,   122,   130,   131,   135,   139,   140,   141,
-     145,   162,   178,   179,   183,   186,   187,   191,   192,   196,
-     200,   204,   205,   209,   212,   213,   214,   215,   219,   220,
-     221,   225,   226,   227,   228,   229,   230,   234,   235,   239,
-     240,   241,   242,   246,   250,   253,   257,   258,   259,   263,
-     264,   265,   266,   267,   268,   269,   270,   271,   275,   278,
-     279,   283,   284,   288,   292,   296,   300,   304,   305,   308,
-     314,   318,   319,   323,   326,   327,   331,   332
+     145,   154,   163,   164,   168,   171,   172,   176,   177,   181,
+     185,   189,   190,   194,   197,   198,   199,   200,   204,   205,
+     206,   210,   211,   212,   213,   214,   215,   219,   220,   224,
+     225,   226,   227,   231,   235,   238,   242,   243,   244,   248,
+     249,   250,   251,   252,   253,   254,   255,   256,   260,   263,
+     264,   268,   269,   273,   277,   281,   285,   289,   290,   293,
+     299,   303,   304,   308,   311,   312,   316,   317
 };
 #endif
 
@@ -1316,47 +1316,32 @@ yyreduce:
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               int resultado = adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
-                                               if(resultado == 1){
-                                                        strcpy(msg_erro,""); //esvazia mensagem de erro
-                                                        strcat(msg_erro, "O identificador '"); 
-                                                        strcat(msg_erro, (yyvsp[-3].string)); 
-                                                        strcat(msg_erro, "' já está sendo usado!\n"); 
-                                                        yyerror();
-                                               }
-
+                                               adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
                                            }
-#line 1330 "translate.tab.c"
+#line 1322 "translate.tab.c"
     break;
 
   case 11: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
-#line 162 "translate.y"
+#line 154 "translate.y"
                               {
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               int resultado = adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
-                                               if(resultado == 1){
-                                                    strcpy(msg_erro,""); //esvazia mensagem de erro
-                                                    strcat(msg_erro, "O identificador '"); 
-                                                    strcat(msg_erro, (yyvsp[-1].string)); 
-                                                    strcat(msg_erro, "' já está sendo usado!\n"); 
-                                                    yyerror();
-                                               }
+                                               adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
                                            }
-#line 1348 "translate.tab.c"
+#line 1333 "translate.tab.c"
     break;
 
   case 69: /* id: ID  */
-#line 308 "translate.y"
+#line 293 "translate.y"
         { 
             //conferir se já foi definido ou declarado (sintatico ou semantico ?)
         }
-#line 1356 "translate.tab.c"
+#line 1341 "translate.tab.c"
     break;
 
 
-#line 1360 "translate.tab.c"
+#line 1345 "translate.tab.c"
 
       default: break;
     }
@@ -1549,7 +1534,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 335 "translate.y"
+#line 320 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C
