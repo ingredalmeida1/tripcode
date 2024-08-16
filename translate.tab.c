@@ -78,6 +78,11 @@
 
 #include "TAD/TabelaSimbolos.h"
 
+TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder printar
+int numero_de_tabelas = 0;
+
+TabelaSimbolos* escopo_atual = NULL;
+
 //variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
 int yylex();
@@ -93,7 +98,7 @@ char msg_erro[200];           //construir mensagem de erro
 void yyerror();               // reportar erros
 
 
-#line 97 "translate.tab.c"
+#line 102 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -593,8 +598,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   117,   117,   117,   125,   126,   130,   134,   135,   136,
-     140,   152,   164,   165,   169,   172,   173,   177,   178,   182,
+       0,   122,   122,   122,   130,   131,   135,   139,   140,   141,
+     145,   154,   164,   165,   169,   172,   173,   177,   178,   182,
      186,   190,   191,   195,   198,   199,   200,   201,   205,   206,
      207,   211,   212,   213,   214,   215,   216,   220,   221,   225,
      226,   227,   228,   232,   236,   239,   243,   244,   245,   249,
@@ -1297,38 +1302,33 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 117 "translate.y"
-    { inicializar_tabela(50);     //inicializar tabela de simbolos global 
-
+#line 122 "translate.y"
+    { inicializar_tabela(&escopo_atual, NULL, "GLOBAL");     //inicializar tabela de simbolos global 
+      //adicionar ela na lista de tabelas
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     }
-#line 1306 "translate.tab.c"
+#line 1311 "translate.tab.c"
     break;
 
   case 10: /* def_variavel: BAGAGEM TYPE ID ASSIGN expr DOT_COMMA  */
-#line 140 "translate.y"
+#line 145 "translate.y"
                                           {
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                                Simbolo novo_simbolo;
-                                                novo_simbolo.tipo = strdup((yyvsp[-4].string)); 
-                                                novo_simbolo.identificador = strdup((yyvsp[-3].string));
-                                                adicionar_simbolo(novo_simbolo);
+                                               adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
                                            }
-#line 1320 "translate.tab.c"
+#line 1322 "translate.tab.c"
     break;
 
   case 11: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
-#line 152 "translate.y"
+#line 154 "translate.y"
                               {
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                                Simbolo novo_simbolo;
-                                                novo_simbolo.tipo = strdup((yyvsp[-2].string)); 
-                                                novo_simbolo.identificador = strdup((yyvsp[-1].string));
-                                                adicionar_simbolo(novo_simbolo);
+                                               adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
+
                                            }
 #line 1334 "translate.tab.c"
     break;
@@ -1546,7 +1546,7 @@ void yyerror() {
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-    imprimir_tabela_simbolos(); // até o momento do erro
+    imprimir_tabela_simbolos((*escopo_atual)); // até o momento do erro
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -1554,6 +1554,6 @@ void yyerror() {
 
 int main(void) {
     yyparse();     
-    imprimir_tabela_simbolos();
+    imprimir_tabela_simbolos((*escopo_atual));
     return 0;
 }

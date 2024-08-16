@@ -11,6 +11,11 @@
 
 #include "TAD/TabelaSimbolos.h"
 
+TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder printar
+int numero_de_tabelas = 0;
+
+TabelaSimbolos* escopo_atual = NULL;
+
 //variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
 int yylex();
@@ -114,8 +119,8 @@ void yyerror();               // reportar erros
 
 %%
 p:  
-    { inicializar_tabela(50);     //inicializar tabela de simbolos global 
-
+    { inicializar_tabela(&escopo_atual, NULL, "GLOBAL");     //inicializar tabela de simbolos global 
+      //adicionar ela na lista de tabelas
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     } 
     consts variaveis functions_header main functions 
@@ -141,10 +146,7 @@ def_variavel:
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                                Simbolo novo_simbolo;
-                                                novo_simbolo.tipo = strdup($2); 
-                                                novo_simbolo.identificador = strdup($3);
-                                                adicionar_simbolo(novo_simbolo);
+                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
                                            }
     ;
 
@@ -153,10 +155,8 @@ dec_variavel:
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                                Simbolo novo_simbolo;
-                                                novo_simbolo.tipo = strdup($2); 
-                                                novo_simbolo.identificador = strdup($3);
-                                                adicionar_simbolo(novo_simbolo);
+                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+
                                            }
     ;
 
@@ -328,7 +328,7 @@ void yyerror() {
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-    imprimir_tabela_simbolos(); // até o momento do erro
+    imprimir_tabela_simbolos((*escopo_atual)); // até o momento do erro
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -336,6 +336,6 @@ void yyerror() {
 
 int main(void) {
     yyparse();     
-    imprimir_tabela_simbolos();
+    imprimir_tabela_simbolos((*escopo_atual));
     return 0;
 }
