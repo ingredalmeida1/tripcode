@@ -76,7 +76,9 @@
 #include <stdlib.h>
 #include <string.h> 
 
-#include "TAD/tabela-simbolos/tabelaSimbolos.h"
+#include "TAD/TabelaSimbolos.h"
+
+//variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
 int yylex();
 
@@ -91,7 +93,7 @@ char msg_erro[200];           //construir mensagem de erro
 void yyerror();               // reportar erros
 
 
-#line 95 "translate.tab.c"
+#line 97 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -591,14 +593,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    91,    91,    91,    99,   100,   104,   108,   109,   110,
-     114,   118,   121,   122,   126,   129,   130,   134,   135,   139,
-     143,   147,   148,   152,   155,   156,   157,   158,   162,   163,
-     164,   168,   169,   170,   171,   172,   173,   177,   178,   182,
-     183,   184,   185,   189,   193,   196,   200,   201,   202,   206,
-     207,   208,   209,   210,   211,   212,   213,   214,   218,   221,
-     222,   226,   227,   231,   235,   239,   243,   247,   248,   251,
-     260,   264,   265,   269,   272,   273,   277,   278
+       0,   117,   117,   117,   125,   126,   130,   134,   135,   136,
+     140,   152,   164,   165,   169,   172,   173,   177,   178,   182,
+     186,   190,   191,   195,   198,   199,   200,   201,   205,   206,
+     207,   211,   212,   213,   214,   215,   216,   220,   221,   225,
+     226,   227,   228,   232,   236,   239,   243,   244,   245,   249,
+     250,   251,   252,   253,   254,   255,   256,   257,   261,   264,
+     265,   269,   270,   274,   278,   282,   286,   290,   291,   294,
+     300,   304,   305,   309,   312,   313,   317,   318
 };
 #endif
 
@@ -1295,39 +1297,52 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 91 "translate.y"
-    { inicializar_tabela(50);    //inicializar tabela de simbolos global 
+#line 117 "translate.y"
+    { inicializar_tabela(50);     //inicializar tabela de simbolos global 
 
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     }
-#line 1304 "translate.tab.c"
+#line 1306 "translate.tab.c"
     break;
 
-  case 31: /* term: INT  */
-#line 168 "translate.y"
-        {printf("int %d", (yyvsp[0].inteiro)); }
-#line 1310 "translate.tab.c"
+  case 10: /* def_variavel: BAGAGEM TYPE ID ASSIGN expr DOT_COMMA  */
+#line 140 "translate.y"
+                                          {
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                                Simbolo novo_simbolo;
+                                                novo_simbolo.tipo = strdup((yyvsp[-4].string)); 
+                                                novo_simbolo.identificador = strdup((yyvsp[-3].string));
+                                                adicionar_simbolo(novo_simbolo);
+                                           }
+#line 1320 "translate.tab.c"
     break;
 
-  case 33: /* term: STRING  */
-#line 170 "translate.y"
-             {printf("string %s", (yyvsp[0].string)); }
-#line 1316 "translate.tab.c"
+  case 11: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
+#line 152 "translate.y"
+                              {
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                                Simbolo novo_simbolo;
+                                                novo_simbolo.tipo = strdup((yyvsp[-2].string)); 
+                                                novo_simbolo.identificador = strdup((yyvsp[-1].string));
+                                                adicionar_simbolo(novo_simbolo);
+                                           }
+#line 1334 "translate.tab.c"
     break;
 
   case 69: /* id: ID  */
-#line 251 "translate.y"
-        { Simbolo identificador;
-          printf("identificador %s", (yyvsp[0].string));
-          identificador.nome = strdup((yyvsp[0].string));  
-          printf("identificador %s", identificador.nome);
-          adicionar_simbolo(identificador);
-         }
-#line 1327 "translate.tab.c"
+#line 294 "translate.y"
+        { 
+            //conferir se já foi definido ou declarado (sintatico ou semantico ?)
+        }
+#line 1342 "translate.tab.c"
     break;
 
 
-#line 1331 "translate.tab.c"
+#line 1346 "translate.tab.c"
 
       default: break;
     }
@@ -1520,7 +1535,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 281 "translate.y"
+#line 321 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C

@@ -9,7 +9,9 @@
 #include <stdlib.h>
 #include <string.h> 
 
-#include "TAD/tabela-simbolos/tabelaSimbolos.h"
+#include "TAD/TabelaSimbolos.h"
+
+//variavel para armazenar ponteiro para a tabela de simbolos do bloco atual
 
 int yylex();
 
@@ -26,7 +28,7 @@ void yyerror();               // reportar erros
 %}
 
 %code requires {
-     #include "TAD/tabela-simbolos/tabelaSimbolos.h"
+     #include "TAD/TabelaSimbolos.h"
 }
 
 /*----------------------------------------------------------------------------------------------------
@@ -38,6 +40,8 @@ void yyerror();               // reportar erros
     float real;
     char *string;
 }
+/* avaliar se compensa criar os tipo Tipo, Identificador e Funcao                                  */
+
 
 /*----------------------------------------------------------------------------------------------------
         Tokens
@@ -65,6 +69,8 @@ void yyerror();               // reportar erros
 %type <string>  STRING
 %type <string>  BOOL
 
+%type <string>  TYPE
+
 %type <string>  ID
 
 %type <string> OP
@@ -86,9 +92,29 @@ void yyerror();               // reportar erros
 /*----------------------------------------------------------------------------------------------------
         Regras da Gramática
 ----------------------------------------------------------------------------------------------------*/
+/* Anotacoes:
+ * Tabela de Simbolos Multinivel 
+    => para cada bloco de codigo inicia uma nova tabela
+        - producoes que contem OPEN_CODEBLOCK ou 'function'
+            - para funcoes temos que inserir as variaveis dos parametros na tabela de simbolos
+            - os demais blocos nao precisa   
+
+ * ter sepado variaveis globais e constantes ?
+
+ * como sempre tem que definir o prototipo da funcao e a definicao da funcao só vai vim depois do main, 
+   quando ler os cabecalhos das funcoes ja vai saber quais funcoes podem ser chamadas dentro do codigo principal e de outras funcoes
+   e tambem a quantidade de parametros
+   e depois quando definir a funcao, completa com as variaveis declaradas dentro declaradas
+
+ * sempre que definiu um prototipo de funcao tem que conferir se ja nao tem variavel global com o mesmo identificador
+ * sempre que definir ou declarar variavel, tem que conferir se ja nao existe funcao ou outra variavel global ou no mesmo bloco com mesmo identificador 
+ 
+ * 
+
+*/
 %%
 p:  
-    { inicializar_tabela(50);    //inicializar tabela de simbolos global 
+    { inicializar_tabela(50);     //inicializar tabela de simbolos global 
 
       printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
     } 
@@ -111,11 +137,28 @@ variaveis:
     ;
 
 def_variavel: 
-    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA
+    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                                Simbolo novo_simbolo;
+                                                novo_simbolo.tipo = strdup($2); 
+                                                novo_simbolo.identificador = strdup($3);
+                                                adicionar_simbolo(novo_simbolo);
+                                           }
     ;
 
 dec_variavel:
-    BAGAGEM TYPE ID DOT_COMMA 
+    BAGAGEM TYPE ID DOT_COMMA {
+                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
+                                               //se encontra: erro de sintaxe
+                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                                Simbolo novo_simbolo;
+                                                novo_simbolo.tipo = strdup($2); 
+                                                novo_simbolo.identificador = strdup($3);
+                                                adicionar_simbolo(novo_simbolo);
+                                           }
+    ;
 
 functions_header:
     functions_header function_header 
@@ -165,9 +208,9 @@ operador:
     ;
 
 term: 
-    INT {printf("int %d", $1); }
+    INT 
     | FLOAT     
-    | STRING {printf("string %s", $1); }
+    | STRING 
     | BOOL     
     | ID     
     | call_function  
@@ -248,12 +291,9 @@ id_list:
     |
     ;
 
-id : ID { Simbolo identificador;
-          printf("identificador %s", $1);
-          identificador.nome = strdup($1);  
-          printf("identificador %s", identificador.nome);
-          adicionar_simbolo(identificador);
-         }
+id : ID { 
+            //conferir se já foi definido ou declarado (sintatico ou semantico ?)
+        }
     ;
 
 types:
