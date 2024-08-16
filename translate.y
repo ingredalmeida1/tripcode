@@ -236,19 +236,88 @@ stmt:
     ;
 
 for:
-    DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK
+    DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK 
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+
+    stmt stmts CLOSE_CODEBLOCK 
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
     ;    
 
 while:
-    TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK
+    TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "WHILE");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+    stmt stmts CLOSE_CODEBLOCK
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
 
 if: 
-    ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK else
+    ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+    stmt stmts CLOSE_CODEBLOCK
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
+    else
     ;
 
 else:
-     ISENTO OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK
-    | TRIBUTADO OPEN_CODEBLOCK stmt stmts CLOSE_CODEBLOCK else
+     ISENTO OPEN_CODEBLOCK 
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+    stmt stmts CLOSE_CODEBLOCK
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
+    
+    | TRIBUTADO OPEN_CODEBLOCK 
+    {
+        TabelaSimbolos *nova_tabela = NULL;
+        inicializar_tabela(&nova_tabela, escopo_atual, "TRIBUTADO");
+        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = nova_tabela;
+    }
+    stmt stmts CLOSE_CODEBLOCK
+    {
+        // restaura o escopo anterior como o escopo atual
+        escopo_atual = escopo_atual->anterior;
+    }
+     else
     |
     ;
 

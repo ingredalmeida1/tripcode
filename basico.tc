@@ -31,6 +31,8 @@ ROTEIRO trip() >>>
         teste <-> teste + EMBARCAR soma (teste + 0);
     <<<
 
+    BAGAGEM VOUCHER ultima;
+
     CHECKOUT("Resultado final" <> MILHAS valor <> "ok!");
 
     DESPACHAR 0;
