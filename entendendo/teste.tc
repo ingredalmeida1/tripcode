@@ -1,5 +1,0 @@
-ROTEIRO trip() >>>
-    EMBARCAR minha_funcao (MILHAS x,  DOLAR y);
-
-    DESPACHAR 0;
-<<< MILHAS <<<
