@@ -110,8 +110,8 @@ void yyerror();               // reportar erros
  * sempre que definir ou declarar variavel, tem que conferir se ja nao existe funcao ou outra variavel global ou no mesmo bloco com mesmo identificador 
  
  * 
-
 */
+
 %%
 p:  
     { inicializar_tabela(50);     //inicializar tabela de simbolos global 
