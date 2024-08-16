@@ -1,20 +1,27 @@
+/*====================================================================================================
+        Analisador Sintático para a Linguagem TripCode
+====================================================================================================*/
 %{
+/*----------------------------------------------------------------------------------------------------
+        Bibliotecas C, codigos C e Definicoes de Tokens 
+----------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> 
+
 #include "TAD/tabela-simbolos/tabelaSimbolos.h"
+
+int yylex();
 
 char* strdup(const char*);
 double atof(const char*);
 int atoi(const char*);
 
-int yylex();
+extern int yylineno;          // contar as linhas
 
-extern char *yytext; // para acessar o texto reconhecido pelo scanner/lex */
-extern int yylineno; // contar as linhas
+char msg_erro[200];           //construir mensagem de erro
 
-char error_message[200];   //construir mensagem de erro
-void yyerror();            //imprimir erro
+void yyerror();               // reportar erros
 
 %}
 
@@ -22,23 +29,26 @@ void yyerror();            //imprimir erro
      #include "TAD/tabela-simbolos/tabelaSimbolos.h"
 }
 
-// especifica os diferentes tipos de valores que os tokens podem armazenar
+/*----------------------------------------------------------------------------------------------------
+        Registros Semânticos
+----------------------------------------------------------------------------------------------------*/
+/* especificar os tipos de valores que os tokens podem armazenar                                    */
 %union {
-    char *str;
-    int iValue;
+    int inteiro;
     float real;
+    char *string;
 }
 
-// declara os tokens que são retornados pelo Lex e especifica o tipo de valor que eles retornam
-
+/*----------------------------------------------------------------------------------------------------
+        Tokens
+----------------------------------------------------------------------------------------------------*/
 %token TRIP 
 %token BAGAGEM EXTERIOR 
 %token CHECKIN CHECKOUT
 %token ALFANDEGA ISENTO TRIBUTADO
-%token ITINERARIO ROTA IMPREVISTO
 %token POUSAR FERIADO
 %token DECOLAR ORIGEM DESTINO ESCALA
-%token TURISTANDO TURISTAR DURANTE
+%token TURISTANDO 
 %token ROTEIRO EMBARCAR DESPACHAR
 %token COMMA DOT_COMMA DOT COLON
 %token OPEN_PARENTHESES CLOSE_PARENTHESES 
@@ -46,25 +56,37 @@ void yyerror();            //imprimir erro
 %token OPEN_CODEBLOCK CLOSE_CODEBLOCK
 %token ASSIGN CONCAT
 %token TYPE
-
-%token <str> OP
-%token <str> RELOP
-%token <str> LOGICOP
-%token <str> LOGICOP_UNARY
-
 %token INT FLOAT STRING BOOL ID
+%token OP RELOP LOGICOP LOGICOP_UNARY
 
-%type <iValue> INT
-%type <real> FLOAT
-%type <str>  STRING
-%type <str>  BOOL
-%type <str> ID
+/* especificar o tipo do atributo armazenado no token                                               */
+%type <inteiro> INT
+%type <real>    FLOAT
+%type <string>  STRING
+%type <string>  BOOL
 
+%type <string>  ID
+
+%type <string> OP
+%type <string> RELOP
+%type <string> LOGICOP
+%type <string> LOGICOP_UNARY
+
+/* definir variavel de partida da gramatica                                                        */
 %start p
 
-%%
+/*----------------------------------------------------------------------------------------------------
+        Associatividade e Precedência dos Operadores
+----------------------------------------------------------------------------------------------------*/
+%left OP
+%left RELOP 
+%left LOGICOP
+%right LOGICOP_UNARY
 
-// Regras da gramática
+/*----------------------------------------------------------------------------------------------------
+        Regras da Gramática
+----------------------------------------------------------------------------------------------------*/
+%%
 p:  
     { inicializar_tabela(50);    //inicializar tabela de simbolos global 
 
@@ -257,14 +279,18 @@ result:
     ;
 
 %%
-
+/*----------------------------------------------------------------------------------------------------
+        Funcoes em C
+----------------------------------------------------------------------------------------------------*/
 void yyerror() {
-    // printar mensagem de erro na cor vermelha
-    fprintf(stderr, "\n\033[1;31mErro de sintaxe próximo à linha %d: %s\033[0m\n\n", yylineno-1, error_message);
+    // imprimir mensagem de erro na cor vermelha
+    fprintf(stderr, "\n\033[1;31mErro de sintaxe próximo à linha %d: %s\033[0m\n\n", yylineno-1, msg_erro);
      
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
-    // encerrar analise prematuramente:
+    imprimir_tabela_simbolos(); // até o momento do erro
+
+    // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
 }
 

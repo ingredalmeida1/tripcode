@@ -1,21 +1,30 @@
-%{ /* Codigo C */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "translate.tab.h"       // Incluir o cabeçalho gerado pelo Bison 
+/*====================================================================================================
+        Analisador Léxico para a Linguagem TripCode
+====================================================================================================*/
+%{ 
+/*----------------------------------------------------------------------------------------------------
+        Bibliotecas C, codigos C e Definicoes de Tokens 
+----------------------------------------------------------------------------------------------------*/
+#include <stdio.h>            // para funcoes de entrada/saida                                      
+#include <stdlib.h>           // para a funcao atoi                                                 
+#include <string.h>           // para a funcao strdup    
 
-void yyerror(char *);
+#include "translate.tab.h"    // definicioes de tokens e variavel global yylval (gerado pelo Bison) 
 
-extern char error_message[200];  //construir mensagem de erro
+void yyerror(char *);         // funcao usada para reportar erros
 
-extern int yylineno;             //Variável para contar linhas */
+extern char msg_erro[200];    // variavel para construir mensagem de erro                                         
+
+extern int yylineno;          // variável para contar linhas 
 
 %}
 
-/* This tells flex to read only one input file */
-%option noyywrap 
+/* definir para ler apenas um arquivo de entrada */
+%option noyywrap        
 
-/* Definições regulares */
+/*----------------------------------------------------------------------------------------------------
+        Definicoes Regulares  
+----------------------------------------------------------------------------------------------------*/
 delim             [ \t] 
 ws                {delim}+
 line              \n
@@ -23,69 +32,52 @@ comment           ->[^<]*<-
 
 trip              trip
 
-/* --- valores booleanos: */
+/*--- valores booleanos -----------------------------------------------------------------------------*/
 ferias            FERIAS
 diautil           DIAUTIL
 
-/* --- tipos de dados: */
+/*--- tipos de dados --------------------------------------------------------------------------------*/
 status            STATUS
 dolar             DOLAR
 milhas            MILHAS
 voucher           VOUCHER
 
-/* mapa              MAPA */
-/* passaporte        PASSAPORTE */
-
 type              {status}|{dolar}|{milhas}|{voucher}
 
-/* --- operadores relacionados aos tipos */
-/* cambio            CAMBIO */
-/* cotacao           COTACAO */
-/* classe            CLASSE */
-
-/* --- declarar variavel */
+/*--- declarar/definir variavel e definir constante -------------------------------------------------*/
 bagagem           BAGAGEM
 exterior          EXTERIOR
 
-/* --- comandos de entrada/saida */
+/*--- comandos de entrada/saida ---------------------------------------------------------------------*/
 checkin           CHECKIN
 checkout          CHECKOUT
 
-/* --- comando condicional */
+/*--- comando condicional ---------------------------------------------------------------------------*/
 alfandega         ALFANDEGA
 isento            ISENTO
 tributado         TRIBUTADO
 
-/* --- comando switch */
-itinerario        ITINERARIO
-rota              ROTA
-imprevisto        IMPREVISTO
-
 pousar            POUSAR
 feriado           FERIADO
 
-/* --- comando repeticao */
+/*--- comandos repeticao ----------------------------------------------------------------------------*/
 decolar           DECOLAR
 origem            ORIGEM
 destino           DESTINO
 escala            ESCALA 
 
 turistando        TURISTANDO
-turistar          TURISTAR
-durante           DURANTE
 
-/* --- definicao de funcao */
+/*--- funcoes ---------------------------------------------------------------------------------------*/
 roteiro           ROTEIRO
 despachar         DESPACHAR
 embarcar          EMBARCAR
 
-/* --- operadores */
+/* --- operadores -----------------------------------------------------------------------------------*/
 and               AND
 or                OR
 
 not               NOT
-/* descansar         DESCANSAR */
-/* trabalhar         TRABALHAR */
 
 som               \+
 sub               \-
@@ -108,7 +100,7 @@ relop             {eq}|{gt}|{ge}|{lt}|{le}|{diff}
 logicop           {and}|{or}
 logicop_unary     {not}
 
-/* --- valores */
+/* --- valores --------------------------------------------------------------------------------------*/
 digit             [0-9]
 lower_letter      [a-z]
 upper_letter      [A-Z]
@@ -123,7 +115,7 @@ boolean           {ferias}|{diautil}
 
 id                ({lower_letter})(_|{letter}|{digit})*
 
-/* --- estrutura do codigo */
+/* --- estrutura do codigo --------------------------------------------------------------------------*/
 dot_comma         \;
 dot               \.
 comma             \,
@@ -135,12 +127,14 @@ open_codeblock    \>\>\>
 close_codeblock   \<\<\<
 colon             \:
 
-/* --- erros lexicos */
+/* --- erros lexicos --------------------------------------------------------------------------------*/
 all_characters     [a-zA-Z1-9]
-lexema_error      {all_characters}+|.
+invalid            {all_characters}+|.
 
+/*----------------------------------------------------------------------------------------------------
+        Expressoes Regulares definindo os Tokens 
+----------------------------------------------------------------------------------------------------*/
 %%
-
 {comment}                { printf("%s", yytext); }
 {line}                   { printf("\n%d\t", yylineno++); }
 {ws}                     { printf("%s", yytext); }
@@ -157,10 +151,6 @@ lexema_error      {all_characters}+|.
 {isento}                 { printf("%s", yytext); return ISENTO; }
 {tributado}              { printf("%s", yytext); return TRIBUTADO; }
 
-{itinerario}             { printf("%s", yytext); return ITINERARIO; }
-{rota}                   { printf("%s", yytext); return ROTA; }
-{imprevisto}             { printf("%s", yytext); return IMPREVISTO; }
-
 {pousar}                 { printf("%s", yytext); return POUSAR; }
 {feriado}                { printf("%s", yytext); return FERIADO; }
 
@@ -170,8 +160,6 @@ lexema_error      {all_characters}+|.
 {escala}                 { printf("%s", yytext); return ESCALA; }
 
 {turistando}             { printf("%s", yytext); return TURISTANDO; }
-{turistar}               { printf("%s", yytext); return TURISTAR; }
-{durante}                { printf("%s", yytext); return DURANTE; }
 
 {roteiro}                { printf("%s", yytext); return ROTEIRO; }
 {embarcar}               { printf("%s", yytext); return EMBARCAR; }
@@ -191,34 +179,36 @@ lexema_error      {all_characters}+|.
 {atribuicao}             { printf("%s", yytext); return ASSIGN;}
 {concat}                 { printf("%s", yytext); return CONCAT;}
 
-{op}                     { printf("%s", yytext); yylval.str = strdup(yytext); return OP;}
-{relop}                  { printf("%s", yytext); yylval.str = strdup(yytext); return RELOP;}
-{logicop}                { printf("%s", yytext); yylval.str = strdup(yytext); return LOGICOP;}
-{logicop_unary}          { printf("%s", yytext); yylval.str = strdup(yytext); return LOGICOP_UNARY;}
+{op}                     { printf("%s", yytext); yylval.string = strdup(yytext); return OP;}
+{relop}                  { printf("%s", yytext); yylval.string = strdup(yytext); return RELOP;}
+{logicop}                { printf("%s", yytext); yylval.string = strdup(yytext); return LOGICOP;}
+{logicop_unary}          { printf("%s", yytext); yylval.string = strdup(yytext); return LOGICOP_UNARY;}
 
-{type}                   { printf("%s", yytext); yylval.str = strdup(yytext); return TYPE;}
+{type}                   { printf("%s", yytext); yylval.string = strdup(yytext); return TYPE;}
 
-{inteiro}                { printf("%s", yytext); yylval.iValue = atoi(yytext); return INT;}
+{inteiro}                { printf("%s", yytext); yylval.inteiro = atoi(yytext); return INT;}
 {float}                  { printf("%s", yytext); yylval.real = atof(yytext); return FLOAT;}
-{string}                 { printf("%s", yytext); yylval.str = strdup(yytext); return STRING;}
-{boolean}                { printf("%s", yytext); yylval.str = strdup(yytext); return BOOL;}
+{string}                 { printf("%s", yytext); yylval.string = strdup(yytext); return STRING;}
+{boolean}                { printf("%s", yytext); yylval.string = strdup(yytext); return BOOL;}
 
-{id}                     { printf("%s", yytext); yylval.str = strdup(yytext); return ID; }
+{id}                     { printf("%s", yytext); yylval.string = strdup(yytext); return ID; }
 
-{lexema_error}          {  printf("%s", yytext); 
+{invalid}                { printf("%s", yytext); 
+
                            // formatar mensagem de erro                      
-                           char message[200] = "lexema '"; 
-                           strcat(message, yytext); 
-                           strcat(message, "' inválido!"); 
-                           // armazenar na variavel de mensagem de erro
-                           strcpy(error_message, message); 
-                           // chamar funcao erro  
-                           yyerror(message);
-                        }  
+                           char msg[200] = "lexema '"; 
+                           strcat(msg, yytext); 
+                           strcat(msg, "' inválido!"); 
 
-<<EOF>>                 {
-                            // se chegou no fim do arquivo:
-                            printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
-                            return 0;
+                           // armazenar na variavel global de mensagem de erro
+                           strcpy(msg_erro, msg); 
+
+                           // reportar erro  
+                           yyerror(msg);
+                         }  
+
+<<EOF>>                 { // se chegou no fim do arquivo:
+                          printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
+                          return 0;
                         }                      
 %%

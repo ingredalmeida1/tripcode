@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 21 "translate.y"
+#line 28 "translate.y"
 
      #include "TAD/tabela-simbolos/tabelaSimbolos.h"
 
@@ -68,43 +68,38 @@ extern int yydebug;
     ALFANDEGA = 263,               /* ALFANDEGA  */
     ISENTO = 264,                  /* ISENTO  */
     TRIBUTADO = 265,               /* TRIBUTADO  */
-    ITINERARIO = 266,              /* ITINERARIO  */
-    ROTA = 267,                    /* ROTA  */
-    IMPREVISTO = 268,              /* IMPREVISTO  */
-    POUSAR = 269,                  /* POUSAR  */
-    FERIADO = 270,                 /* FERIADO  */
-    DECOLAR = 271,                 /* DECOLAR  */
-    ORIGEM = 272,                  /* ORIGEM  */
-    DESTINO = 273,                 /* DESTINO  */
-    ESCALA = 274,                  /* ESCALA  */
-    TURISTANDO = 275,              /* TURISTANDO  */
-    TURISTAR = 276,                /* TURISTAR  */
-    DURANTE = 277,                 /* DURANTE  */
-    ROTEIRO = 278,                 /* ROTEIRO  */
-    EMBARCAR = 279,                /* EMBARCAR  */
-    DESPACHAR = 280,               /* DESPACHAR  */
-    COMMA = 281,                   /* COMMA  */
-    DOT_COMMA = 282,               /* DOT_COMMA  */
-    DOT = 283,                     /* DOT  */
-    COLON = 284,                   /* COLON  */
-    OPEN_PARENTHESES = 285,        /* OPEN_PARENTHESES  */
-    CLOSE_PARENTHESES = 286,       /* CLOSE_PARENTHESES  */
-    OPEN_BRACKET = 287,            /* OPEN_BRACKET  */
-    CLOSE_BRACKET = 288,           /* CLOSE_BRACKET  */
-    OPEN_CODEBLOCK = 289,          /* OPEN_CODEBLOCK  */
-    CLOSE_CODEBLOCK = 290,         /* CLOSE_CODEBLOCK  */
-    ASSIGN = 291,                  /* ASSIGN  */
-    CONCAT = 292,                  /* CONCAT  */
-    TYPE = 293,                    /* TYPE  */
+    POUSAR = 266,                  /* POUSAR  */
+    FERIADO = 267,                 /* FERIADO  */
+    DECOLAR = 268,                 /* DECOLAR  */
+    ORIGEM = 269,                  /* ORIGEM  */
+    DESTINO = 270,                 /* DESTINO  */
+    ESCALA = 271,                  /* ESCALA  */
+    TURISTANDO = 272,              /* TURISTANDO  */
+    ROTEIRO = 273,                 /* ROTEIRO  */
+    EMBARCAR = 274,                /* EMBARCAR  */
+    DESPACHAR = 275,               /* DESPACHAR  */
+    COMMA = 276,                   /* COMMA  */
+    DOT_COMMA = 277,               /* DOT_COMMA  */
+    DOT = 278,                     /* DOT  */
+    COLON = 279,                   /* COLON  */
+    OPEN_PARENTHESES = 280,        /* OPEN_PARENTHESES  */
+    CLOSE_PARENTHESES = 281,       /* CLOSE_PARENTHESES  */
+    OPEN_BRACKET = 282,            /* OPEN_BRACKET  */
+    CLOSE_BRACKET = 283,           /* CLOSE_BRACKET  */
+    OPEN_CODEBLOCK = 284,          /* OPEN_CODEBLOCK  */
+    CLOSE_CODEBLOCK = 285,         /* CLOSE_CODEBLOCK  */
+    ASSIGN = 286,                  /* ASSIGN  */
+    CONCAT = 287,                  /* CONCAT  */
+    TYPE = 288,                    /* TYPE  */
+    INT = 289,                     /* INT  */
+    FLOAT = 290,                   /* FLOAT  */
+    STRING = 291,                  /* STRING  */
+    BOOL = 292,                    /* BOOL  */
+    ID = 293,                      /* ID  */
     OP = 294,                      /* OP  */
     RELOP = 295,                   /* RELOP  */
     LOGICOP = 296,                 /* LOGICOP  */
-    LOGICOP_UNARY = 297,           /* LOGICOP_UNARY  */
-    INT = 298,                     /* INT  */
-    FLOAT = 299,                   /* FLOAT  */
-    STRING = 300,                  /* STRING  */
-    BOOL = 301,                    /* BOOL  */
-    ID = 302                       /* ID  */
+    LOGICOP_UNARY = 297            /* LOGICOP_UNARY  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -113,13 +108,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 26 "translate.y"
+#line 36 "translate.y"
 
-    char *str;
-    int iValue;
+    int inteiro;
     float real;
+    char *string;
 
-#line 123 "translate.tab.h"
+#line 118 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
