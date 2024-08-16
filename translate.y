@@ -111,11 +111,11 @@ variaveis:
     ;
 
 def_variavel: 
-    BAGAGEM TYPE ids ASSIGN expr DOT_COMMA
+    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA
     ;
 
 dec_variavel:
-    BAGAGEM TYPE ids DOT_COMMA 
+    BAGAGEM TYPE ID DOT_COMMA 
 
 functions_header:
     functions_header function_header 
@@ -236,7 +236,7 @@ return:
     ;
 
 atribuicao:
-    ids ASSIGN expr DOT_COMMA
+    ID ASSIGN expr DOT_COMMA
     ;
 
 ids:
