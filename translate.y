@@ -145,8 +145,16 @@ def_variavel:
     BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
-                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
+                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               if(resultado == 1){
+                                                        strcpy(msg_erro,""); //esvazia mensagem de erro
+                                                        strcat(msg_erro, "O identificador '"); 
+                                                        strcat(msg_erro, $3); 
+                                                        strcat(msg_erro, "' já está sendo usado!\n"); 
+                                                        yyerror();
+                                               }
+
                                            }
     ;
 
@@ -155,8 +163,14 @@ dec_variavel:
                                                //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
                                                //se encontra: erro de sintaxe
                                                //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
-
+                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                               if(resultado == 1){
+                                                    strcpy(msg_erro,""); //esvazia mensagem de erro
+                                                    strcat(msg_erro, "O identificador '"); 
+                                                    strcat(msg_erro, $3); 
+                                                    strcat(msg_erro, "' já está sendo usado!\n"); 
+                                                    yyerror();
+                                               }
                                            }
     ;
 
