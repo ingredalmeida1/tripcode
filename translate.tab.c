@@ -87,7 +87,7 @@ Funcao** funcoes = NULL; //armazenar todas as funcoes
 int numero_de_funcoes = 0;
 
 Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
-int prototipos_funcao = 1;   //flag para sabe se os parametros formais sao do momento do prototipo ou nao
+int prototipo = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
 
 int yylex();
 
@@ -614,14 +614,14 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,   125,   125,   125,   144,   145,   149,   156,   157,   158,
-     162,   179,   196,   197,   202,   201,   215,   224,   225,   229,
-     230,   234,   249,   248,   268,   269,   274,   273,   296,   297,
-     298,   299,   303,   304,   305,   309,   310,   311,   312,   313,
-     314,   318,   319,   323,   324,   325,   326,   331,   330,   349,
-     348,   365,   374,   364,   383,   382,   398,   407,   397,   412,
-     416,   417,   418,   419,   420,   421,   422,   423,   424,   428,
-     431,   432,   436,   437,   441,   445,   449,   453,   457,   458,
-     461,   465,   469,   470,   474,   477,   478,   482,   483
+     162,   179,   196,   197,   202,   201,   216,   227,   228,   232,
+     233,   237,   252,   251,   268,   269,   274,   273,   305,   306,
+     307,   308,   312,   313,   314,   318,   319,   320,   321,   322,
+     323,   327,   328,   332,   333,   334,   335,   340,   339,   358,
+     357,   374,   383,   373,   392,   391,   407,   416,   406,   421,
+     425,   426,   427,   428,   429,   430,   431,   432,   433,   437,
+     440,   441,   445,   446,   450,   454,   458,   462,   466,   467,
+     470,   474,   478,   479,   483,   486,   487,   491,   492
 };
 #endif
 
@@ -1396,30 +1396,33 @@ yyreduce:
   case 14: /* $@2: %empty  */
 #line 202 "translate.y"
     {
-        printf("funcao %s", (yyvsp[-1].string));
         //inicializar estrutura para armazenar informacoes da funcao
         Funcao *nova_funcao = NULL;
         inicializar_funcao(&nova_funcao, (yyvsp[-1].string));
         adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
         funcao_atual = nova_funcao;
 
+        prototipo = 1; //muda a flag para verdadeiro
+
     }
-#line 1408 "translate.tab.c"
+#line 1409 "translate.tab.c"
     break;
 
   case 16: /* function_header_end: CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 216 "translate.y"
+#line 217 "translate.y"
     {
         set_tipo(&funcao_atual, (yyvsp[-1].string));
         adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, (yyvsp[-1].string));
+
+        prototipo = 0; //volta a flag para falso
     }
-#line 1417 "translate.tab.c"
+#line 1420 "translate.tab.c"
     break;
 
   case 21: /* param_form: TYPE ID  */
-#line 235 "translate.y"
+#line 238 "translate.y"
     {
-        if (prototipos_funcao){
+        if (prototipo){
             adicionar_parametro(&funcao_atual, (yyvsp[0].string), (yyvsp[-1].string));
         }
         //else{
@@ -1428,15 +1431,12 @@ yyreduce:
         
 
     }
-#line 1432 "translate.tab.c"
+#line 1435 "translate.tab.c"
     break;
 
   case 22: /* $@3: %empty  */
-#line 249 "translate.y"
+#line 252 "translate.y"
     {
-        
-        prototipos_funcao = 0; //antes de começar o bloco main, muda a flag de definicao de prototipos para false
-     
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
         adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
@@ -1459,33 +1459,42 @@ yyreduce:
   case 26: /* $@4: %empty  */
 #line 274 "translate.y"
     {
-        printf("comecou");
         Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-4].string), numero_de_funcoes); 
 
-        //conseiderando que sempre vai declarar o prototipo da funcao: apesar de ser semantico, se nao tiver vai dar falha de segmentação
+        if (funcao == NULL){
+            //printf("O protótipo da funcao não foi declarado");
+            prototipo = 0;
+        }
+        else{
+            prototipo = 1;
+            //conseiderando que sempre vai declarar o prototipo da funcao: apesar de ser semantico, se nao tiver vai dar falha de segmentação
         
-        inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-            
-        adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
+            inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
+                
+            adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = (*funcao)->escopo;
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = (*funcao)->escopo;
+        }
+
     }
-#line 1475 "translate.tab.c"
+#line 1482 "translate.tab.c"
     break;
 
   case 27: /* function: ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK $@4 stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 288 "translate.y"
+#line 295 "translate.y"
     {
-        
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
+        if (prototipo){
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+        prototipo = 0;   
     }
-#line 1485 "translate.tab.c"
+#line 1494 "translate.tab.c"
     break;
 
   case 47: /* $@5: %empty  */
-#line 331 "translate.y"
+#line 340 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
@@ -1494,42 +1503,42 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1498 "translate.tab.c"
+#line 1507 "translate.tab.c"
     break;
 
   case 48: /* for: DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK $@5 stmt stmts CLOSE_CODEBLOCK  */
-#line 341 "translate.y"
+#line 350 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1507 "translate.tab.c"
+#line 1516 "translate.tab.c"
     break;
 
   case 49: /* $@6: %empty  */
-#line 349 "translate.y"
+#line 358 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "WHILE");
+        inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
         adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1520 "translate.tab.c"
+#line 1529 "translate.tab.c"
     break;
 
   case 50: /* while: TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK $@6 stmt stmts CLOSE_CODEBLOCK  */
-#line 358 "translate.y"
+#line 367 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1529 "translate.tab.c"
+#line 1538 "translate.tab.c"
     break;
 
   case 51: /* $@7: %empty  */
-#line 365 "translate.y"
+#line 374 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
@@ -1538,20 +1547,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1542 "translate.tab.c"
+#line 1551 "translate.tab.c"
     break;
 
   case 52: /* $@8: %empty  */
-#line 374 "translate.y"
+#line 383 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1551 "translate.tab.c"
+#line 1560 "translate.tab.c"
     break;
 
   case 54: /* $@9: %empty  */
-#line 383 "translate.y"
+#line 392 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
@@ -1560,20 +1569,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1564 "translate.tab.c"
+#line 1573 "translate.tab.c"
     break;
 
   case 55: /* else: ISENTO OPEN_CODEBLOCK $@9 stmt stmts CLOSE_CODEBLOCK  */
-#line 392 "translate.y"
+#line 401 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1573 "translate.tab.c"
+#line 1582 "translate.tab.c"
     break;
 
   case 56: /* $@10: %empty  */
-#line 398 "translate.y"
+#line 407 "translate.y"
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "TRIBUTADO");
@@ -1582,20 +1591,20 @@ yyreduce:
         // atualiza o escopo atual para a nova tabela
         escopo_atual = nova_tabela;
     }
-#line 1586 "translate.tab.c"
+#line 1595 "translate.tab.c"
     break;
 
   case 57: /* $@11: %empty  */
-#line 407 "translate.y"
+#line 416 "translate.y"
     {
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-#line 1595 "translate.tab.c"
+#line 1604 "translate.tab.c"
     break;
 
 
-#line 1599 "translate.tab.c"
+#line 1608 "translate.tab.c"
 
       default: break;
     }
@@ -1788,7 +1797,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 486 "translate.y"
+#line 495 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C
@@ -1800,7 +1809,7 @@ void yyerror() {
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
-    // imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -1809,7 +1818,7 @@ void yyerror() {
 int main(void) {
     yyparse();     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
-    // imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     return 0;
 }

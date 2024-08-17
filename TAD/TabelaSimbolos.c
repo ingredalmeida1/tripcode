@@ -76,33 +76,40 @@ int adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_i
 
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
 
-    char titulo[200] = "         TABELA DE SIMBOLOS ";
+    char titulo[200] = "         TABELA DE SIMBOLOS DO BLOCO ";
     strcat(titulo, tabela_simbolos.nome_bloco);
     
-    printf("-------------------------------------------------------------------------------------------\n");
-    printf("| \033[1;35m%-87s\033[0m |\n", titulo);
-    printf("\033[35m-------------------------------------------------------------------------------------------\033[0m \n");
-    printf("| \033[1;35m%-6s\033[0m | \033[1;35m%-50s\033[0m | \033[1;35m%-15s\033[0m | \033[1;35m%-7s\033[0m |\n", 
+    printf("-----------------------------------------------------------------------\n");
+    printf("| \033[1;35m%-67s\033[0m |", titulo);
+    
+    if (tabela_simbolos.anterior == NULL) {
+        printf("\033[2;37m ----> anterior = NULL\033[0m\n");
+    }
+    else{
+        printf("\033[2;37m ----> anterior = %s\033[0m\n", tabela_simbolos.anterior->nome_bloco);
+    }
+
+    printf("\033[35m-----------------------------------------------------------------------\033[0m \n");
+    printf("| \033[35m%-6s\033[0m | \033[35m%-28s\033[0m | \033[35m%-15s\033[0m | \033[35m%-9s\033[0m |\n", 
             "indice",
             "identificador", 
             "tipo",  
             "valor"); //colocar tipo do retorna da funcao, por enquanto? 
-    printf("\033[35m-------------------------------------------------------------------------------------------\033[0m \n");
-    
+    printf("\033[35m-----------------------------------------------------------------------\033[0m \n");
+
     for (int i = 0; i < tabela_simbolos.tamanho; i++) {
-        printf("| %-6d | %-50s | %-15s | %-7s |\n", 
+        printf("| %-6d | %-28s | %-15s | %-9s |\n", 
             tabela_simbolos.simbolos[i]->indice,
             tabela_simbolos.simbolos[i]->identificador,
             tabela_simbolos.simbolos[i]->tipo,
             tabela_simbolos.simbolos[i]->valor);
     }
+    printf("-----------------------------------------------------------------------\n");
     
-    printf("-------------------------------------------------------------------------------------------\n");
 }
 
 // Funcoes Relacionadas à Funcoes:
 void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_de_funcoes){
-    printf("adicionar funcao %s", nova_funcao->identificador); 
     (*funcoes)[*numero_de_funcoes] = nova_funcao;
     (*numero_de_funcoes)+= 1;
 }
@@ -123,7 +130,6 @@ void inicializar_funcao(Funcao **funcao, char *identificador) {
     }
     
     (*funcao)->identificador = strdup(identificador); 
-    printf("iniciza funcao com id = %s",(*funcao)->identificador);
 
     (*funcao)->parametros = NULL; // Inicialmente não há parâmetros
     // aloca memória para um array de ponteiros para parametros:
@@ -186,7 +192,7 @@ void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anteri
 
 void imprimir_funcao(Funcao *funcao) {
     if (funcao == NULL) {
-        printf("Erro: Função nula.\n");
+        // printf("Erro: Função nula.\n");
         return;
     }
 

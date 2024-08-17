@@ -20,7 +20,7 @@ Funcao** funcoes = NULL; //armazenar todas as funcoes
 int numero_de_funcoes = 0;
 
 Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
-int prototipos_funcao = 1;   //flag para sabe se os parametros formais sao do momento do prototipo ou nao
+int prototipo = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
 
 int yylex();
 
@@ -200,12 +200,13 @@ functions_header:
 function_header:
     ROTEIRO ID OPEN_PARENTHESES 
     {
-        printf("funcao %s", $2);
         //inicializar estrutura para armazenar informacoes da funcao
         Funcao *nova_funcao = NULL;
         inicializar_funcao(&nova_funcao, $2);
         adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
         funcao_atual = nova_funcao;
+
+        prototipo = 1; //muda a flag para verdadeiro
 
     }
     params_form function_header_end
@@ -216,6 +217,8 @@ function_header_end:
     {
         set_tipo(&funcao_atual, $3);
         adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, $3);
+
+        prototipo = 0; //volta a flag para falso
     }
     ;
 
@@ -233,7 +236,7 @@ list_params_form:
 param_form:
     TYPE ID 
     {
-        if (prototipos_funcao){
+        if (prototipo){
             adicionar_parametro(&funcao_atual, $2, $1);
         }
         //else{
@@ -247,9 +250,6 @@ param_form:
 main:
     ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK 
     {
-        
-        prototipos_funcao = 0; //antes de começar o bloco main, muda a flag de definicao de prototipos para false
-     
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
         adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
@@ -272,23 +272,32 @@ functions:
 function:
     ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK 
     {
-        printf("comecou");
         Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
 
-        //conseiderando que sempre vai declarar o prototipo da funcao: apesar de ser semantico, se nao tiver vai dar falha de segmentação
+        if (funcao == NULL){
+            //printf("O protótipo da funcao não foi declarado");
+            prototipo = 0;
+        }
+        else{
+            prototipo = 1;
+            //conseiderando que sempre vai declarar o prototipo da funcao: apesar de ser semantico, se nao tiver vai dar falha de segmentação
         
-        inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-            
-        adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
+            inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
+                
+            adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = (*funcao)->escopo;
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = (*funcao)->escopo;
+        }
+
     }
     stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
     {
-        
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
+        if (prototipo){
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+        prototipo = 0;   
     }
     ;
 
@@ -348,7 +357,7 @@ while:
     TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
     {
         TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "WHILE");
+        inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
         adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
         // atualiza o escopo atual para a nova tabela
@@ -494,7 +503,7 @@ void yyerror() {
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
-    // imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -503,7 +512,7 @@ void yyerror() {
 int main(void) {
     yyparse();     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
-    // imprimir_todas_funcoes(funcoes, numero_de_funcoes);
+    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     return 0;
 }
