@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 38 "translate.y"
+#line 39 "translate.y"
 
      #include "TAD/TabelaSimbolos.h"
 
@@ -108,7 +108,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 46 "translate.y"
+#line 47 "translate.y"
 
     int inteiro;
     float real;

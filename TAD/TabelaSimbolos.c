@@ -110,7 +110,7 @@ void adicionar_nova_funcao(Funcao ***funcoes, Funcao *nova_funcao, int *numero_d
 void imprimir_todas_funcoes(Funcao **funcoes, int total){
     printf("Funcoes adicionadas:\n ");
     for (int i = 0; i < total; i++) {
-        imprimir_funcao(*funcoes);    
+        imprimir_funcao((funcoes[i]));    
     }
     printf("\n");
 }
@@ -123,6 +123,7 @@ void inicializar_funcao(Funcao **funcao, char *identificador) {
     }
     
     (*funcao)->identificador = strdup(identificador); 
+    printf("iniciza funcao com id = %s",(*funcao)->identificador);
 
     (*funcao)->parametros = NULL; // Inicialmente não há parâmetros
     // aloca memória para um array de ponteiros para parametros:
@@ -156,16 +157,31 @@ void set_tipo(Funcao **funcao, char *tipo) {
     (*funcao)->tipo_retorno = strdup(tipo); 
 }
 
+Funcao** buscar_funcao(Funcao **funcoes, char* identificador, int total){
+    for (int i = 0; i < total; i++) {
+        if (strcmp(funcoes[i]->identificador, identificador) == 0) {
+            return &funcoes[i]; // símbolo já existe
+        }
+    }
+    return NULL; //o prototipo da funcao nao foi declarado
+}
+
 // depois ajustar pro ponteiro anterior apontar pro bloco de escopo global
-void inicializar_tabela_simbolos_funcao(Funcao **funcao) {
+void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anterior) {
 
     char nome_bloco[200] = "FUNCAO ";
-    strcat(nome_bloco, (*funcao)->identificador);
+    strcat(nome_bloco, (**funcao)->identificador);
 
     TabelaSimbolos *tabela_funcao = NULL;
-    inicializar_tabela(&tabela_funcao, NULL, nome_bloco) ;
+    inicializar_tabela(&tabela_funcao, anterior, nome_bloco) ;
 
-    (*funcao)->escopo = tabela_funcao;
+    //adiciona parametros da funcao na tabela de simbolos
+    for (int i = 0; i < (**funcao)->qtd_parametros; i++){
+        adicionar_simbolo(&tabela_funcao, (**funcao)->parametros[i]->tipo, (**funcao)->parametros[i]->identificador, "-");
+    }
+
+    (**funcao)->escopo = tabela_funcao;
+
 }
 
 void imprimir_funcao(Funcao *funcao) {

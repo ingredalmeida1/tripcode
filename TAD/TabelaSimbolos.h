@@ -62,7 +62,9 @@ void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo);
 
 void set_tipo(Funcao **funcao, char *tipo);
 
-void inicializar_tabela_simbolos_funcao(Funcao **funcao);
+Funcao** buscar_funcao(Funcao **funcoes, char* identificador, int total);
+
+void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anterior);
 
 void imprimir_funcao(Funcao *funcao);
 
