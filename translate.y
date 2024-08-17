@@ -49,8 +49,6 @@ void yyerror();               // reportar erros
     float real;
     char *string;
 }
-/* avaliar se compensa criar os tipo Tipo, Identificador e Funcao                                  */
-
 
 /*----------------------------------------------------------------------------------------------------
         Tokens
@@ -101,24 +99,6 @@ void yyerror();               // reportar erros
 /*----------------------------------------------------------------------------------------------------
         Regras da Gramática
 ----------------------------------------------------------------------------------------------------*/
-/* Anotacoes:
- * Tabela de Simbolos Multinivel 
-    => para cada bloco de codigo inicia uma nova tabela
-        - producoes que contem OPEN_CODEBLOCK ou 'function'
-            - para funcoes temos que inserir as variaveis dos parametros na tabela de simbolos
-            - os demais blocos nao precisa   
-
- * ter sepado variaveis globais e constantes ?
-
- * como sempre tem que definir o prototipo da funcao e a definicao da funcao só vai vim depois do main, 
-   quando ler os cabecalhos das funcoes ja vai saber quais funcoes podem ser chamadas dentro do codigo principal e de outras funcoes
-   e tambem a quantidade de parametros
-   e depois quando definir a funcao, completa com as variaveis declaradas dentro declaradas
-
- * sempre que definiu um prototipo de funcao tem que conferir se ja nao tem variavel global com o mesmo identificador
- * sempre que definir ou declarar variavel, tem que conferir se ja nao existe funcao ou outra variavel global ou no mesmo bloco com mesmo identificador 
- 
-*/
 
 %%
 tripcode:  
@@ -134,7 +114,7 @@ tripcode:
       //já inicializar lista para armazenar funcoes
       funcoes = (Funcao**) malloc(10 * sizeof(Funcao*));   
 
-      printf("%d\t", yylineno++); //inicializa contagem linhas do arquivo
+      printf("%d\t", yylineno++); //inicializar contagem linhas do arquivo
     } 
 
     consts variaveis functions_header main functions 
@@ -160,35 +140,14 @@ variaveis:
 
 def_variavel: 
     BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
-                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
-                                               //se encontra: erro de sintaxe
-                                               //se não encontra: insere na tabela o valor do identificador($3) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
-                                               //if(resultado == 1){
-                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
-                                               //         strcat(msg_erro, "O identificador '"); 
-                                               //         strcat(msg_erro, $3); 
-                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
-                                               //         yyerror();
-                                               //}
-
-                                           }
+                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                            }
     ;
 
 dec_variavel:
     BAGAGEM TYPE ID DOT_COMMA {
-                                               //percorrer a tabela de simbolos do bloco atual, de variaveis globais e de funcoes para verifica se já existe identificador com mesmo nome
-                                               //se encontra: erro de sintaxe
-                                               //se não encontra: insere na tabela o valor do identificador($1) e seu tipo($2)  [o valor só vai ser armazenado proxima etapa do trabalho]
-                                               int resultado = adicionar_simbolo(&escopo_atual, $2, $3, "-");
-                                               //if(resultado == 1){
-                                               //         strcpy(msg_erro,""); //esvazia mensagem de erro
-                                               //         strcat(msg_erro, "O identificador '"); 
-                                               //         strcat(msg_erro, $3); 
-                                               //         strcat(msg_erro, "' já está sendo usado!\n"); 
-                                               //         yyerror();
-                                               //}
-                                           }
+                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                            }
     ;
 
 
@@ -206,7 +165,7 @@ function_header:
         adicionar_nova_funcao(&funcoes, nova_funcao, &numero_de_funcoes);
         funcao_atual = nova_funcao;
 
-        prototipo = 1; //muda a flag para verdadeiro
+        prototipo = 1; //mudar a flag para verdadeiro para que os parametros sejam adicionados na funcao atual
 
     }
     params_form function_header_end
@@ -218,7 +177,7 @@ function_header_end:
         set_tipo(&funcao_atual, $3);
         adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, $3);
 
-        prototipo = 0; //volta a flag para falso
+        prototipo = 0; //voltar a flag para falso
     }
     ;
 
@@ -239,11 +198,6 @@ param_form:
         if (prototipo){
             adicionar_parametro(&funcao_atual, $2, $1);
         }
-        //else{
-            //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
-        // }
-        
-
     }
     ;
 
@@ -275,12 +229,10 @@ function:
         Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
 
         if (funcao == NULL){
-            //printf("O protótipo da funcao não foi declarado");
             prototipo = 0;
         }
         else{
-            prototipo = 1;
-            //conseiderando que sempre vai declarar o prototipo da funcao: apesar de ser semantico, se nao tiver vai dar falha de segmentação
+            prototipo = 1; //aporveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
         
             inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
                 
@@ -503,7 +455,6 @@ void yyerror() {
     printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
 
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
-    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
@@ -511,8 +462,8 @@ void yyerror() {
 
 int main(void) {
     yyparse();     
+    
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
-    //imprimir_todas_funcoes(funcoes, numero_de_funcoes);
 
     return 0;
 }

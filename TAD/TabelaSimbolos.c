@@ -41,21 +41,7 @@ void liberar_tabela(TabelaSimbolos *tabela_simbolos) {
     free(tabela_simbolos);
 }
 
-int verificar_simbolo_existente(TabelaSimbolos *tabela_simbolos, char *identificador) {
-    for (int i = 0; i < tabela_simbolos->tamanho; i++) {
-        if (strcmp(tabela_simbolos->simbolos[i]->identificador, identificador) == 0) {
-            return 1; // símbolo já existe
-        }
-    }
-    return 0; // símbolo ainda não existe
-}
-
-int adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
-    // verificar se o símbolo já existe na tabela
-    // if (verificar_simbolo_existente(*tabela_simbolos, nome_identificador)) {
-    //     // printf("Erro: O símbolo '%s' já existe na tabela.\n", nome_identificador);
-    //     return 1;
-    // }
+void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
 
     int indice = (*tabela_simbolos)->tamanho;
 
@@ -71,7 +57,7 @@ int adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_i
     (*tabela_simbolos)->tamanho += 1;
 
     // printf("Símbolo '%s' adicionado na posição %d da tabela '%s'.\n", nome_identificador, indice, (*tabela_simbolos)->nome_bloco);
-    return 0;
+    return;
 }
 
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
@@ -214,10 +200,9 @@ void imprimir_funcao(Funcao *funcao) {
         printf("Nenhum parâmetro.\n");
     }
 
-    // Se desejar, também pode imprimir os símbolos do escopo da função
     if (funcao->escopo != NULL) {
         printf("Escopo da Função:\n");
-        imprimir_tabela_simbolos(*(funcao->escopo)); // Usando sua função para imprimir a tabela de símbolos
+        imprimir_tabela_simbolos(*(funcao->escopo)); 
     }
 
     printf("-------------------------------------------------\n");
