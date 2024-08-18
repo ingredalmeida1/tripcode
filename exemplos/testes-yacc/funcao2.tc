@@ -1,0 +1,57 @@
+-> Exemplo correto <-
+
+-> declaracao de constantes <-
+EXTERIOR max_passageiros MILHAS 150
+EXTERIOR destino_final VOUCHER "Nova Iorque"
+EXTERIOR taxa_imposto DOLAR 0.07
+
+-> declaracao de variaveis globais <-
+BAGAGEM MILHAS passageiros <-> 0;
+BAGAGEM VOUCHER local_atual <-> "Londres";
+BAGAGEM DOLAR orcamento <-> 1000.00;
+
+-> protótipo <-
+ROTEIRO calcular_taxa(DOLAR valor) <<< DOLAR >>>
+ROTEIRO embarcar_passageiros(MILHAS numero) <<< STATUS >>>
+
+-> funcao principal <-
+ROTEIRO trip() >>> 
+  BAGAGEM VOUCHER proximo_destino <-> "Toronto";
+  BAGAGEM DOLAR distancia <-> 0.0;
+  BAGAGEM STATUS embarcado;
+
+  TURISTANDO (local_atual != destino_final) >>> 
+    DECOLAR (ORIGEM 0, DESTINO 1000, ESCALA 100) >>> 
+      ALFANDEGA (local_atual == "Londres") >>> 
+        proximo_destino <-> "Paris";
+      <<< ISENTO >>> 
+        proximo_destino <-> "Amsterdã";
+      <<<
+      local_atual <-> proximo_destino;
+      distancia <-> distancia + ESCALA;
+    <<<
+
+    CHECKOUT("Distância percorrida: " + distancia + " milhas");
+  <<<
+
+  embarcado <-> EMBARCAR embarcar_passageiros(50);
+  CHECKOUT("Status de embarque: " + embarcado);
+
+  orcamento <-> orcamento - EMBARCAR calcular_taxa(orcamento);
+  CHECKOUT("Orçamento restante: " + orcamento);
+<<<
+
+ROTEIRO calcular_taxa(DOLAR valor) >>> 
+  DESPACHAR valor * taxa_imposto;
+<<< DOLAR >>>
+
+ROTEIRO embarcar_passageiros(MILHAS numero) >>> 
+  ALFANDEGA (numero <= max_passageiros) >>> 
+    passageiros <-> passageiros + numero;
+    CHECKIN([MILHAS], passageiros);
+    DESPACHAR FERIAS;
+  <<< ISENTO >>> 
+    CHECKOUT("Número de passageiros excede o máximo permitido.");
+    DESPACHAR DIAUTIL;
+  <<<
+<<< STATUS >>>

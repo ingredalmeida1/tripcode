@@ -1,0 +1,26 @@
+-> Exemplo incorreto <-
+
+-> declaracao de constantes <-
+EXTERIOR MAX_PASSAGEIROS MILHAS 100;
+
+-> funcao principal <-
+ROTEIRO trip() >>> 
+  BAGAGEM MILHAS resultado <-> EMBARCAR calcular_distancia(0, 1000);
+
+  TURISTANDO (resultado > 500) >>> 
+    CHECKOUT("Viagem Longa");
+    <<<
+<<<
+
+ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) >>> 
+  BAGAGEM DOLAR distancia <-> 0.0;
+
+  DECOLAR (ORIGEM origem, DESTINO destino, ESCALA 100) >>> 
+    distancia <-> distancia + ESCALA;
+    ALFANDEGA (distancia > 1000) >>> 
+      distancia <-> 1000;
+    <<< 
+  <<<
+
+  DESPACHAR distancia;
+<<< DOLAR >>>
