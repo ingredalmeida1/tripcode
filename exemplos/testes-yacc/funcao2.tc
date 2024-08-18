@@ -10,7 +10,7 @@ BAGAGEM MILHAS passageiros <-> 0;
 BAGAGEM VOUCHER local_atual <-> "Londres";
 BAGAGEM DOLAR orcamento <-> 1000.00;
 
--> protótipo <-
+-> protótipo de funcao <-
 ROTEIRO calcular_taxa(DOLAR valor) <<< DOLAR >>>
 ROTEIRO embarcar_passageiros(MILHAS numero) <<< STATUS >>>
 
