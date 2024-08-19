@@ -1,13 +1,10 @@
 -> Exemplo incorreto <-
 
--> declaracao de constantes <-
-EXTERIOR MAX_PASSAGEIROS MILHAS 100;
-
 -> protótipo de funcao <-
-ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) <<< DOLAR >>>
+ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) >>> DOLAR <<<
 
 -> funcao principal <-
-ROTEIRO trip() >>> 
+ROTEIRO trip()>>> 
   BAGAGEM MILHAS resultado <-> EMBARCAR calcular_distancia(0, 1000);
 
   -> faltou fechar bloco <-
@@ -26,4 +23,4 @@ ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) >>>
   <<<
 
   DESPACHAR distancia;
-<<< DOLAR >>>
+<<< DOLAR <<<
