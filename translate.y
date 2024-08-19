@@ -355,7 +355,7 @@ else:
         escopo_atual = escopo_atual->anterior;
     }
     
-    | TRIBUTADO OPEN_CODEBLOCK 
+    | TRIBUTADO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
     {
         TabelaSimbolos *nova_tabela = NULL;
         inicializar_tabela(&nova_tabela, escopo_atual, "TRIBUTADO");
