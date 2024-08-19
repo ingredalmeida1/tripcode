@@ -1,0 +1,19 @@
+-> Condição incorreta em TripCode <-
+
+ROTEIRO trip() >>> 
+    BAGAGEM MILHAS nota1;
+    BAGAGEM MILHAS nota2;
+
+    CHECKIN([MILHAS, MILHAS], nota1, nota2);
+
+    ALFANDEGA (nota1 + nota2 >= 60) >>>
+        CHECKOUT("Aprovado!");
+    -> TRIBUTADO precisa ter uma condição <-
+    <<< TRIBUTADO >>> 
+        CHECKOUT("Reprovado!");
+    <<< ISENTO >>>
+       CHECKOUT("Exame Final!");
+    <<<
+    
+    DESPACHAR 0;
+<<< MILHAS <<<

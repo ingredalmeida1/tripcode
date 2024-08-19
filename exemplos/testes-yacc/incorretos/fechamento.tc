@@ -1,0 +1,8 @@
+-> Programa sem fechamento em TripCode <-
+ROTEIRO trip() >>> 
+    CHECKOUT("Hello World!");
+
+    DESPACHAR 0;
+
+ MILHAS <<<
+-> Fim do programa <-
