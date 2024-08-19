@@ -1,5 +1,3 @@
--> Exemplo incorreto <-
-
 -> protótipo de funcao <-
 ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) >>> DOLAR <<<
 
@@ -10,7 +8,7 @@ ROTEIRO trip()>>>
   -> faltou fechar bloco <-
   TURISTANDO (resultado > 500) >>> 
     CHECKOUT("Viagem Longa");
-<<<
+<<< -> está faltando espeficicar o tipo de retorno <-
 
 ROTEIRO calcular_distancia(MILHAS origem, MILHAS destino) >>> 
   BAGAGEM DOLAR distancia <-> 0.0;

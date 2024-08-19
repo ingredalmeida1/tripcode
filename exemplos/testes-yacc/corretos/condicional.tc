@@ -1,5 +1,4 @@
 -> Condição Correta em TripCode <-
-
 ROTEIRO trip() >>> 
     BAGAGEM MILHAS nota1;
     BAGAGEM MILHAS nota2;
@@ -8,8 +7,6 @@ ROTEIRO trip() >>>
 
     ALFANDEGA (nota1 + nota2 >= 60) >>>
         CHECKOUT("Aprovado!");
-    <<< TRIBUTADO (nota1 + nota2 <= 40)>>>
-        CHECKOUT("Reprovado!");
     <<< ISENTO >>>
        CHECKOUT("Exame Final!");
     <<<

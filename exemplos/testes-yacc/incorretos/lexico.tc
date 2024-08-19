@@ -1,0 +1,9 @@
+-> Exemplo de Erro Lexico <-
+BAGAGEM VOUCHER nome _leticia;
+
+ROTEIRO trip() >>> 
+
+    CHECKOUT("Meu nome é" <> VOUCHER nome <> "!");
+
+    DESPACHAR 0;
+<<< MILHAS <<<

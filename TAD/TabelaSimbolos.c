@@ -158,7 +158,6 @@ Funcao** buscar_funcao(Funcao **funcoes, char* identificador, int total){
     return NULL; //o prototipo da funcao nao foi declarado
 }
 
-// depois ajustar pro ponteiro anterior apontar pro bloco de escopo global
 void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anterior) {
 
     char nome_bloco[200] = "FUNCAO ";

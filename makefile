@@ -4,16 +4,19 @@ compile:
 	flex lex.l
 	gcc translate.tab.c TAD/TabelaSimbolos.c lex.yy.c -lfl
 
-run:
+run_corretos:
 	./a.out < exemplos/testes-yacc/corretos/basico.tc
 	./a.out < exemplos/testes-yacc/corretos/condicional.tc
-	./a.out < exemplos/testes-yacc/corretos/escopos.tc
-	./a.out < exemplos/testes-yacc/corretos/funcao.tc
 	./a.out < exemplos/testes-yacc/corretos/repeticao.tc
+	./a.out < exemplos/testes-yacc/corretos/funcao.tc
+	./a.out < exemplos/testes-yacc/corretos/escopos.tc
 
-run2:
+run_incorretos:
 	./a.out < exemplos/testes-yacc/incorretos/basico.tc
-	./a.out < exemplos/testes-yacc/incorretos/condicional.tc
-	./a.out < exemplos/testes-yacc/incorretos/declaracao.tc
+	./a.out < exemplos/testes-yacc/incorretos/lexico.tc
 	./a.out < exemplos/testes-yacc/incorretos/fechamento.tc
+	./a.out < exemplos/testes-yacc/incorretos/declaracao.tc
 	./a.out < exemplos/testes-yacc/incorretos/repeticao.tc
+	./a.out < exemplos/testes-yacc/incorretos/funcao.tc
+
+

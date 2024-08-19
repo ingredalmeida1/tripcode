@@ -354,22 +354,6 @@ else:
         // restaura o escopo anterior como o escopo atual
         escopo_atual = escopo_atual->anterior;
     }
-    
-    | TRIBUTADO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "TRIBUTADO");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-    stmt stmts CLOSE_CODEBLOCK
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
-     else
     |
     ;
 
