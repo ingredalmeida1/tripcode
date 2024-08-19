@@ -1,0 +1,14 @@
+-> Mais de um identificador no mesmo escopo <-
+ROTEIRO trip() >>> 
+    -> 
+    Por enquanto, os dois identificadores são
+    reconhecidos e adicionados na tabela de símbolos,
+    na análise semântica esse caso será tratado
+    <-
+    BAGAGEM MILHAS num;
+
+    BAGAGEM DOLAR num;
+    
+    DESPACHAR 0;
+
+<<< MILHAS <<<
