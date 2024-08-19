@@ -15,7 +15,7 @@ Este projeto contém um compilador para a linguagem Tripcode, desenvolvido com F
 - `TAD`: Diretório com os Tipos de Dados Abstratos utilizados no compilador.
 - `testes-flex e testes-yacc`: Diretório com os códigos de teste para avaliar o compilador.
 
-## Como Executar o Analisador Léxico
+## Como Executar
 
 Siga as etapas abaixo para compilar e executar o compilador:
 
