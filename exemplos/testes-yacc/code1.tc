@@ -1,6 +1,0 @@
-BAGAGEM MILHAS soma;
-
-BAGAGEM MILHAS x = 5;
-BAGAGEM MILHAS y = 3;
-
-soma = x + y;
