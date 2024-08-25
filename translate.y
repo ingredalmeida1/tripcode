@@ -1,5 +1,5 @@
 /*====================================================================================================
-        Analisador Sintático para a Linguagem TripCode
+        Analisador Sintático e Semântico para a Linguagem TripCode
 ====================================================================================================*/
 %{
 /*----------------------------------------------------------------------------------------------------
@@ -32,7 +32,12 @@ extern int yylineno;          // contar as linhas
 
 char msg_erro[200];           //construir mensagem de erro
 
-void yyerror();               // reportar erros
+void yyerror();               // reportar erros léxicos e sintaticos
+
+void semantic_error();        // reportar erros semâticos
+
+//funcoes auxiliares para analise semantica
+int identificador_disponivel(char *identificador);
 
 %}
 
@@ -128,6 +133,16 @@ consts:
 const: 
      EXTERIOR ID term 
      {
+        strcpy(msg_erro,""); //esvazia mensagem de erro
+        strcat(msg_erro, "Definição de Constante: ");
+
+        //conferir se já tem algo na tabela global com mesmo nome
+        int resultado = identificador_disponivel($2);
+        if (resultado){
+            semantic_error();
+        }
+        strcpy(msg_erro,""); //reseta msg de erro
+
         adicionar_simbolo(&escopo_atual, "CONSTANTE", $2, "-");
      }
     ;
@@ -140,13 +155,29 @@ variaveis:
 
 def_variavel: 
     BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                                strcpy(msg_erro,""); //esvazia mensagem de erro
+                                                strcat(msg_erro, "Definição de Variável: ");
+                                                int resultado = identificador_disponivel($3);
+                                                if (resultado){
+                                                    semantic_error();
+                                                }
+                                                strcpy(msg_erro,""); //reseta msg de erro
+                                               
+                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
                                             }
     ;
 
 dec_variavel:
     BAGAGEM TYPE ID DOT_COMMA {
-                                               adicionar_simbolo(&escopo_atual, $2, $3, "-");
+                                                strcpy(msg_erro,""); //esvazia mensagem de erro
+                                                strcat(msg_erro, "Declaração de Variável: ");
+                                                int resultado = identificador_disponivel($3);
+                                                if (resultado){
+                                                    semantic_error();
+                                                }
+                                                strcpy(msg_erro,""); //reseta msg de erro
+
+                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
                                             }
     ;
 
@@ -159,6 +190,15 @@ functions_header:
 function_header:
     ROTEIRO ID OPEN_PARENTHESES 
     {
+        strcpy(msg_erro,""); //esvazia mensagem de erro
+        strcat(msg_erro, "Protótipo de Funcao: ");
+
+        int resultado = identificador_disponivel($2);
+        if (resultado){
+            semantic_error();
+        }
+        strcpy(msg_erro,""); //reseta msg de erro
+
         //inicializar estrutura para armazenar informacoes da funcao
         Funcao *nova_funcao = NULL;
         inicializar_funcao(&nova_funcao, $2);
@@ -198,6 +238,9 @@ param_form:
         if (prototipo){
             adicionar_parametro(&funcao_atual, $2, $1);
         }
+        //else{
+            //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
+        // }
     }
     ;
 
@@ -230,17 +273,25 @@ function:
 
         if (funcao == NULL){
             prototipo = 0;
-        }
-        else{
-            prototipo = 1; //aporveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
-        
-            inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-                
-            adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
 
-            // atualiza o escopo atual para a nova tabela
-            escopo_atual = (*funcao)->escopo;
+            strcpy(msg_erro,"");
+            strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
+            strcat(msg_erro, $2); 
+            strcat(msg_erro, "' não foi declarado\n"); 
+            semantic_error();
         }
+
+        strcpy(msg_erro,""); //reseta msg de erro
+        
+        prototipo = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
+    
+        inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
+            
+        adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
+
+        // atualiza o escopo atual para a nova tabela
+        escopo_atual = (*funcao)->escopo;
+        
 
     }
     stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
@@ -370,7 +421,22 @@ command:
     ;
 
 call_function:
-    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES 
+    EMBARCAR ID OPEN_PARENTHESES
+    {
+        Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
+
+        if (funcao == NULL){
+            prototipo = 0;
+
+            strcpy(msg_erro,"");
+            strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
+            strcat(msg_erro, $2); 
+            strcat(msg_erro, "' não foi declarado\n"); 
+            semantic_error();
+        }
+        strcpy(msg_erro,""); //reseta msg de erro
+    } 
+    params_real CLOSE_PARENTHESES 
 
 params_real: 
     param_real list_params_real
@@ -436,12 +502,43 @@ void yyerror() {
     // imprimir mensagem de erro na cor vermelha
     fprintf(stderr, "\n\033[1;31mErro de sintaxe próximo à linha %d: %s\033[0m\n\n", yylineno-1, msg_erro);
      
-    printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
-
-    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
+    // printf("\n\n\033[1;31mPrograma sintaticamente incorreto.\033[0m\n\n");
+    printf("\n\n");
+    
+    //imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas); // até o momento do erro
 
     // encerrar a análise prematuramente (assim que encontra um erro):
     exit(0);
+}
+
+void semantic_error() {
+     // imprimir mensagem de erro na cor vermelha
+     fprintf(stderr, "\n\033[1;31mErro semântico próximo à linha %d:\033[0m\n\033[31m---> %s\033[0m\n", yylineno-1, msg_erro);
+     
+     // printf("\n\n\033[1;31mPrograma semanticamente incorreto.\033[0m\n\n");
+     printf("\n\n");
+
+     exit(0);
+}
+
+int identificador_disponivel(char *identificador){
+    //define a mensagem de erro:
+    strcat(msg_erro, "O identificador '"); 
+    strcat(msg_erro, identificador); 
+    
+    //percorrer funcoes para vê se identificador já foi usado:
+    if (buscar_funcao(funcoes, identificador, numero_de_funcoes) != NULL){
+        strcat(msg_erro, "' já está sendo usado para uma função!\n");
+        return 1;
+    }
+
+    //percorreter tabela de simbolos do bloco local para vê se identificador já foi usado no escopo local:
+    //se escopo local nao for o global tem que conferir se já existe constante com mesmo identificador?
+    if (verificar_simbolo_escopo_local(escopo_atual, identificador)) {
+        strcat(msg_erro, "' já está sendo usado!\n");
+        return 1;
+    }
+    return 0;
 }
 
 int main(void) {

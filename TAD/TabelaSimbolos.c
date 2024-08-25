@@ -41,7 +41,22 @@ void liberar_tabela(TabelaSimbolos *tabela_simbolos) {
     free(tabela_simbolos);
 }
 
+int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identificador) {
+    for (int i = 0; i < tabela_simbolos->tamanho; i++) {
+        if (strcmp(tabela_simbolos->simbolos[i]->identificador, identificador) == 0) {
+            return 1; // símbolo já existe
+        }
+    }
+    return 0; // símbolo ainda não existe
+}
+
 void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
+
+    // verificar se o símbolo já existe na tabela
+    // if (verificar_simbolo_existente(*tabela_simbolos, nome_identificador)) {
+    //     // printf("Erro: O símbolo '%s' já existe na tabela.\n", nome_identificador);
+    //     return 1;
+    // }
 
     int indice = (*tabela_simbolos)->tamanho;
 

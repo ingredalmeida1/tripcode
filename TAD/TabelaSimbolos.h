@@ -45,6 +45,8 @@ void inicializar_tabela(TabelaSimbolos **tabela_simbolos, TabelaSimbolos *tabela
 
 void liberar_tabela(TabelaSimbolos *tabela_simbolos);
 
+int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identificador);
+
 void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial);
 
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos);
