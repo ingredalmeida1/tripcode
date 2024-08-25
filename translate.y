@@ -20,7 +20,10 @@ Funcao** funcoes = NULL; //armazenar todas as funcoes
 int numero_de_funcoes = 0;
 
 Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
+Funcao* funcao_temp = NULL; //variavel para armazenar ponteiro para a funcao temporaria para comparar com o prototipo
+
 int prototipo = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
+int definicao = 0;
 
 int yylex();
 
@@ -38,6 +41,7 @@ void semantic_error();        // reportar erros semâticos
 
 //funcoes auxiliares para analise semantica
 int identificador_disponivel(char *identificador);
+int comparar_definicao_com_prototipo();
 
 %}
 
@@ -211,7 +215,7 @@ function_header:
     params_form function_header_end
     ;
 
-function_header_end:
+    function_header_end:
     CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
     {
         set_tipo(&funcao_atual, $3);
@@ -238,9 +242,10 @@ param_form:
         if (prototipo){
             adicionar_parametro(&funcao_atual, $2, $1);
         }
-        //else{
+        if (definicao){
             //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
-        // }
+            adicionar_parametro(&funcao_temp, $2, $1);
+        }
     }
     ;
 
@@ -267,12 +272,10 @@ functions:
     ;
 
 function:
-    ROTEIRO ID OPEN_PARENTHESES params_form CLOSE_PARENTHESES OPEN_CODEBLOCK 
+    ROTEIRO ID OPEN_PARENTHESES 
     {
         Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
-
         if (funcao == NULL){
-            prototipo = 0;
 
             strcpy(msg_erro,"");
             strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
@@ -280,30 +283,56 @@ function:
             strcat(msg_erro, "' não foi declarado\n"); 
             semantic_error();
         }
-
         strcpy(msg_erro,""); //reseta msg de erro
         
-        prototipo = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
+        definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
     
         inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-            
         adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
 
         // atualiza o escopo atual para a nova tabela
         escopo_atual = (*funcao)->escopo;
-        
 
+        funcao_atual = *funcao;
+        
+        //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
+        Funcao *aux = NULL;
+        inicializar_funcao(&aux, $2);
+        funcao_temp = aux;  
     }
-    stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
+    params_form CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts function_end
+    ;
+
+function_end:
+    CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
     {
-        if (prototipo){
+        if (definicao){
+
+            strcpy(msg_erro,""); //esvazia mensagem de erro
+            strcat(msg_erro, "Definicao de Funcao: ");
+
+            if (funcao_temp==NULL){
+                printf("temporario nula");
+            }
+            if (funcao_atual==NULL){
+                printf("atual nula");
+            }
+
+            set_tipo(&funcao_temp, $2);
+
+            int resultado = comparar_definicao_com_prototipo();
+            if (resultado){
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
         }
-        prototipo = 0;   
+        definicao = 0; 
     }
     ;
-
+    
 expr: 
     expr operador term
     | OPEN_PARENTHESES expr CLOSE_PARENTHESES
@@ -538,6 +567,33 @@ int identificador_disponivel(char *identificador){
         strcat(msg_erro, "' já está sendo usado!\n");
         return 1;
     }
+    return 0;
+}
+
+int comparar_definicao_com_prototipo() {
+    if (funcao_atual->qtd_parametros != funcao_temp->qtd_parametros) {
+        strcat(msg_erro, "Quantidade de Parâmetros Diferente!\n");
+        return 1; 
+    }
+
+    for (int i = 0; i < funcao_atual->qtd_parametros; i++) {
+        if (strcmp(funcao_atual->parametros[i]->tipo, funcao_temp->parametros[i]->tipo) != 0) {
+            char buffer[100]; 
+            snprintf(buffer, sizeof(buffer), "Erro no %dº parâmetro: esperado '%s'!\n", 
+                     i + 1, 
+                     funcao_atual->parametros[i]->tipo);
+            strcat(msg_erro, buffer);
+            return 1;
+        }
+    }
+
+    if (strcmp(funcao_atual->tipo_retorno, funcao_temp->tipo_retorno) != 0) {
+        strcat(msg_erro, "Tipo de Retorno diferente: esperado ");
+        strcat(msg_erro, funcao_atual->tipo_retorno);
+        strcat(msg_erro, "!");
+        return 1;
+    }
+
     return 0;
 }
 
