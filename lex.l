@@ -114,6 +114,7 @@ string            \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
 boolean           {ferias}|{diautil}
 
 id                ({lower_letter})(_|{letter}|{digit})*
+id_const          {upper_letter}+
 
 /* --- estrutura do codigo --------------------------------------------------------------------------*/
 dot_comma         \;
@@ -192,6 +193,7 @@ invalid            {all_characters}+|.
 {boolean}                { printf("%s", yytext); yylval.string = strdup(yytext); return BOOL;}
 
 {id}                     { printf("%s", yytext); yylval.string = strdup(yytext); return ID; }
+{id_const}               { printf("%s", yytext); yylval.string = strdup(yytext); return ID_CONST; }
 
 {invalid}                { printf("%s", yytext); 
 

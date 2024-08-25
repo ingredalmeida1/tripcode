@@ -76,7 +76,7 @@ int comparar_definicao_com_prototipo();
 %token OPEN_CODEBLOCK CLOSE_CODEBLOCK
 %token ASSIGN CONCAT
 %token TYPE
-%token INT FLOAT STRING BOOL ID
+%token INT FLOAT STRING BOOL ID ID_CONST
 %token OP RELOP LOGICOP LOGICOP_UNARY
 
 /* especificar o tipo do atributo armazenado no token                                               */
@@ -88,6 +88,7 @@ int comparar_definicao_com_prototipo();
 %type <string>  TYPE
 
 %type <string>  ID
+%type <string>  ID_CONST
 
 %type <string> OP
 %type <string> RELOP
@@ -135,7 +136,7 @@ consts:
     ;
 
 const: 
-     EXTERIOR ID term 
+     EXTERIOR ID_CONST term 
      {
         strcpy(msg_erro,""); //esvazia mensagem de erro
         strcat(msg_erro, "Definição de Constante: ");
@@ -311,12 +312,6 @@ function_end:
             strcpy(msg_erro,""); //esvazia mensagem de erro
             strcat(msg_erro, "Definicao de Funcao: ");
 
-            if (funcao_temp==NULL){
-                printf("temporario nula");
-            }
-            if (funcao_atual==NULL){
-                printf("atual nula");
-            }
 
             set_tipo(&funcao_temp, $2);
 

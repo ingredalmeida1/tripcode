@@ -1,7 +1,7 @@
 -> testando comentario <-
-EXTERIOR valor 10 
+EXTERIOR VALOR 10 
 
-BAGAGEM VOUCHER nome <-> "leticia";
+BAGAGEM VOUCHER valor <-> "leticia";
 BAGAGEM VOUCHER julia;
 
 ROTEIRO soma(MILHAS a) >>> MILHAS <<<
@@ -24,7 +24,7 @@ ROTEIRO trip() >>>
     ALFANDEGA (20) >>>
         BAGAGEM DOLAR teste <-> teste + -20.5;
     <<< ISENTO >>>
-        EMBARCAR soma (teste + 0);
+        EMBARCAR soma(teste + 0);
         teste <-> EMBARCAR soma (teste + 0);
         teste <-> teste + EMBARCAR soma (teste + 0);
     <<<
@@ -48,6 +48,6 @@ ROTEIRO soma(MILHAS a) >>>
     DESPACHAR valor;
 <<< MILHAS <<<
 
-ROTEIRO multiplicacao(DOLAR a, MILHAS b) >>>
+ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>>
     DESPACHAR a * b;
 <<< DOLAR <<<

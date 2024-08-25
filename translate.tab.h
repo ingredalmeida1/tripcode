@@ -96,10 +96,11 @@ extern int yydebug;
     STRING = 291,                  /* STRING  */
     BOOL = 292,                    /* BOOL  */
     ID = 293,                      /* ID  */
-    OP = 294,                      /* OP  */
-    RELOP = 295,                   /* RELOP  */
-    LOGICOP = 296,                 /* LOGICOP  */
-    LOGICOP_UNARY = 297            /* LOGICOP_UNARY  */
+    ID_CONST = 294,                /* ID_CONST  */
+    OP = 295,                      /* OP  */
+    RELOP = 296,                   /* RELOP  */
+    LOGICOP = 297,                 /* LOGICOP  */
+    LOGICOP_UNARY = 298            /* LOGICOP_UNARY  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -114,7 +115,7 @@ union YYSTYPE
     float real;
     char *string;
 
-#line 118 "translate.tab.h"
+#line 119 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
