@@ -26,14 +26,27 @@
         - Mesma verificação de acima porque nesse caso o parênteses não influencia na conversão de tipo
 
 Checklit:
-* Declarar/Definir Variavel:
+✔ Declarar/Definir Variavel:
   ✔ se existe funcao com mesmo identificador
   ✔ se já exite identificador no escopo local (os demais não precisa conferir pq ai só vai substituir, né)
   ✔ mudar pra identificador de constante ser sempre letra maisucula
- 
+  ✔ na definiciao,se o tipo do valor atribuido é compativiel com o tipo definido
+
+✔ Usar variavel:
+  - verificar se a variavel foi declarada/definida: se existe na tabela de simbolos do escopo local ou de escopos acima
+
 ✔ Prototipo Funcao:
   ✔ se já existe o indentificador na tabela global
   ✔ se já existe função com mesmo nome
+
+* Definir função:
+  ✔ se existe prototipo para funcao 
+  conferir se
+	  ✔ quantidade dos parametros
+	  ✔ tipo dos parametros
+	  ✔ tipo de retorno
+  casa com o prototipo (-> criar funcao temporaria e depois comparar com a do prototipo)
+  * tipo de retorno
 
 * Chamar a função:
   ✔ se existe prototipo para funcao
@@ -43,19 +56,9 @@ Checklit:
   * quantidade dos parametros
   * tipo dos parametros 
   
-✔ Definir função:
-  ✔ se existe prototipo para funcao 
-  conferir se
-	  ✔ quantidade dos parametros
-	  ✔ tipo dos parametros
-	  ✔ tipo de retorno
-  casa com o prototipo (-> criar funcao temporaria e depois comparar com a do prototipo)
-
-* Usar variavel:
-  - definir se a variavel foi declarada/definida: se existe na tabela de simbolos do escopo local ou de escopos acima
-
-* Verificar tipo quando for fazer atribuicao
-* Operador pode ser aplicado aos tipos
+* Verificacao Tipos
+  * quando faz atribuicao
+  * operação pode ser aplicada aos tipos
  
 
 

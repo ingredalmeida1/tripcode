@@ -101,6 +101,7 @@ int comparar_definicao_com_prototipo();
 %type <string> call_function
 %type <string> id
 %type <string> return
+%type <string> const
 
 /* definir variavel de partida da gramatica                                                        */
 %start tripcode
@@ -119,21 +120,20 @@ int comparar_definicao_com_prototipo();
 
 %%
 tripcode:  
-    { //inicializar tabela de simbolos global 
-      inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
+    {   //inicializar tabela de simbolos global 
+        inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
 
-      //inicializar lista para armazenar todas as tabelas de simbolos     
-      tabelas_simbolos = (TabelaSimbolos**) malloc(100 * sizeof(TabelaSimbolos*));
-     
-      //adicionar nova tabela na lista de tabelas
-      adicionar_nova_tabela(&tabelas_simbolos, escopo_atual, &numero_de_tabelas);
+        //inicializar lista para armazenar todas as tabelas de simbolos     
+        tabelas_simbolos = (TabelaSimbolos**) malloc(100 * sizeof(TabelaSimbolos*));
+        
+        //adicionar nova tabela na lista de tabelas
+        adicionar_nova_tabela(&tabelas_simbolos, escopo_atual, &numero_de_tabelas);
 
-      //já inicializar lista para armazenar funcoes
-      funcoes = (Funcao**) malloc(10 * sizeof(Funcao*));   
+        //já inicializar lista para armazenar funcoes
+        funcoes = (Funcao**) malloc(10 * sizeof(Funcao*));   
 
-      printf("%d\t", yylineno++); //inicializar contagem linhas do arquivo
+        printf("%d\t", yylineno++); //inicializar contagem linhas do arquivo
     } 
-
     consts variaveis functions_header main functions 
     ;
 
@@ -143,56 +143,69 @@ consts:
     ;
 
 const: 
-     EXTERIOR ID_CONST term 
-     {
-        strcpy(msg_erro,""); //esvazia mensagem de erro
-        strcat(msg_erro, "Definição de Constante: ");
+    EXTERIOR ID_CONST term 
+        {
+            strcpy(msg_erro,""); //esvazia mensagem de erro
+            strcat(msg_erro, "Definição de Constante: ");
 
-        //conferir se já tem algo na tabela global com mesmo nome
-        int resultado = identificador_disponivel($2);
-        if (resultado){
-            semantic_error();
+            //conferir se já tem algo na tabela global com mesmo nome
+            int resultado = identificador_disponivel($2);
+            if (resultado){
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+
+            adicionar_simbolo(&escopo_atual, $3, $2, "CONSTANTE");
         }
-        strcpy(msg_erro,""); //reseta msg de erro
-
-        adicionar_simbolo(&escopo_atual, "CONSTANTE", $2, "-");
-     }
     ;
 
 variaveis: 
-    variaveis def_variavel
-    | variaveis dec_variavel
+    variaveis  dec_variavel 
+    | variaveis def_variavel
     |
     ;
 
-def_variavel: 
-    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA {
-                                                strcpy(msg_erro,""); //esvazia mensagem de erro
-                                                strcat(msg_erro, "Definição de Variável: ");
-                                                int resultado = identificador_disponivel($3);
-                                                if (resultado){
-                                                    semantic_error();
-                                                }
-                                                strcpy(msg_erro,""); //reseta msg de erro
-                                               
-                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
-                                            }
-    ;
-
 dec_variavel:
-    BAGAGEM TYPE ID DOT_COMMA {
-                                                strcpy(msg_erro,""); //esvazia mensagem de erro
-                                                strcat(msg_erro, "Declaração de Variável: ");
-                                                int resultado = identificador_disponivel($3);
-                                                if (resultado){
-                                                    semantic_error();
-                                                }
-                                                strcpy(msg_erro,""); //reseta msg de erro
+    BAGAGEM TYPE ID DOT_COMMA 
+        {
+            strcpy(msg_erro,""); //esvazia mensagem de erro
+            strcat(msg_erro, "Declaração de Variável: ");
+            int resultado = identificador_disponivel($3);
+            if (resultado){
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
 
-                                                adicionar_simbolo(&escopo_atual, $2, $3, "-");
-                                            }
+            adicionar_simbolo(&escopo_atual, $2, $3, "-");
+        }
     ;
 
+def_variavel: 
+    BAGAGEM TYPE ID ASSIGN expr DOT_COMMA   
+        {
+            strcpy(msg_erro,""); //esvazia mensagem de erro
+            strcat(msg_erro, "Definição de Variável: ");
+            int resultado = identificador_disponivel($3);
+            if (resultado){
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+
+            if ((strcmp($2, $5) != 0)){
+                strcat(msg_erro, "O tipo do valor atribuido à variável '");
+                strcat(msg_erro, $3);
+                strcat(msg_erro, "' é incompatível com tipo esperado! ('");
+                strcat(msg_erro, $2);
+                strcat(msg_erro, "' <-> '");
+                strcat(msg_erro, $5);
+                strcat(msg_erro, "' => X)\n");
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+            
+            adicionar_simbolo(&escopo_atual, $2, $3, "-");
+        }
+    ;
 
 functions_header:
     functions_header function_header 
@@ -246,32 +259,33 @@ list_params_form:
 
 param_form:
     TYPE ID 
-    {
-        if (prototipo){
-            adicionar_parametro(&funcao_atual, $2, $1);
+        {
+            if (prototipo){
+                adicionar_parametro(&funcao_atual, $2, $1);
+            }
+            if (definicao){
+                //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
+                adicionar_parametro(&funcao_temp, $2, $1);
+            }
+            //conferir quando for checkout
         }
-        if (definicao){
-            //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
-            adicionar_parametro(&funcao_temp, $2, $1);
-        }
-    }
     ;
 
 main:
-    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK 
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+    ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK  
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
     stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
     ;
 
 functions:
@@ -427,13 +441,7 @@ command:
     | dec_variavel
     | atribuicao
     | call_function DOT_COMMA 
-    | return {if ($1 != funcao_atual->tipo_retorno){
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "Retorno de Função: Retornando valor com tipo diferente de '"); 
-                strcat(msg_erro, funcao_atual->tipo_retorno); 
-                strcat(msg_erro, "'\n"); 
-                semantic_error();
-            }}
+    | return
     | CHECKIN OPEN_PARENTHESES OPEN_BRACKET types CLOSE_BRACKET COMMA ids CLOSE_PARENTHESES DOT_COMMA
     | CHECKOUT OPEN_PARENTHESES result_form CLOSE_PARENTHESES DOT_COMMA
     | POUSAR DOT_COMMA
@@ -478,7 +486,7 @@ return:
     ;
 
 atribuicao:
-    id ASSIGN expr DOT_COMMA { if ($1 != $3){
+    id ASSIGN expr DOT_COMMA { if (strcmp($1, $3) != 0){
                                     strcpy(msg_erro,"");
                                     strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
                                     strcat(msg_erro, $3);  
@@ -492,7 +500,7 @@ atribuicao:
     ;
 
 expr: 
-    expr OP term   { if ($1 != $3 ){
+    expr OP term   { if ( (strcmp($1, $3) != 0) ){
                         strcpy(msg_erro,"");
                         strcat(msg_erro, "Operação '");
                         strcat(msg_erro, $2);  
@@ -543,12 +551,12 @@ expr:
     ;
 
 term: 
-    INT              {$$ = "INT";}
-    | FLOAT          {$$ = "FLOAT";}
-    | STRING         {$$ = "STRING";}
+    INT              {$$ = "MILHAS";}
+    | FLOAT          {$$ = "DOLAR";}
+    | STRING         {$$ = "VOUCHER";}
     | BOOL           {$$ = "BOOL";}
     | call_function  {$$ = $1;}
-    | id             {$$ = $1;}
+    | id             {$$ = $1;}          
     ;
 
 ids:
