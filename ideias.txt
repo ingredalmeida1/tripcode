@@ -55,14 +55,17 @@ Checklit:
   	 ao final percorrer funcoes e vê se todas que foram chamadas foram definidas )
   * quantidade dos parametros
   * tipo dos parametros 
+
+✔ Verificar se variável foi inicializada antes de ser usada
   
 * Verificacao Tipos
-  * quando faz atribuicao
-  * if
-  * while
-  * for
-  * operação pode ser aplicada aos tipos
- 
+  ✔ quando faz atribuicao
+    - conferir se a variável é constante (const), pois se for  ela não deve ser reatribuída após a sua inicialização.
+  ✔ operação pode ser aplicada aos tipos
+    ✔ operadores aritméticos (+, -, *, /, %): operandos têm que ser de tipos numéricos (DOLAR ou MILHAS)
+    ✔ operadores de comparação (=, #, <, >, <=, >=): se os operandos têm tipos compatíveis, ou seja, é permitido comparar tipos numéricos entre si, mas comparar tipos diferentes como int e char* deve gerar um erro e o tipo resultante é o tipo BOOL
+    ✔ operadores lógicos (AND, OR, NOT): os operandos devem ser de tipo booleano 
+  * condicoes if, while, for
+    - verificar se a expressão de condição é de um tipo que pode ser convertido para booleano
 
-
-
+* Parametros CHECKIN, CHECKOUT

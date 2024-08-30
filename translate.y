@@ -100,7 +100,6 @@ void verificar_definicao_funcoes_chamadas();
 %type <string> expr
 %type <string> term
 %type <string> call_function
-%type <string> id
 %type <string> return
 %type <string> const
 
@@ -159,7 +158,7 @@ const:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            adicionar_simbolo(&escopo_atual, $3, $2, "CONSTANTE");
+            adicionar_simbolo(&escopo_atual, $3, $2, "CONSTANTE", 1);
         }
     ;
 
@@ -180,7 +179,7 @@ dec_variavel:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            adicionar_simbolo(&escopo_atual, $2, $3, "-");
+            adicionar_simbolo(&escopo_atual, $2, $3, "-",0);
         }
     ;
 
@@ -208,7 +207,7 @@ def_variavel:
             }
             strcpy(msg_erro,""); //reseta msg de erro
             
-            adicionar_simbolo(&escopo_atual, $2, $3, "-");
+            adicionar_simbolo(&escopo_atual, $2, $3, "-",1);
         }
     ;
 
@@ -245,7 +244,7 @@ function_header:
     CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
     {
         set_tipo(&funcao_atual, $3);
-        adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, $3);
+        adicionar_simbolo(&escopo_atual, $3, funcao_atual->identificador, "FUNCAO",3);
 
         prototipo = 0; //voltar a flag para falso
     }
@@ -490,49 +489,81 @@ return:
     ;
 
 atribuicao:
-    id ASSIGN expr DOT_COMMA 
+    ID ASSIGN expr DOT_COMMA 
         { 
-            if (strcmp($1, $3) != 0){
+            Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+            if (simbolo == NULL){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
+                strcat(msg_erro, "A variável '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "' não foi previamente declarada!'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+
+            if (strcmp(simbolo->tipo, $3) != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Atribuição: Não é possível atribuir um valor do tipo '");
                 strcat(msg_erro, $3);  
                 strcat(msg_erro, "' a uma variavel do tipo '"); 
-                strcat(msg_erro, $1); 
+                strcat(msg_erro, simbolo->tipo); 
                 strcat(msg_erro, "'\n"); 
                 semantic_error();
             }
             strcpy(msg_erro,"");
+
+            //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
+            simbolo->inicializado = 1;
         }
     ;
 
 expr: 
     expr OP term   
         { 
-            if ( (strcmp($1, $3) != 0) ){
+            if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Operação '");
-                strcat(msg_erro, $2);  
-                strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
-                strcat(msg_erro, $1); 
-                strcat(msg_erro, "' != '"); 
-                strcat(msg_erro, $3); 
-                strcat(msg_erro, "'\n"); 
+                strcat(msg_erro, "Operação Aritimética: Ainda não está diponível maniplar variáveis do tipo VOUCHER com operações aritméticas =(");
                 semantic_error();
             }
             strcpy(msg_erro,"");
-                    
-            if (strcmp($1, "STRING") == 0){
-                strcat(msg_erro, "Operação '");
-                strcat(msg_erro, $2);  
-                strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
-                strcat(msg_erro, $1); 
+
+            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOLL") == 0) ){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação Aritimética: Operandos devem ser de tipos numéricos (MILHAS ou DOLAR)");
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            
+            //o resultado só vai ser do tipo MILHAS se os dois operandos forem do tipo MILHAS (inclusive na divisao)
+            if ( (strcmp($1, "MILHAS") == 0) && (strcmp($3, "MILHAS") == 0) ){
+                $$ = "MILHAS";
+            }
+            else{
+                $$ = "DOLAR";
+            }
+        }
+
+    | expr RELOP term   
+        { 
+            if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação Relacional: Ainda não está diponível para variáveis do tipo VOUCHER =(");
+                semantic_error();
             }
             strcpy(msg_erro,"");
 
-            $$ = $1;
-        }
 
-    | expr RELOP term   { $$ = "BOLL"; }
+            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOLL") == 0) ){
+                if ( (strcmp($2, "#") != 0) && (strcmp($2, "=") != 0) ) //se não está vendo se igual nem se diferente
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Operação Relacionados: Para que os operandos sejam booleanos o operados tem que ser '=' ou '#'");
+                    semantic_error();
+            }
+            strcpy(msg_erro,"");
+
+            //para valores numéricos não tem restrição
+            $$ = "BOLL"; 
+        }
 
     | expr LOGICOP term 
         { 
@@ -563,39 +594,45 @@ expr:
     ;
 
 term: 
-    INT              {$$ = "MILHAS";}
-    | FLOAT          {$$ = "DOLAR";}
-    | STRING         {$$ = "VOUCHER";}
-    | BOOL           {$$ = "BOOL";}
-    | call_function  {$$ = $1;}
-    | id             {$$ = $1;}          
+    INT             {$$ = "MILHAS";}
+    | FLOAT         {$$ = "DOLAR";}
+    | STRING        {$$ = "VOUCHER";}
+    | BOOL          {$$ = "BOOL";}
+    | call_function {$$ = $1;}
+    | ID            {
+                        //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
+                        Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+                        if (simbolo == NULL){
+                            strcpy(msg_erro,"");
+                            strcat(msg_erro, "A variável '"); 
+                            strcat(msg_erro, $1); 
+                            strcat(msg_erro, "' não foi previamente declarada!'\n"); 
+                            semantic_error();
+                        }
+                        strcpy(msg_erro,"");
+                        
+                        //pra poder usar uma variável ela precisar ter sido inicializada
+                        if (simbolo->inicializado == 0){
+                            strcpy(msg_erro,"");
+                            strcat(msg_erro, "A variável '"); 
+                            strcat(msg_erro, $1); 
+                            strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
+                            semantic_error();
+                        }
+                        strcpy(msg_erro,"");
+                        $$ = simbolo->tipo;
+                    }
     ;
 
+//relacionado com checkin e checkout
 ids:
-    id id_list
+    ID id_list
     ;
 
 id_list:
-    id_list COMMA id
+    id_list COMMA ID
     |
     ;
-//sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
-id: 
-    ID 
-        { Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
-            if (simbolo == NULL){
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "'Usar' Variável: Não existe variável com o identificador '"); 
-                strcat(msg_erro, $1); 
-                strcat(msg_erro, "'\n"); 
-                semantic_error();
-            }
-            strcpy(msg_erro,"");
-
-            $$ = simbolo->tipo;
-        }
-    ;
-
 types:
     TYPE type_list
     ;
@@ -710,7 +747,7 @@ int main(void) {
     yyparse();     
     
     printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
-    
+
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
 
     return 0;

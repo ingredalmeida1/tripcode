@@ -50,7 +50,7 @@ int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identi
     return 0; // símbolo ainda não existe
 }
 
-void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial) {
+void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial, int inicializado) {
 
     // verificar se o símbolo já existe na tabela
     // if (verificar_simbolo_existente(*tabela_simbolos, nome_identificador)) {
@@ -65,6 +65,7 @@ void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_
     novo_simbolo->tipo = strdup(tipo); 
     novo_simbolo->identificador = strdup(nome_identificador);
     novo_simbolo->valor = strdup(valor_inicial); 
+    novo_simbolo->inicializado = inicializado; 
 
     (*tabela_simbolos)->simbolos[indice] = novo_simbolo;
 
@@ -97,8 +98,8 @@ void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
     char titulo[200] = "         TABELA DE SIMBOLOS DO BLOCO ";
     strcat(titulo, tabela_simbolos.nome_bloco);
     
-    printf("-----------------------------------------------------------------------\n");
-    printf("| \033[1;35m%-67s\033[0m |", titulo);
+    printf("------------------------------------------------------------------------\n");
+    printf("| \033[1;35m%-68s\033[0m |", titulo);
     
     if (tabela_simbolos.anterior == NULL) {
         printf("\033[2;37m ----> anterior = NULL\033[0m\n");
@@ -107,22 +108,24 @@ void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
         printf("\033[2;37m ----> anterior = %s\033[0m\n", tabela_simbolos.anterior->nome_bloco);
     }
 
-    printf("\033[35m-----------------------------------------------------------------------\033[0m \n");
-    printf("| \033[35m%-6s\033[0m | \033[35m%-28s\033[0m | \033[35m%-15s\033[0m | \033[35m%-9s\033[0m |\n", 
+    printf("\033[35m------------------------------------------------------------------------\033[0m \n");
+    printf("| \033[35m%-6s\033[0m | \033[35m%-20s\033[0m | \033[35m%-15s\033[0m | \033[35m%-9s\033[0m | \033[35m%-6s\033[0m |\n", 
             "indice",
             "identificador", 
             "tipo",  
-            "valor"); //colocar tipo do retorna da funcao, por enquanto? 
-    printf("\033[35m-----------------------------------------------------------------------\033[0m \n");
+            "valor",
+            "init"); 
+    printf("\033[35m------------------------------------------------------------------------\033[0m \n");
 
     for (int i = 0; i < tabela_simbolos.tamanho; i++) {
-        printf("| %-6d | %-28s | %-15s | %-9s |\n", 
+        printf("| %-6d | %-20s | %-15s | %-9s | %-6d |\n", 
             tabela_simbolos.simbolos[i]->indice,
             tabela_simbolos.simbolos[i]->identificador,
             tabela_simbolos.simbolos[i]->tipo,
-            tabela_simbolos.simbolos[i]->valor);
+            tabela_simbolos.simbolos[i]->valor,
+            tabela_simbolos.simbolos[i]->inicializado);
     }
-    printf("-----------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------\n");
     
 }
 
@@ -210,7 +213,7 @@ void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anteri
 
     //adiciona parametros da funcao na tabela de simbolos
     for (int i = 0; i < (**funcao)->qtd_parametros; i++){
-        adicionar_simbolo(&tabela_funcao, (**funcao)->parametros[i]->tipo, (**funcao)->parametros[i]->identificador, "-");
+        adicionar_simbolo(&tabela_funcao, (**funcao)->parametros[i]->tipo, (**funcao)->parametros[i]->identificador, "-", 2); //parametros necessariamente vao ter sido inicializados?
     }
 
     (**funcao)->escopo = tabela_funcao;

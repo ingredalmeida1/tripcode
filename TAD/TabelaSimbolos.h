@@ -9,7 +9,8 @@ typedef struct {
     int  indice;          //armazenar o indice na tabela de simbolos para otimizar o acesso interno e a manipulação das informações.   
     char *tipo;           //em vez de armazenar como string podemos armazenar como enum, nao sei facilitaria                   
     char *identificador;  
-    char *valor;          //por enquanto valor temporario para armazenar tipos de funcoes    
+    char *valor;          //por enquanto valor temporario para armazenar tipos de funcoes
+    int inicializado;      // 0 se não inicializado, 1 se inicializado  -> conferir se antes de usar a variável já voi armazenado valor nela  
 } Simbolo; //cada simbolo possui um identificador e um tipo associado (o valor será adicionado na próximata etapa)
 
 typedef struct TabelaSimbolos TabelaSimbolos;
@@ -49,7 +50,7 @@ void liberar_tabela(TabelaSimbolos *tabela_simbolos);
 
 int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identificador);
 
-void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial);
+void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial, int inicializado);
 
 Simbolo* buscar_simbolo(TabelaSimbolos *tabela_atual, char *identificador);
 
