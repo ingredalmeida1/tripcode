@@ -55,7 +55,6 @@ checkout          CHECKOUT
 /*--- comando condicional ---------------------------------------------------------------------------*/
 alfandega         ALFANDEGA
 isento            ISENTO
-tributado         TRIBUTADO
 
 pousar            POUSAR
 feriado           FERIADO
@@ -150,7 +149,6 @@ invalid            {all_characters}+|.
 
 {alfandega}              { printf("%s", yytext); return ALFANDEGA; }
 {isento}                 { printf("%s", yytext); return ISENTO; }
-{tributado}              { printf("%s", yytext); return TRIBUTADO; }
 
 {pousar}                 { printf("%s", yytext); return POUSAR; }
 {feriado}                { printf("%s", yytext); return FERIADO; }

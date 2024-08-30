@@ -67,40 +67,39 @@ extern int yydebug;
     CHECKOUT = 262,                /* CHECKOUT  */
     ALFANDEGA = 263,               /* ALFANDEGA  */
     ISENTO = 264,                  /* ISENTO  */
-    TRIBUTADO = 265,               /* TRIBUTADO  */
-    POUSAR = 266,                  /* POUSAR  */
-    FERIADO = 267,                 /* FERIADO  */
-    DECOLAR = 268,                 /* DECOLAR  */
-    ORIGEM = 269,                  /* ORIGEM  */
-    DESTINO = 270,                 /* DESTINO  */
-    ESCALA = 271,                  /* ESCALA  */
-    TURISTANDO = 272,              /* TURISTANDO  */
-    ROTEIRO = 273,                 /* ROTEIRO  */
-    EMBARCAR = 274,                /* EMBARCAR  */
-    DESPACHAR = 275,               /* DESPACHAR  */
-    COMMA = 276,                   /* COMMA  */
-    DOT_COMMA = 277,               /* DOT_COMMA  */
-    DOT = 278,                     /* DOT  */
-    COLON = 279,                   /* COLON  */
-    OPEN_PARENTHESES = 280,        /* OPEN_PARENTHESES  */
-    CLOSE_PARENTHESES = 281,       /* CLOSE_PARENTHESES  */
-    OPEN_BRACKET = 282,            /* OPEN_BRACKET  */
-    CLOSE_BRACKET = 283,           /* CLOSE_BRACKET  */
-    OPEN_CODEBLOCK = 284,          /* OPEN_CODEBLOCK  */
-    CLOSE_CODEBLOCK = 285,         /* CLOSE_CODEBLOCK  */
-    ASSIGN = 286,                  /* ASSIGN  */
-    CONCAT = 287,                  /* CONCAT  */
-    TYPE = 288,                    /* TYPE  */
-    INT = 289,                     /* INT  */
-    FLOAT = 290,                   /* FLOAT  */
-    STRING = 291,                  /* STRING  */
-    BOOL = 292,                    /* BOOL  */
-    ID = 293,                      /* ID  */
-    ID_CONST = 294,                /* ID_CONST  */
-    OP = 295,                      /* OP  */
-    RELOP = 296,                   /* RELOP  */
-    LOGICOP = 297,                 /* LOGICOP  */
-    LOGICOP_UNARY = 298            /* LOGICOP_UNARY  */
+    POUSAR = 265,                  /* POUSAR  */
+    FERIADO = 266,                 /* FERIADO  */
+    DECOLAR = 267,                 /* DECOLAR  */
+    ORIGEM = 268,                  /* ORIGEM  */
+    DESTINO = 269,                 /* DESTINO  */
+    ESCALA = 270,                  /* ESCALA  */
+    TURISTANDO = 271,              /* TURISTANDO  */
+    ROTEIRO = 272,                 /* ROTEIRO  */
+    EMBARCAR = 273,                /* EMBARCAR  */
+    DESPACHAR = 274,               /* DESPACHAR  */
+    COMMA = 275,                   /* COMMA  */
+    DOT_COMMA = 276,               /* DOT_COMMA  */
+    DOT = 277,                     /* DOT  */
+    COLON = 278,                   /* COLON  */
+    OPEN_PARENTHESES = 279,        /* OPEN_PARENTHESES  */
+    CLOSE_PARENTHESES = 280,       /* CLOSE_PARENTHESES  */
+    OPEN_BRACKET = 281,            /* OPEN_BRACKET  */
+    CLOSE_BRACKET = 282,           /* CLOSE_BRACKET  */
+    OPEN_CODEBLOCK = 283,          /* OPEN_CODEBLOCK  */
+    CLOSE_CODEBLOCK = 284,         /* CLOSE_CODEBLOCK  */
+    ASSIGN = 285,                  /* ASSIGN  */
+    CONCAT = 286,                  /* CONCAT  */
+    TYPE = 287,                    /* TYPE  */
+    INT = 288,                     /* INT  */
+    FLOAT = 289,                   /* FLOAT  */
+    STRING = 290,                  /* STRING  */
+    BOOL = 291,                    /* BOOL  */
+    ID = 292,                      /* ID  */
+    ID_CONST = 293,                /* ID_CONST  */
+    OP = 294,                      /* OP  */
+    RELOP = 295,                   /* RELOP  */
+    LOGICOP = 296,                 /* LOGICOP  */
+    LOGICOP_UNARY = 297            /* LOGICOP_UNARY  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -115,7 +114,7 @@ union YYSTYPE
     float real;
     char *string;
 
-#line 119 "translate.tab.h"
+#line 118 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

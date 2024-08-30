@@ -33,6 +33,8 @@ typedef struct {
     Parametro** parametros;   //lista de parametros da funcao
     int qtd_parametros;       
     TabelaSimbolos* escopo;   //cada funcao tem seu proprio escopo
+    int chamada;
+    int definida;
 } Funcao;
 
 // Funcoes Relacionadas à Todas às Tabelas de Símblos:
@@ -49,6 +51,8 @@ int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identi
 
 void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial);
 
+Simbolo* buscar_simbolo(TabelaSimbolos *tabela_atual, char *identificador);
+
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos);
 
 // Funcoes Relacionadas à Funcoes:
@@ -61,6 +65,10 @@ void inicializar_funcao(Funcao **funcao, char *identificador);
 void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo);
 
 void set_tipo(Funcao **funcao, char *tipo);
+
+void set_chamada(Funcao **funcao);
+
+void set_definida(Funcao **funcao);
 
 Funcao** buscar_funcao(Funcao **funcoes, char* identificador, int total);
 

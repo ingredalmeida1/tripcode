@@ -65,7 +65,7 @@ int comparar_definicao_com_prototipo();
 %token TRIP 
 %token BAGAGEM EXTERIOR 
 %token CHECKIN CHECKOUT
-%token ALFANDEGA ISENTO TRIBUTADO
+%token ALFANDEGA ISENTO
 %token POUSAR FERIADO
 %token DECOLAR ORIGEM DESTINO ESCALA
 %token TURISTANDO 
@@ -94,6 +94,13 @@ int comparar_definicao_com_prototipo();
 %type <string> RELOP
 %type <string> LOGICOP
 %type <string> LOGICOP_UNARY
+
+/* especificar o tipo de variaveis da gramatica                                               */
+%type <string> expr
+%type <string> term
+%type <string> call_function
+%type <string> id
+%type <string> return
 
 /* definir variavel de partida da gramatica                                                        */
 %start tripcode
@@ -287,7 +294,9 @@ function:
         strcpy(msg_erro,""); //reseta msg de erro
         
         definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
-    
+
+        
+
         inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
         adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
 
@@ -295,7 +304,10 @@ function:
         escopo_atual = (*funcao)->escopo;
 
         funcao_atual = *funcao;
-        
+
+        //mudar flag que indica que funcao foi definida
+        set_definida(&funcao_atual);
+
         //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
         Funcao *aux = NULL;
         inicializar_funcao(&aux, $2);
@@ -328,28 +340,6 @@ function_end:
     }
     ;
     
-expr: 
-    expr operador term
-    | OPEN_PARENTHESES expr CLOSE_PARENTHESES
-    | term
-    | expr LOGICOP_UNARY
-    ;
-
-operador:
-    OP
-    | RELOP
-    | LOGICOP
-    ;
-
-term: 
-    INT 
-    | FLOAT     
-    | STRING 
-    | BOOL     
-    | ID     
-    | call_function  
-    ;
-
 stmts:
     stmts stmt
     |
@@ -436,8 +426,14 @@ command:
     def_variavel
     | dec_variavel
     | atribuicao
-    | call_function DOT_COMMA
-    | return
+    | call_function DOT_COMMA 
+    | return {if ($1 != funcao_atual->tipo_retorno){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Retorno de Função: Retornando valor com tipo diferente de '"); 
+                strcat(msg_erro, funcao_atual->tipo_retorno); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }}
     | CHECKIN OPEN_PARENTHESES OPEN_BRACKET types CLOSE_BRACKET COMMA ids CLOSE_PARENTHESES DOT_COMMA
     | CHECKOUT OPEN_PARENTHESES result_form CLOSE_PARENTHESES DOT_COMMA
     | POUSAR DOT_COMMA
@@ -445,22 +441,23 @@ command:
     ;
 
 call_function:
-    EMBARCAR ID OPEN_PARENTHESES
-    {
-        Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
+    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES {
+                                                                    Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
 
-        if (funcao == NULL){
-            prototipo = 0;
+                                                                    if (funcao == NULL){
+                                                                        prototipo = 0;
 
-            strcpy(msg_erro,"");
-            strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
-            strcat(msg_erro, $2); 
-            strcat(msg_erro, "' não foi declarado\n"); 
-            semantic_error();
-        }
-        strcpy(msg_erro,""); //reseta msg de erro
-    } 
-    params_real CLOSE_PARENTHESES 
+                                                                        strcpy(msg_erro,"");
+                                                                        strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
+                                                                        strcat(msg_erro, $2); 
+                                                                        strcat(msg_erro, "' não foi declarado\n"); 
+                                                                        semantic_error();
+                                                                    }
+                                                                    strcpy(msg_erro,""); //reseta msg de erro
+
+                                                                    $$ = (*funcao)->tipo_retorno;
+                                                                } 
+    ;
 
 params_real: 
     param_real list_params_real
@@ -477,11 +474,81 @@ param_real:
     ;
 
 return:
-    DESPACHAR expr DOT_COMMA
+    DESPACHAR expr DOT_COMMA {$$ = $2;}
     ;
 
 atribuicao:
-    ID ASSIGN expr DOT_COMMA
+    id ASSIGN expr DOT_COMMA { if ($1 != $3){
+                                    strcpy(msg_erro,"");
+                                    strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
+                                    strcat(msg_erro, $3);  
+                                    strcat(msg_erro, "' a uma variavel do tipo '"); 
+                                    strcat(msg_erro, $1); 
+                                    strcat(msg_erro, "'\n"); 
+                                    semantic_error();
+                                }
+                                strcpy(msg_erro,"");
+                                }
+    ;
+
+expr: 
+    expr OP term   { if ($1 != $3 ){
+                        strcpy(msg_erro,"");
+                        strcat(msg_erro, "Operação '");
+                        strcat(msg_erro, $2);  
+                        strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
+                        strcat(msg_erro, $1); 
+                        strcat(msg_erro, "' != '"); 
+                        strcat(msg_erro, $3); 
+                        strcat(msg_erro, "'\n"); 
+                        semantic_error();
+                    }
+                    strcpy(msg_erro,"");
+                          
+                    if (strcmp($1, "STRING") == 0){
+                        strcat(msg_erro, "Operação '");
+                        strcat(msg_erro, $2);  
+                        strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
+                        strcat(msg_erro, $1); 
+                    }
+                    strcpy(msg_erro,"");
+
+                    $$ = $1;
+                    }
+
+    | expr RELOP term   { $$ = "BOLL"; }
+
+    | expr LOGICOP term { if ((strcmp($1, "BOOL") != 0) || (strcmp($3, "BOOL") != 0)){
+                            strcpy(msg_erro,"");
+                                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
+                                semantic_error();
+                            }
+                          strcpy(msg_erro,"");
+                          $$ = $1;
+                        }
+    
+    | expr LOGICOP_UNARY {if (strcmp($1, "BOOL") != 0) {
+                                strcpy(msg_erro,"");
+                                strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
+                                strcat(msg_erro, $1); 
+                                strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
+                                semantic_error();
+                            }
+                            strcpy(msg_erro,"");
+                            
+                            $$ = $1;
+                        }
+    | term {$$ = $1;}
+    | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;}
+    ;
+
+term: 
+    INT              {$$ = "INT";}
+    | FLOAT          {$$ = "FLOAT";}
+    | STRING         {$$ = "STRING";}
+    | BOOL           {$$ = "BOOL";}
+    | call_function  {$$ = $1;}
+    | id             {$$ = $1;}
     ;
 
 ids:
@@ -492,8 +559,20 @@ id_list:
     id_list COMMA id
     |
     ;
+//sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
+id: 
+    ID { Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+            if (simbolo == NULL){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "'Usar' Variável: Não existe variável com o identificador '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
 
-id : ID 
+            $$ = simbolo->tipo;
+        }
     ;
 
 types:

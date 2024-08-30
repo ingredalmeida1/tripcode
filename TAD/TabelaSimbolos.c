@@ -75,6 +75,23 @@ void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_
     return;
 }
 
+Simbolo* buscar_simbolo(TabelaSimbolos *tabela_atual, char *identificador) {
+    // Percorrer as tabelas de símbolos, começando pela atual e caminhando para as anteriores
+    while (tabela_atual != NULL) {
+        // Verificar se o identificador está na tabela atual
+        for (int i = 0; i < tabela_atual->tamanho; i++) {
+            if (strcmp(tabela_atual->simbolos[i]->identificador, identificador) == 0) {
+                return tabela_atual->simbolos[i]; // Retorna o símbolo se encontrado
+            }
+        }
+        // Passa para a tabela anterior
+        tabela_atual = tabela_atual->anterior;
+    }
+    
+    return NULL; // Identificador não encontrado em nenhuma das tabelas
+}
+
+
 void imprimir_tabela_simbolos(TabelaSimbolos tabela_simbolos) {
 
     char titulo[200] = "         TABELA DE SIMBOLOS DO BLOCO ";
@@ -142,6 +159,8 @@ void inicializar_funcao(Funcao **funcao, char *identificador) {
     }
 
     (*funcao)->qtd_parametros = 0; 
+    (*funcao)->chamada = 0; 
+    (*funcao)->definida = 0; 
 
     (*funcao)->escopo = NULL; //vai iniciar a funcao quando declarar o prototipo, entao ainda nao tem escopo
 }
@@ -162,6 +181,14 @@ void adicionar_parametro(Funcao **funcao, char *identificador, char *tipo) {
 
 void set_tipo(Funcao **funcao, char *tipo) {
     (*funcao)->tipo_retorno = strdup(tipo); 
+}
+
+void set_chamada(Funcao **funcao) {
+    (*funcao)->chamada = 1; 
+}
+
+void set_definida(Funcao **funcao) {
+    (*funcao)->definida = 1; 
 }
 
 Funcao** buscar_funcao(Funcao **funcoes, char* identificador, int total){

@@ -29,7 +29,7 @@ Checklit:
 * Declarar/Definir Variavel:
   ✔ se existe funcao com mesmo identificador
   ✔ se já exite identificador no escopo local (os demais não precisa conferir pq ai só vai substituir, né)
-  * mudar pra identificador de constante ser sempre letra maisucula
+  ✔ mudar pra identificador de constante ser sempre letra maisucula
  
 ✔ Prototipo Funcao:
   ✔ se já existe o indentificador na tabela global
