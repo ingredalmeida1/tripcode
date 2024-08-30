@@ -33,7 +33,7 @@ Checklit:
   ✔ na definiciao,se o tipo do valor atribuido é compativiel com o tipo definido
 
 ✔ Usar variavel:
-  - verificar se a variavel foi declarada/definida: se existe na tabela de simbolos do escopo local ou de escopos acima
+  ✔ verificar se a variavel foi declarada/definida: se existe na tabela de simbolos do escopo local ou de escopos acima
 
 ✔ Prototipo Funcao:
   ✔ se já existe o indentificador na tabela global
@@ -50,7 +50,7 @@ Checklit:
 
 * Chamar a função:
   ✔ se existe prototipo para funcao
-  * as que são chamadas no código precisam ter sido definidas 
+  ✔ as que são chamadas no código precisam ter sido definidas 
   	(adicionar um flag de se chamou pelo menos uma vez e uma pra se a funcao foi definida
   	 ao final percorrer funcoes e vê se todas que foram chamadas foram definidas )
   * quantidade dos parametros
@@ -58,6 +58,9 @@ Checklit:
   
 * Verificacao Tipos
   * quando faz atribuicao
+  * if
+  * while
+  * for
   * operação pode ser aplicada aos tipos
  
 

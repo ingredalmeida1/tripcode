@@ -42,6 +42,7 @@ void semantic_error();        // reportar erros semâticos
 //funcoes auxiliares para analise semantica
 int identificador_disponivel(char *identificador);
 int comparar_definicao_com_prototipo();
+void verificar_definicao_funcoes_chamadas();
 
 %}
 
@@ -135,6 +136,9 @@ tripcode:
         printf("%d\t", yylineno++); //inicializar contagem linhas do arquivo
     } 
     consts variaveis functions_header main functions 
+    {
+        verificar_definicao_funcoes_chamadas();
+    }
     ;
 
 consts: 
@@ -192,6 +196,7 @@ def_variavel:
             strcpy(msg_erro,""); //reseta msg de erro
 
             if ((strcmp($2, $5) != 0)){
+                strcat(msg_erro, "Definição de Variável: ");
                 strcat(msg_erro, "O tipo do valor atribuido à variável '");
                 strcat(msg_erro, $3);
                 strcat(msg_erro, "' é incompatível com tipo esperado! ('");
@@ -295,63 +300,60 @@ functions:
 
 function:
     ROTEIRO ID OPEN_PARENTHESES 
-    {
-        Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
-        if (funcao == NULL){
+        {
+            Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
+            if (funcao == NULL){
 
-            strcpy(msg_erro,"");
-            strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
-            strcat(msg_erro, $2); 
-            strcat(msg_erro, "' não foi declarado\n"); 
-            semantic_error();
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
+                strcat(msg_erro, $2); 
+                strcat(msg_erro, "' não foi declarado\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+            
+            definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
+
+            inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
+            adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = (*funcao)->escopo;
+
+            funcao_atual = *funcao;
+
+            //mudar flag que indica que funcao foi definida
+            set_definida(&funcao_atual);
+
+            //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
+            Funcao *aux = NULL;
+            inicializar_funcao(&aux, $2);
+            funcao_temp = aux;  
         }
-        strcpy(msg_erro,""); //reseta msg de erro
-        
-        definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
-
-        
-
-        inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-        adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = (*funcao)->escopo;
-
-        funcao_atual = *funcao;
-
-        //mudar flag que indica que funcao foi definida
-        set_definida(&funcao_atual);
-
-        //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
-        Funcao *aux = NULL;
-        inicializar_funcao(&aux, $2);
-        funcao_temp = aux;  
-    }
     params_form CLOSE_PARENTHESES OPEN_CODEBLOCK stmt stmts function_end
     ;
 
 function_end:
     CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK
-    {
-        if (definicao){
+        {
+            if (definicao){
 
-            strcpy(msg_erro,""); //esvazia mensagem de erro
-            strcat(msg_erro, "Definicao de Funcao: ");
+                strcpy(msg_erro,""); //esvazia mensagem de erro
+                strcat(msg_erro, "Definicao de Funcao: ");
 
+                set_tipo(&funcao_temp, $2);
 
-            set_tipo(&funcao_temp, $2);
+                int resultado = comparar_definicao_com_prototipo();
+                if (resultado){
+                    semantic_error();
+                }
+                strcpy(msg_erro,""); //reseta msg de erro
 
-            int resultado = comparar_definicao_com_prototipo();
-            if (resultado){
-                semantic_error();
+                // restaura o escopo anterior como o escopo atual
+                escopo_atual = escopo_atual->anterior;
             }
-            strcpy(msg_erro,""); //reseta msg de erro
-
-            // restaura o escopo anterior como o escopo atual
-            escopo_atual = escopo_atual->anterior;
+            definicao = 0; 
         }
-        definicao = 0; 
-    }
     ;
     
 stmts:
@@ -368,71 +370,70 @@ stmt:
 
 for:
     DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK 
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
     stmt stmts CLOSE_CODEBLOCK 
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
     ;    
 
 while:
     TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
     stmt stmts CLOSE_CODEBLOCK
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
 
 if: 
     ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
     stmt stmts CLOSE_CODEBLOCK
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
     else
     ;
 
 else:
      ISENTO OPEN_CODEBLOCK 
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
     stmt stmts CLOSE_CODEBLOCK
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
     |
     ;
 
@@ -449,22 +450,25 @@ command:
     ;
 
 call_function:
-    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES {
-                                                                    Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
+    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES 
+        {
+            Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
 
-                                                                    if (funcao == NULL){
-                                                                        prototipo = 0;
+            if (funcao == NULL){
+                prototipo = 0;
 
-                                                                        strcpy(msg_erro,"");
-                                                                        strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
-                                                                        strcat(msg_erro, $2); 
-                                                                        strcat(msg_erro, "' não foi declarado\n"); 
-                                                                        semantic_error();
-                                                                    }
-                                                                    strcpy(msg_erro,""); //reseta msg de erro
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
+                strcat(msg_erro, $2); 
+                strcat(msg_erro, "' não foi declarado\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
 
-                                                                    $$ = (*funcao)->tipo_retorno;
-                                                                } 
+            (*funcao)->chamada = 1;
+
+            $$ = (*funcao)->tipo_retorno;
+        } 
     ;
 
 params_real: 
@@ -486,66 +490,74 @@ return:
     ;
 
 atribuicao:
-    id ASSIGN expr DOT_COMMA { if (strcmp($1, $3) != 0){
-                                    strcpy(msg_erro,"");
-                                    strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
-                                    strcat(msg_erro, $3);  
-                                    strcat(msg_erro, "' a uma variavel do tipo '"); 
-                                    strcat(msg_erro, $1); 
-                                    strcat(msg_erro, "'\n"); 
-                                    semantic_error();
-                                }
-                                strcpy(msg_erro,"");
-                                }
+    id ASSIGN expr DOT_COMMA 
+        { 
+            if (strcmp($1, $3) != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
+                strcat(msg_erro, $3);  
+                strcat(msg_erro, "' a uma variavel do tipo '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+        }
     ;
 
 expr: 
-    expr OP term   { if ( (strcmp($1, $3) != 0) ){
-                        strcpy(msg_erro,"");
-                        strcat(msg_erro, "Operação '");
-                        strcat(msg_erro, $2);  
-                        strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
-                        strcat(msg_erro, $1); 
-                        strcat(msg_erro, "' != '"); 
-                        strcat(msg_erro, $3); 
-                        strcat(msg_erro, "'\n"); 
-                        semantic_error();
-                    }
-                    strcpy(msg_erro,"");
-                          
-                    if (strcmp($1, "STRING") == 0){
-                        strcat(msg_erro, "Operação '");
-                        strcat(msg_erro, $2);  
-                        strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
-                        strcat(msg_erro, $1); 
-                    }
-                    strcpy(msg_erro,"");
+    expr OP term   
+        { 
+            if ( (strcmp($1, $3) != 0) ){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação '");
+                strcat(msg_erro, $2);  
+                strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "' != '"); 
+                strcat(msg_erro, $3); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+                    
+            if (strcmp($1, "STRING") == 0){
+                strcat(msg_erro, "Operação '");
+                strcat(msg_erro, $2);  
+                strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
+                strcat(msg_erro, $1); 
+            }
+            strcpy(msg_erro,"");
 
-                    $$ = $1;
-                    }
+            $$ = $1;
+        }
 
     | expr RELOP term   { $$ = "BOLL"; }
 
-    | expr LOGICOP term { if ((strcmp($1, "BOOL") != 0) || (strcmp($3, "BOOL") != 0)){
-                            strcpy(msg_erro,"");
-                                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
-                                semantic_error();
-                            }
-                          strcpy(msg_erro,"");
-                          $$ = $1;
-                        }
+    | expr LOGICOP term 
+        { 
+            if ((strcmp($1, "BOOL") != 0) || (strcmp($3, "BOOL") != 0)){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            $$ = $1;
+        }
     
-    | expr LOGICOP_UNARY {if (strcmp($1, "BOOL") != 0) {
-                                strcpy(msg_erro,"");
-                                strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
-                                strcat(msg_erro, $1); 
-                                strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
-                                semantic_error();
-                            }
-                            strcpy(msg_erro,"");
-                            
-                            $$ = $1;
-                        }
+    | expr LOGICOP_UNARY 
+            {
+                if (strcmp($1, "BOOL") != 0) {
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
+                    strcat(msg_erro, $1); 
+                    strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
+                    semantic_error();
+                }
+                strcpy(msg_erro,"");
+                
+                $$ = $1;
+            }
     | term {$$ = $1;}
     | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;}
     ;
@@ -569,7 +581,8 @@ id_list:
     ;
 //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
 id: 
-    ID { Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+    ID 
+        { Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
             if (simbolo == NULL){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "'Usar' Variável: Não existe variável com o identificador '"); 
@@ -632,7 +645,7 @@ void semantic_error() {
      exit(0);
 }
 
-int identificador_disponivel(char *identificador){
+int identificador_disponivel(char *identificador) {
     //define a mensagem de erro:
     strcat(msg_erro, "O identificador '"); 
     strcat(msg_erro, identificador); 
@@ -679,8 +692,24 @@ int comparar_definicao_com_prototipo() {
     return 0;
 }
 
+
+void verificar_definicao_funcoes_chamadas() {
+    for (int i = 0; i < numero_de_funcoes; i++) {
+        if (funcoes[i]->chamada){
+            if (funcoes[i]->definida == 0){
+                strcat(msg_erro, "A função '");
+                strcat(msg_erro, funcoes[i]->identificador);
+                strcat(msg_erro, "' não foi definida, existe apenas seu protótipo!");
+                semantic_error();
+            }
+        } 
+    }
+}
+
 int main(void) {
     yyparse();     
+    
+    printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
 

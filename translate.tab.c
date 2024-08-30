@@ -109,9 +109,10 @@ void semantic_error();        // reportar erros semâticos
 //funcoes auxiliares para analise semantica
 int identificador_disponivel(char *identificador);
 int comparar_definicao_com_prototipo();
+void verificar_definicao_funcoes_chamadas();
 
 
-#line 115 "translate.tab.c"
+#line 116 "translate.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -620,15 +621,15 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   123,   123,   123,   141,   142,   146,   163,   164,   165,
-     169,   184,   211,   212,   217,   216,   240,   251,   252,   256,
-     257,   261,   276,   275,   292,   293,   298,   297,   334,   358,
-     359,   363,   364,   365,   366,   371,   370,   389,   388,   405,
-     414,   404,   423,   422,   436,   440,   441,   442,   443,   444,
-     445,   446,   447,   448,   452,   471,   472,   476,   477,   481,
-     485,   489,   503,   527,   529,   538,   549,   550,   554,   555,
-     556,   557,   558,   559,   563,   567,   568,   572,   587,   591,
-     592,   596,   599,   600,   604,   605
+       0,   124,   124,   124,   145,   146,   150,   167,   168,   169,
+     173,   188,   216,   217,   222,   221,   245,   256,   257,   261,
+     262,   266,   281,   280,   297,   298,   303,   302,   337,   360,
+     361,   365,   366,   367,   368,   373,   372,   390,   389,   406,
+     415,   405,   424,   423,   437,   441,   442,   443,   444,   445,
+     446,   447,   448,   449,   453,   475,   476,   480,   481,   485,
+     489,   493,   509,   535,   537,   548,   561,   562,   566,   567,
+     568,   569,   570,   571,   575,   579,   580,   584,   600,   604,
+     605,   609,   612,   613,   617,   618
 };
 #endif
 
@@ -1327,7 +1328,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 123 "translate.y"
+#line 124 "translate.y"
     {   //inicializar tabela de simbolos global 
         inicializar_tabela(&escopo_atual, NULL, "GLOBAL");  
 
@@ -1342,11 +1343,19 @@ yyreduce:
 
         printf("%d\t", yylineno++); //inicializar contagem linhas do arquivo
     }
-#line 1346 "translate.tab.c"
+#line 1347 "translate.tab.c"
+    break;
+
+  case 3: /* tripcode: $@1 consts variaveis functions_header main functions  */
+#line 139 "translate.y"
+    {
+        verificar_definicao_funcoes_chamadas();
+    }
+#line 1355 "translate.tab.c"
     break;
 
   case 6: /* const: EXTERIOR ID_CONST term  */
-#line 147 "translate.y"
+#line 151 "translate.y"
         {
             strcpy(msg_erro,""); //esvazia mensagem de erro
             strcat(msg_erro, "Definição de Constante: ");
@@ -1360,11 +1369,11 @@ yyreduce:
 
             adicionar_simbolo(&escopo_atual, (yyvsp[0].string), (yyvsp[-1].string), "CONSTANTE");
         }
-#line 1364 "translate.tab.c"
+#line 1373 "translate.tab.c"
     break;
 
   case 10: /* dec_variavel: BAGAGEM TYPE ID DOT_COMMA  */
-#line 170 "translate.y"
+#line 174 "translate.y"
         {
             strcpy(msg_erro,""); //esvazia mensagem de erro
             strcat(msg_erro, "Declaração de Variável: ");
@@ -1376,11 +1385,11 @@ yyreduce:
 
             adicionar_simbolo(&escopo_atual, (yyvsp[-2].string), (yyvsp[-1].string), "-");
         }
-#line 1380 "translate.tab.c"
+#line 1389 "translate.tab.c"
     break;
 
   case 11: /* def_variavel: BAGAGEM TYPE ID ASSIGN expr DOT_COMMA  */
-#line 185 "translate.y"
+#line 189 "translate.y"
         {
             strcpy(msg_erro,""); //esvazia mensagem de erro
             strcat(msg_erro, "Definição de Variável: ");
@@ -1391,6 +1400,7 @@ yyreduce:
             strcpy(msg_erro,""); //reseta msg de erro
 
             if ((strcmp((yyvsp[-4].string), (yyvsp[-1].string)) != 0)){
+                strcat(msg_erro, "Definição de Variável: ");
                 strcat(msg_erro, "O tipo do valor atribuido à variável '");
                 strcat(msg_erro, (yyvsp[-3].string));
                 strcat(msg_erro, "' é incompatível com tipo esperado! ('");
@@ -1404,11 +1414,11 @@ yyreduce:
             
             adicionar_simbolo(&escopo_atual, (yyvsp[-4].string), (yyvsp[-3].string), "-");
         }
-#line 1408 "translate.tab.c"
+#line 1418 "translate.tab.c"
     break;
 
   case 14: /* $@2: %empty  */
-#line 217 "translate.y"
+#line 222 "translate.y"
     {
         strcpy(msg_erro,""); //esvazia mensagem de erro
         strcat(msg_erro, "Protótipo de Funcao: ");
@@ -1428,22 +1438,22 @@ yyreduce:
         prototipo = 1; //mudar a flag para verdadeiro para que os parametros sejam adicionados na funcao atual
 
     }
-#line 1432 "translate.tab.c"
+#line 1442 "translate.tab.c"
     break;
 
   case 16: /* function_header_end: CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 241 "translate.y"
+#line 246 "translate.y"
     {
         set_tipo(&funcao_atual, (yyvsp[-1].string));
         adicionar_simbolo(&escopo_atual, "FUNCAO", funcao_atual->identificador, (yyvsp[-1].string));
 
         prototipo = 0; //voltar a flag para falso
     }
-#line 1443 "translate.tab.c"
+#line 1453 "translate.tab.c"
     break;
 
   case 21: /* param_form: TYPE ID  */
-#line 262 "translate.y"
+#line 267 "translate.y"
         {
             if (prototipo){
                 adicionar_parametro(&funcao_atual, (yyvsp[0].string), (yyvsp[-1].string));
@@ -1454,11 +1464,11 @@ yyreduce:
             }
             //conferir quando for checkout
         }
-#line 1458 "translate.tab.c"
+#line 1468 "translate.tab.c"
     break;
 
   case 22: /* $@3: %empty  */
-#line 276 "translate.y"
+#line 281 "translate.y"
         {
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
@@ -1467,325 +1477,328 @@ yyreduce:
             // atualiza o escopo atual para a nova tabela
             escopo_atual = nova_tabela;
         }
-#line 1471 "translate.tab.c"
+#line 1481 "translate.tab.c"
     break;
 
   case 23: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK $@3 stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 285 "translate.y"
+#line 290 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
         }
-#line 1480 "translate.tab.c"
+#line 1490 "translate.tab.c"
     break;
 
   case 26: /* $@4: %empty  */
-#line 298 "translate.y"
-    {
-        Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-1].string), numero_de_funcoes); 
-        if (funcao == NULL){
+#line 303 "translate.y"
+        {
+            Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-1].string), numero_de_funcoes); 
+            if (funcao == NULL){
 
-            strcpy(msg_erro,"");
-            strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
-            strcat(msg_erro, (yyvsp[-1].string)); 
-            strcat(msg_erro, "' não foi declarado\n"); 
-            semantic_error();
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Definição de Função: Protótipo da função '"); 
+                strcat(msg_erro, (yyvsp[-1].string)); 
+                strcat(msg_erro, "' não foi declarado\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,""); //reseta msg de erro
+            
+            definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
+
+            inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
+            adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = (*funcao)->escopo;
+
+            funcao_atual = *funcao;
+
+            //mudar flag que indica que funcao foi definida
+            set_definida(&funcao_atual);
+
+            //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
+            Funcao *aux = NULL;
+            inicializar_funcao(&aux, (yyvsp[-1].string));
+            funcao_temp = aux;  
         }
-        strcpy(msg_erro,""); //reseta msg de erro
-        
-        definicao = 1; //aproveitar a flag para indicar que vai mudar o escopo atual e assim que fechar o bloco da funcao tem que restaurar para o escopo anterior
-
-        
-
-        inicializar_tabela_simbolos_funcao(&funcao, escopo_atual);
-        adicionar_nova_tabela(&tabelas_simbolos, (*funcao)->escopo, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = (*funcao)->escopo;
-
-        funcao_atual = *funcao;
-
-        //mudar flag que indica que funcao foi definida
-        set_definida(&funcao_atual);
-
-        //inicializar estrutura temporar para armazenar informacoes da definicao da funcao
-        Funcao *aux = NULL;
-        inicializar_funcao(&aux, (yyvsp[-1].string));
-        funcao_temp = aux;  
-    }
-#line 1517 "translate.tab.c"
+#line 1525 "translate.tab.c"
     break;
 
   case 28: /* function_end: CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 335 "translate.y"
-    {
-        if (definicao){
+#line 338 "translate.y"
+        {
+            if (definicao){
 
-            strcpy(msg_erro,""); //esvazia mensagem de erro
-            strcat(msg_erro, "Definicao de Funcao: ");
+                strcpy(msg_erro,""); //esvazia mensagem de erro
+                strcat(msg_erro, "Definicao de Funcao: ");
 
+                set_tipo(&funcao_temp, (yyvsp[-1].string));
 
-            set_tipo(&funcao_temp, (yyvsp[-1].string));
+                int resultado = comparar_definicao_com_prototipo();
+                if (resultado){
+                    semantic_error();
+                }
+                strcpy(msg_erro,""); //reseta msg de erro
 
-            int resultado = comparar_definicao_com_prototipo();
-            if (resultado){
+                // restaura o escopo anterior como o escopo atual
+                escopo_atual = escopo_atual->anterior;
+            }
+            definicao = 0; 
+        }
+#line 1549 "translate.tab.c"
+    break;
+
+  case 35: /* $@5: %empty  */
+#line 373 "translate.y"
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
+#line 1562 "translate.tab.c"
+    break;
+
+  case 36: /* for: DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK $@5 stmt stmts CLOSE_CODEBLOCK  */
+#line 382 "translate.y"
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+#line 1571 "translate.tab.c"
+    break;
+
+  case 37: /* $@6: %empty  */
+#line 390 "translate.y"
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
+#line 1584 "translate.tab.c"
+    break;
+
+  case 38: /* while: TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK $@6 stmt stmts CLOSE_CODEBLOCK  */
+#line 399 "translate.y"
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+#line 1593 "translate.tab.c"
+    break;
+
+  case 39: /* $@7: %empty  */
+#line 406 "translate.y"
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
+#line 1606 "translate.tab.c"
+    break;
+
+  case 40: /* $@8: %empty  */
+#line 415 "translate.y"
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+#line 1615 "translate.tab.c"
+    break;
+
+  case 42: /* $@9: %empty  */
+#line 424 "translate.y"
+        {
+            TabelaSimbolos *nova_tabela = NULL;
+            inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
+            adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+            // atualiza o escopo atual para a nova tabela
+            escopo_atual = nova_tabela;
+        }
+#line 1628 "translate.tab.c"
+    break;
+
+  case 43: /* else: ISENTO OPEN_CODEBLOCK $@9 stmt stmts CLOSE_CODEBLOCK  */
+#line 433 "translate.y"
+        {
+            // restaura o escopo anterior como o escopo atual
+            escopo_atual = escopo_atual->anterior;
+        }
+#line 1637 "translate.tab.c"
+    break;
+
+  case 54: /* call_function: EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES  */
+#line 454 "translate.y"
+        {
+            Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-3].string), numero_de_funcoes); 
+
+            if (funcao == NULL){
+                prototipo = 0;
+
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
+                strcat(msg_erro, (yyvsp[-3].string)); 
+                strcat(msg_erro, "' não foi declarado\n"); 
                 semantic_error();
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            // restaura o escopo anterior como o escopo atual
-            escopo_atual = escopo_atual->anterior;
+            (*funcao)->chamada = 1;
+
+            (yyval.string) = (*funcao)->tipo_retorno;
         }
-        definicao = 0; 
-    }
-#line 1542 "translate.tab.c"
-    break;
-
-  case 35: /* $@5: %empty  */
-#line 371 "translate.y"
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-#line 1555 "translate.tab.c"
-    break;
-
-  case 36: /* for: DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK $@5 stmt stmts CLOSE_CODEBLOCK  */
-#line 381 "translate.y"
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
-#line 1564 "translate.tab.c"
-    break;
-
-  case 37: /* $@6: %empty  */
-#line 389 "translate.y"
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-#line 1577 "translate.tab.c"
-    break;
-
-  case 38: /* while: TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK $@6 stmt stmts CLOSE_CODEBLOCK  */
-#line 398 "translate.y"
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
-#line 1586 "translate.tab.c"
-    break;
-
-  case 39: /* $@7: %empty  */
-#line 405 "translate.y"
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-#line 1599 "translate.tab.c"
-    break;
-
-  case 40: /* $@8: %empty  */
-#line 414 "translate.y"
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
-#line 1608 "translate.tab.c"
-    break;
-
-  case 42: /* $@9: %empty  */
-#line 423 "translate.y"
-    {
-        TabelaSimbolos *nova_tabela = NULL;
-        inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
-        adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
-
-        // atualiza o escopo atual para a nova tabela
-        escopo_atual = nova_tabela;
-    }
-#line 1621 "translate.tab.c"
-    break;
-
-  case 43: /* else: ISENTO OPEN_CODEBLOCK $@9 stmt stmts CLOSE_CODEBLOCK  */
-#line 432 "translate.y"
-    {
-        // restaura o escopo anterior como o escopo atual
-        escopo_atual = escopo_atual->anterior;
-    }
-#line 1630 "translate.tab.c"
-    break;
-
-  case 54: /* call_function: EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES  */
-#line 452 "translate.y"
-                                                               {
-                                                                    Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-3].string), numero_de_funcoes); 
-
-                                                                    if (funcao == NULL){
-                                                                        prototipo = 0;
-
-                                                                        strcpy(msg_erro,"");
-                                                                        strcat(msg_erro, "Chamada de Função: Protótipo da função '"); 
-                                                                        strcat(msg_erro, (yyvsp[-3].string)); 
-                                                                        strcat(msg_erro, "' não foi declarado\n"); 
-                                                                        semantic_error();
-                                                                    }
-                                                                    strcpy(msg_erro,""); //reseta msg de erro
-
-                                                                    (yyval.string) = (*funcao)->tipo_retorno;
-                                                                }
-#line 1651 "translate.tab.c"
+#line 1660 "translate.tab.c"
     break;
 
   case 60: /* return: DESPACHAR expr DOT_COMMA  */
-#line 485 "translate.y"
+#line 489 "translate.y"
                              {(yyval.string) = (yyvsp[-1].string);}
-#line 1657 "translate.tab.c"
+#line 1666 "translate.tab.c"
     break;
 
   case 61: /* atribuicao: id ASSIGN expr DOT_COMMA  */
-#line 489 "translate.y"
-                             { if (strcmp((yyvsp[-3].string), (yyvsp[-1].string)) != 0){
-                                    strcpy(msg_erro,"");
-                                    strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
-                                    strcat(msg_erro, (yyvsp[-1].string));  
-                                    strcat(msg_erro, "' a uma variavel do tipo '"); 
-                                    strcat(msg_erro, (yyvsp[-3].string)); 
-                                    strcat(msg_erro, "'\n"); 
-                                    semantic_error();
-                                }
-                                strcpy(msg_erro,"");
-                                }
-#line 1673 "translate.tab.c"
+#line 494 "translate.y"
+        { 
+            if (strcmp((yyvsp[-3].string), (yyvsp[-1].string)) != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Atribuição: Não é possível atribuir tipo '");
+                strcat(msg_erro, (yyvsp[-1].string));  
+                strcat(msg_erro, "' a uma variavel do tipo '"); 
+                strcat(msg_erro, (yyvsp[-3].string)); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+        }
+#line 1683 "translate.tab.c"
     break;
 
   case 62: /* expr: expr OP term  */
-#line 503 "translate.y"
-                   { if ( (strcmp((yyvsp[-2].string), (yyvsp[0].string)) != 0) ){
-                        strcpy(msg_erro,"");
-                        strcat(msg_erro, "Operação '");
-                        strcat(msg_erro, (yyvsp[-1].string));  
-                        strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
-                        strcat(msg_erro, (yyvsp[-2].string)); 
-                        strcat(msg_erro, "' != '"); 
-                        strcat(msg_erro, (yyvsp[0].string)); 
-                        strcat(msg_erro, "'\n"); 
-                        semantic_error();
-                    }
-                    strcpy(msg_erro,"");
-                          
-                    if (strcmp((yyvsp[-2].string), "STRING") == 0){
-                        strcat(msg_erro, "Operação '");
-                        strcat(msg_erro, (yyvsp[-1].string));  
-                        strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
-                        strcat(msg_erro, (yyvsp[-2].string)); 
-                    }
-                    strcpy(msg_erro,"");
+#line 510 "translate.y"
+        { 
+            if ( (strcmp((yyvsp[-2].string), (yyvsp[0].string)) != 0) ){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação '");
+                strcat(msg_erro, (yyvsp[-1].string));  
+                strcat(msg_erro, "': Tanto o lado esquerdo quanto o lado direito devem ser do mesmo tipo e '"); 
+                strcat(msg_erro, (yyvsp[-2].string)); 
+                strcat(msg_erro, "' != '"); 
+                strcat(msg_erro, (yyvsp[0].string)); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+                    
+            if (strcmp((yyvsp[-2].string), "STRING") == 0){
+                strcat(msg_erro, "Operação '");
+                strcat(msg_erro, (yyvsp[-1].string));  
+                strcat(msg_erro, "': Não é possível aplicar essa operação em strings!'"); 
+                strcat(msg_erro, (yyvsp[-2].string)); 
+            }
+            strcpy(msg_erro,"");
 
-                    (yyval.string) = (yyvsp[-2].string);
-                    }
-#line 1701 "translate.tab.c"
+            (yyval.string) = (yyvsp[-2].string);
+        }
+#line 1712 "translate.tab.c"
     break;
 
   case 63: /* expr: expr RELOP term  */
-#line 527 "translate.y"
+#line 535 "translate.y"
                         { (yyval.string) = "BOLL"; }
-#line 1707 "translate.tab.c"
+#line 1718 "translate.tab.c"
     break;
 
   case 64: /* expr: expr LOGICOP term  */
-#line 529 "translate.y"
-                        { if ((strcmp((yyvsp[-2].string), "BOOL") != 0) || (strcmp((yyvsp[0].string), "BOOL") != 0)){
-                            strcpy(msg_erro,"");
-                                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
-                                semantic_error();
-                            }
-                          strcpy(msg_erro,"");
-                          (yyval.string) = (yyvsp[-2].string);
-                        }
-#line 1720 "translate.tab.c"
+#line 538 "translate.y"
+        { 
+            if ((strcmp((yyvsp[-2].string), "BOOL") != 0) || (strcmp((yyvsp[0].string), "BOOL") != 0)){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            (yyval.string) = (yyvsp[-2].string);
+        }
+#line 1732 "translate.tab.c"
     break;
 
   case 65: /* expr: expr LOGICOP_UNARY  */
-#line 538 "translate.y"
-                         {if (strcmp((yyvsp[-1].string), "BOOL") != 0) {
-                                strcpy(msg_erro,"");
-                                strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
-                                strcat(msg_erro, (yyvsp[-1].string)); 
-                                strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
-                                semantic_error();
-                            }
-                            strcpy(msg_erro,"");
-                            
-                            (yyval.string) = (yyvsp[-1].string);
-                        }
-#line 1736 "translate.tab.c"
+#line 549 "translate.y"
+            {
+                if (strcmp((yyvsp[-1].string), "BOOL") != 0) {
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
+                    strcat(msg_erro, (yyvsp[-1].string)); 
+                    strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
+                    semantic_error();
+                }
+                strcpy(msg_erro,"");
+                
+                (yyval.string) = (yyvsp[-1].string);
+            }
+#line 1749 "translate.tab.c"
     break;
 
   case 66: /* expr: term  */
-#line 549 "translate.y"
+#line 561 "translate.y"
            {(yyval.string) = (yyvsp[0].string);}
-#line 1742 "translate.tab.c"
+#line 1755 "translate.tab.c"
     break;
 
   case 67: /* expr: OPEN_PARENTHESES term CLOSE_PARENTHESES  */
-#line 550 "translate.y"
+#line 562 "translate.y"
                                               {(yyval.string) = (yyvsp[-1].string);}
-#line 1748 "translate.tab.c"
+#line 1761 "translate.tab.c"
     break;
 
   case 68: /* term: INT  */
-#line 554 "translate.y"
+#line 566 "translate.y"
                      {(yyval.string) = "MILHAS";}
-#line 1754 "translate.tab.c"
+#line 1767 "translate.tab.c"
     break;
 
   case 69: /* term: FLOAT  */
-#line 555 "translate.y"
+#line 567 "translate.y"
                      {(yyval.string) = "DOLAR";}
-#line 1760 "translate.tab.c"
+#line 1773 "translate.tab.c"
     break;
 
   case 70: /* term: STRING  */
-#line 556 "translate.y"
+#line 568 "translate.y"
                      {(yyval.string) = "VOUCHER";}
-#line 1766 "translate.tab.c"
+#line 1779 "translate.tab.c"
     break;
 
   case 71: /* term: BOOL  */
-#line 557 "translate.y"
+#line 569 "translate.y"
                      {(yyval.string) = "BOOL";}
-#line 1772 "translate.tab.c"
+#line 1785 "translate.tab.c"
     break;
 
   case 72: /* term: call_function  */
-#line 558 "translate.y"
+#line 570 "translate.y"
                      {(yyval.string) = (yyvsp[0].string);}
-#line 1778 "translate.tab.c"
+#line 1791 "translate.tab.c"
     break;
 
   case 73: /* term: id  */
-#line 559 "translate.y"
+#line 571 "translate.y"
                      {(yyval.string) = (yyvsp[0].string);}
-#line 1784 "translate.tab.c"
+#line 1797 "translate.tab.c"
     break;
 
   case 77: /* id: ID  */
-#line 572 "translate.y"
-       { Simbolo *simbolo = buscar_simbolo(escopo_atual,  (yyvsp[0].string));
+#line 585 "translate.y"
+        { Simbolo *simbolo = buscar_simbolo(escopo_atual,  (yyvsp[0].string));
             if (simbolo == NULL){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "'Usar' Variável: Não existe variável com o identificador '"); 
@@ -1797,11 +1810,11 @@ yyreduce:
 
             (yyval.string) = simbolo->tipo;
         }
-#line 1801 "translate.tab.c"
+#line 1814 "translate.tab.c"
     break;
 
 
-#line 1805 "translate.tab.c"
+#line 1818 "translate.tab.c"
 
       default: break;
     }
@@ -1994,7 +2007,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 608 "translate.y"
+#line 621 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C
@@ -2022,7 +2035,7 @@ void semantic_error() {
      exit(0);
 }
 
-int identificador_disponivel(char *identificador){
+int identificador_disponivel(char *identificador) {
     //define a mensagem de erro:
     strcat(msg_erro, "O identificador '"); 
     strcat(msg_erro, identificador); 
@@ -2069,8 +2082,24 @@ int comparar_definicao_com_prototipo() {
     return 0;
 }
 
+
+void verificar_definicao_funcoes_chamadas() {
+    for (int i = 0; i < numero_de_funcoes; i++) {
+        if (funcoes[i]->chamada){
+            if (funcoes[i]->definida == 0){
+                strcat(msg_erro, "A função '");
+                strcat(msg_erro, funcoes[i]->identificador);
+                strcat(msg_erro, "' não foi definida, existe apenas seu protótipo!");
+                semantic_error();
+            }
+        } 
+    }
+}
+
 int main(void) {
     yyparse();     
+    
+    printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
     
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
 

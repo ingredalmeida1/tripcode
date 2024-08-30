@@ -206,9 +206,5 @@ invalid            {all_characters}+|.
                            // reportar erro  
                            yyerror(msg);
                          }  
-
-<<EOF>>                 { // se chegou no fim do arquivo:
-                          printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
-                          return 0;
-                        }                      
+                    
 %%
