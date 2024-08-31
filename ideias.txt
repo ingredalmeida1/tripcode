@@ -68,5 +68,5 @@ Checklit:
   ✔ condicoes if, while -> booleano
   ✔ for -> milhas
   
-* Parametros CHECKIN - conferir se as variaveis existem
-* Parametros CHECKOUT - conferir se variaveis existem e se foram inicializadas
+✔ Parametros CHECKIN - conferir se as variaveis existem
+✔ Parametros CHECKOUT - conferir se variaveis existem e se foram inicializadas
