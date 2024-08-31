@@ -370,9 +370,17 @@ stmt:
 for:
     DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK 
         {
+            if (strcmp($4, "MILHAS") != 0 || strcmp($7, "MILHAS") != 0 || strcmp($10, "MILHAS") != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Bloco de Repeticao DECOLAR: todos termos devem ser do tipo 'MILHAS'\n");
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
             adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
+
+            //ADICIONAR ORIGEM COMO UMA VARIAVEL NA TABELA? teria que mudar a gramática
 
             // atualiza o escopo atual para a nova tabela
             escopo_atual = nova_tabela;
@@ -387,6 +395,15 @@ for:
 while:
     TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
         {
+            if (strcmp($3, "BOOL") != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Bloco de Repeticao TURISTANDO: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
+                strcat(msg_erro, $3); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "TURISTANDO");
             adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
@@ -403,6 +420,15 @@ while:
 if: 
     ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
         {
+            if (strcmp($3, "BOOL") != 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Bloco Condicional ALFANDEGA: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
+                strcat(msg_erro, $3); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "ALFANDEGA");
             adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
@@ -522,7 +548,7 @@ expr:
         { 
             if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Operação Aritimética: Ainda não está diponível maniplar variáveis do tipo VOUCHER com operações aritméticas =(");
+                strcat(msg_erro, "Operação Aritimética: Ainda não está diponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
                 semantic_error();
             }
             strcpy(msg_erro,"");
@@ -562,7 +588,7 @@ expr:
             strcpy(msg_erro,"");
 
             //para valores numéricos não tem restrição
-            $$ = "BOLL"; 
+            $$ = "BOOL"; 
         }
 
     | expr LOGICOP term 

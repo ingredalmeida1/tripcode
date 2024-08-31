@@ -65,7 +65,8 @@ Checklit:
     ✔ operadores aritméticos (+, -, *, /, %): operandos têm que ser de tipos numéricos (DOLAR ou MILHAS)
     ✔ operadores de comparação (=, #, <, >, <=, >=): se os operandos têm tipos compatíveis, ou seja, é permitido comparar tipos numéricos entre si, mas comparar tipos diferentes como int e char* deve gerar um erro e o tipo resultante é o tipo BOOL
     ✔ operadores lógicos (AND, OR, NOT): os operandos devem ser de tipo booleano 
-  * condicoes if, while, for
-    - verificar se a expressão de condição é de um tipo que pode ser convertido para booleano
-
-* Parametros CHECKIN, CHECKOUT
+  * condicoes if, while -> booleano
+  * for -> milhas
+  
+* Parametros CHECKIN
+* Parametros CHECKOUT
