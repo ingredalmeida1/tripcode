@@ -9,9 +9,9 @@ ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>> DOLAR <<<
 
 ROTEIRO trip() >>> 
 
-    BAGAGEM MILHAS teste;
+    BAGAGEM MILHAS teste <-> 6;
 
-    CHECKIN([MILHAS, VOUCHER], teste, dia);
+    CHECKIN([MILHAS, VOUCHER], teste, valor);
 
     TURISTANDO (FERIAS) >>>
         BAGAGEM DOLAR teste <-> 10.8 + 20.0;
@@ -30,7 +30,7 @@ ROTEIRO trip() >>>
 
     BAGAGEM VOUCHER ultima;
 
-    CHECKOUT("Resultado final" <> MILHAS valor <> "ok!");
+    CHECKOUT("Resultado final" <> MILHAS teste <> "ok!");
 
     DESPACHAR 0;
     -> testando outro comentario <-

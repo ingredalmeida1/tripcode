@@ -26,7 +26,13 @@ int qtd_parametros_reais = 0;
 char* tipos_parametros_reais[10]; 
 
 int prototipo = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
-int definicao = 0;
+int definicao = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
+int checkout = 0;    //flag para saber se os parametros formais sao relacionados a chamada da funcao chekcout
+
+int qtd_tipos_checkin = 0;
+char* tipos_checkin[10]; 
+int qtd_ids_checkin = 0;
+char* ids_checkin[10]; 
 
 int yylex();
 
@@ -274,7 +280,41 @@ param_form:
                 //se nao for o prototipo tem que conferir se declarou igual está no prototipo = semantica
                 adicionar_parametro(&funcao_temp, $2, $1);
             }
-            //conferir quando for checkout
+            if (checkout){
+                        
+                Simbolo *simbolo = buscar_simbolo(escopo_atual,  $2);
+                if (simbolo == NULL){
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Chamada comando CHECKOUT: A variável '"); 
+                    strcat(msg_erro, $2); 
+                    strcat(msg_erro, "' não foi previamente declarada!'\n"); 
+                    semantic_error();
+                }
+                strcpy(msg_erro,"");
+
+                if (strcmp(simbolo->tipo, $1) != 0){
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Chamada comando CHECKOUT:  A variável'");
+                    strcat(msg_erro, $2);  
+                    strcat(msg_erro, "' é uma variavel do tipo '"); 
+                    strcat(msg_erro, simbolo->tipo); 
+                    strcat(msg_erro, "' e não do tipo '"); 
+                    strcat(msg_erro, $1); 
+                    strcat(msg_erro, "'\n"); 
+                    semantic_error();
+                }
+                strcpy(msg_erro,"");
+
+                //pra poder usar uma variável ela precisar ter sido inicializada
+                if (simbolo->inicializado == 0){
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "A variável '"); 
+                    strcat(msg_erro, $2); 
+                    strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
+                    semantic_error();
+                }
+                strcpy(msg_erro,"");
+            }
         }
     ;
 
@@ -492,8 +532,54 @@ command:
     | atribuicao
     | call_function DOT_COMMA 
     | return
-    | CHECKIN OPEN_PARENTHESES OPEN_BRACKET types CLOSE_BRACKET COMMA ids CLOSE_PARENTHESES DOT_COMMA
-    | CHECKOUT OPEN_PARENTHESES result_form CLOSE_PARENTHESES DOT_COMMA
+    | CHECKIN OPEN_PARENTHESES OPEN_BRACKET 
+        {qtd_tipos_checkin = 0;} 
+        types CLOSE_BRACKET COMMA 
+        { qtd_ids_checkin=0; } 
+        ids 
+            {
+                if (qtd_tipos_checkin != qtd_ids_checkin){
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Chamada comando CHECKIN: Quantidade de Tipos != Quantidade de Variáveis!\n"); 
+                    semantic_error();
+                }
+                for (int i=0; i<qtd_ids_checkin; i++){
+                    Simbolo *simbolo = buscar_simbolo(escopo_atual,  ids_checkin[i]);
+                    if (simbolo == NULL){
+                        strcpy(msg_erro,"");
+                        strcat(msg_erro, "Chamada comando CHECKIN: A variável '"); 
+                        strcat(msg_erro, ids_checkin[i]); 
+                        strcat(msg_erro, "' não foi previamente declarada!'\n"); 
+                        semantic_error();
+                    }
+                    strcpy(msg_erro,"");
+
+                    if (strcmp(simbolo->tipo, tipos_checkin[i]) != 0){
+                        strcpy(msg_erro,"");
+                        strcat(msg_erro, "Chamada comando CHECKOUT:  A variável'");
+                        strcat(msg_erro, ids_checkin[i]);  
+                        strcat(msg_erro, "' é uma variavel do tipo '"); 
+                        strcat(msg_erro, simbolo->tipo); 
+                        strcat(msg_erro, "' e não do tipo '"); 
+                        strcat(msg_erro, tipos_checkin[i]); 
+                        strcat(msg_erro, "'\n"); 
+                        semantic_error();
+                    }
+                    strcpy(msg_erro,"");
+
+                    //pra poder usar uma variável ela precisar ter sido inicializada
+                    if (simbolo->inicializado == 0){
+                        strcpy(msg_erro,"");
+                        strcat(msg_erro, "A variável '"); 
+                        strcat(msg_erro, ids_checkin[i]); 
+                        strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
+                        semantic_error();
+                    }
+                    strcpy(msg_erro,"");
+                }
+            }
+        CLOSE_PARENTHESES DOT_COMMA
+    | CHECKOUT OPEN_PARENTHESES {checkout = 1;} result_form {checkout = 0;} CLOSE_PARENTHESES DOT_COMMA 
     | POUSAR DOT_COMMA
     | FERIADO DOT_COMMA
     ;
@@ -714,21 +800,37 @@ term:
     ;
 
 //relacionado com checkin e checkout
-ids:
-    ID id_list
-    ;
-
-id_list:
-    id_list COMMA ID
-    |
-    ;
 types:
-    TYPE type_list
+    type type_list
     ;
 
 type_list:
-    type_list COMMA TYPE
+    type_list COMMA type
     |
+    ;
+
+type: 
+    TYPE 
+        {      
+            tipos_checkin[qtd_tipos_checkin] = $1;
+            qtd_tipos_checkin += 1;
+        }
+    ;
+ids:
+    id id_list
+    ;
+
+id_list:
+    id_list COMMA id
+    |
+    ;
+
+id:
+    ID
+        {      
+            ids_checkin[qtd_ids_checkin] = $1;
+            qtd_ids_checkin += 1;
+        }
     ;
 
 result_form:
