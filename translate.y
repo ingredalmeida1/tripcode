@@ -676,6 +676,13 @@ atribuicao:
             }
             strcpy(msg_erro,"");
 
+            if (strcmp(simbolo->valor, "CONSTANTE") == 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Atribuição: Não é possível fazer reatribuição de CONSTANTE\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+
             if (strcmp(simbolo->tipo, $3) != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Atribuição: Não é possível atribuir um valor do tipo '");
@@ -689,6 +696,13 @@ atribuicao:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
+        }
+    |
+    ID_CONST ASSIGN expr DOT_COMMA 
+        { 
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Atribuição: Não é possível fazer reatribuição de CONSTANTE\n"); 
+                semantic_error();
         }
     ;
 
@@ -774,29 +788,45 @@ term:
     | STRING        {$$ = "VOUCHER";}
     | BOOL          {$$ = "BOOL";}
     | call_function {$$ = $1;}
-    | ID            {
-                        //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
-                        Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
-                        if (simbolo == NULL){
-                            strcpy(msg_erro,"");
-                            strcat(msg_erro, "A variável '"); 
-                            strcat(msg_erro, $1); 
-                            strcat(msg_erro, "' não foi previamente declarada!'\n"); 
-                            semantic_error();
-                        }
-                        strcpy(msg_erro,"");
-                        
-                        //pra poder usar uma variável ela precisar ter sido inicializada
-                        if (simbolo->inicializado == 0){
-                            strcpy(msg_erro,"");
-                            strcat(msg_erro, "A variável '"); 
-                            strcat(msg_erro, $1); 
-                            strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
-                            semantic_error();
-                        }
-                        strcpy(msg_erro,"");
-                        $$ = simbolo->tipo;
-                    }
+    | ID            
+        {
+            //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
+            Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+            if (simbolo == NULL){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "A variável '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "' não foi previamente declarada!'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            
+            //pra poder usar uma variável ela precisar ter sido inicializada
+            if (simbolo->inicializado == 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "A variável '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            $$ = simbolo->tipo;
+        }
+    | ID_CONST    
+        {
+            //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
+            Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
+            if (simbolo == NULL){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "A constante '"); 
+                strcat(msg_erro, $1); 
+                strcat(msg_erro, "' não foi previamente definida!'\n"); 
+                semantic_error();
+            }
+            strcpy(msg_erro,"");
+            
+            $$ = simbolo->tipo;
+        }
     ;
 
 //relacionado com checkin e checkout

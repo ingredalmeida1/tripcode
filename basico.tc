@@ -23,7 +23,7 @@ ROTEIRO trip() >>>
     ALFANDEGA (20>0) >>>
         teste <-> 10 + 20;
     <<< ISENTO >>>
-        EMBARCAR soma(teste + 0);
+        EMBARCAR soma(10 + 0);
         teste <-> EMBARCAR soma (teste + 10);
         teste <-> teste + EMBARCAR soma (teste + 0);
     <<<
