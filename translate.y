@@ -22,6 +22,9 @@ int numero_de_funcoes = 0;
 Funcao* funcao_atual = NULL; //variavel para armazenar ponteiro para a funcao que esta sendo avaliada no momento
 Funcao* funcao_temp = NULL; //variavel para armazenar ponteiro para a funcao temporaria para comparar com o prototipo
 
+int qtd_parametros_reais = 0;
+char* tipos_parametros_reais[10]; 
+
 int prototipo = 0;   //flag para saber se os parametros formais sao relacionados ao prototipo de uma funcao
 int definicao = 0;
 
@@ -278,6 +281,11 @@ param_form:
 main:
     ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK  
         {
+            Funcao *nova_funcao = NULL;
+            inicializar_funcao(&nova_funcao, "TRIP"); //pra poder verificar se tem pelo menos um retorno e se o tipo é MILHAS
+            funcao_atual = nova_funcao;
+            set_tipo(&funcao_atual, "MILHAS");
+
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "MAIN");
             adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
@@ -289,6 +297,12 @@ main:
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
+
+            if (funcao_atual->retorno == 0){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Programa Principal 'TRIP': Está faltando retorno do tipo MILHAS\n"); 
+                semantic_error();
+            }
         }
     ;
 
@@ -347,6 +361,16 @@ function_end:
                     semantic_error();
                 }
                 strcpy(msg_erro,""); //reseta msg de erro
+
+                if (funcao_atual->retorno == 0){
+                    strcpy(msg_erro,"");
+                    strcat(msg_erro, "Definicao de Funcao '");
+                    strcat(msg_erro, funcao_atual->identificador);
+                    strcat(msg_erro, "': Faltando retorno do tipo '");
+                    strcat(msg_erro, funcao_atual->tipo_retorno);
+                    strcat(msg_erro, "'\n");
+                    semantic_error();
+                }
 
                 // restaura o escopo anterior como o escopo atual
                 escopo_atual = escopo_atual->anterior;
@@ -475,7 +499,11 @@ command:
     ;
 
 call_function:
-    EMBARCAR ID OPEN_PARENTHESES params_real CLOSE_PARENTHESES 
+    EMBARCAR ID OPEN_PARENTHESES
+        {
+            qtd_parametros_reais = 0; //sempre reiniciando o contador vai sobreescrevendo
+        }
+    params_real CLOSE_PARENTHESES 
         {
             Funcao **funcao = buscar_funcao(funcoes, $2, numero_de_funcoes); 
 
@@ -490,6 +518,24 @@ call_function:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
+            // Verifica a quantidade de parâmetros
+            if (qtd_parametros_reais != (*funcao)->qtd_parametros) {
+                strcpy(msg_erro, "Chamada de Função: Número incorreto de parâmetros na função '");
+                strcat(msg_erro, $2); 
+                strcat(msg_erro, "'\n"); 
+                semantic_error();
+            }
+
+            //tipos dos parâmetros
+            for (int i = 0; i < qtd_parametros_reais; i++) {
+                if (strcmp(tipos_parametros_reais[i], (*funcao)->parametros[i]->tipo) != 0) {
+                    strcpy(msg_erro, "Chamada de Função: Tipos de parâmetros incompatíveis na função '");
+                    strcat(msg_erro, $2); 
+                    strcat(msg_erro, "'\n"); 
+                    semantic_error();
+                }
+            }
+
             (*funcao)->chamada = 1;
 
             $$ = (*funcao)->tipo_retorno;
@@ -497,7 +543,7 @@ call_function:
     ;
 
 params_real: 
-    param_real list_params_real
+    param_real list_params_real 
     | 
     ;
 
@@ -507,11 +553,28 @@ list_params_real:
     ;
 
 param_real:
-    expr
+    expr 
+        {
+            tipos_parametros_reais[qtd_parametros_reais] = $1;
+            qtd_parametros_reais += 1;
+        }
     ;
 
 return:
-    DESPACHAR expr DOT_COMMA {$$ = $2;}
+    DESPACHAR expr DOT_COMMA 
+        {
+            if((strcmp($2, funcao_atual->tipo_retorno) != 0)){
+                strcpy(msg_erro,"");
+                strcat(msg_erro, "Retorno função '");
+                strcat(msg_erro, funcao_atual->identificador);
+                strcat(msg_erro, "': Tipo Incompatível, esperado: '");
+                strcat(msg_erro, funcao_atual->tipo_retorno);
+                strcat(msg_erro, "'\n");
+                semantic_error();
+            }
+
+            funcao_atual->retorno = 1;
+        }
     ;
 
 atribuicao:
@@ -548,7 +611,7 @@ expr:
         { 
             if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Operação Aritimética: Ainda não está diponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
+                strcat(msg_erro, "Operação Aritimética: Ainda não está disponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
                 semantic_error();
             }
             strcpy(msg_erro,"");

@@ -39,34 +39,34 @@ Checklit:
   ✔ se já existe o indentificador na tabela global
   ✔ se já existe função com mesmo nome
 
-* Definir função:
+✔ Definir função:
   ✔ se existe prototipo para funcao 
   conferir se
 	  ✔ quantidade dos parametros
 	  ✔ tipo dos parametros
 	  ✔ tipo de retorno
   casa com o prototipo (-> criar funcao temporaria e depois comparar com a do prototipo)
-  * tipo de retorno
+  ✔ tipo de retorno
 
-* Chamar a função:
+✔ Chamar a função:
   ✔ se existe prototipo para funcao
   ✔ as que são chamadas no código precisam ter sido definidas 
   	(adicionar um flag de se chamou pelo menos uma vez e uma pra se a funcao foi definida
   	 ao final percorrer funcoes e vê se todas que foram chamadas foram definidas )
-  * quantidade dos parametros
-  * tipo dos parametros 
+  ✔ quantidade dos parametros
+  ✔ tipo dos parametros 
 
 ✔ Verificar se variável foi inicializada antes de ser usada
   
-* Verificacao Tipos
+✔ Verificacao Tipos
   ✔ quando faz atribuicao
     - conferir se a variável é constante (const), pois se for  ela não deve ser reatribuída após a sua inicialização.
   ✔ operação pode ser aplicada aos tipos
     ✔ operadores aritméticos (+, -, *, /, %): operandos têm que ser de tipos numéricos (DOLAR ou MILHAS)
     ✔ operadores de comparação (=, #, <, >, <=, >=): se os operandos têm tipos compatíveis, ou seja, é permitido comparar tipos numéricos entre si, mas comparar tipos diferentes como int e char* deve gerar um erro e o tipo resultante é o tipo BOOL
     ✔ operadores lógicos (AND, OR, NOT): os operandos devem ser de tipo booleano 
-  * condicoes if, while -> booleano
-  * for -> milhas
+  ✔ condicoes if, while -> booleano
+  ✔ for -> milhas
   
-* Parametros CHECKIN
-* Parametros CHECKOUT
+* Parametros CHECKIN - conferir se as variaveis existem
+* Parametros CHECKOUT - conferir se variaveis existem e se foram inicializadas

@@ -11,7 +11,7 @@ ROTEIRO trip() >>>
 
     BAGAGEM MILHAS teste;
 
-    CHECKIN([MILHAS, VOUCHER], teste, valor);
+    CHECKIN([MILHAS, VOUCHER], teste, dia);
 
     TURISTANDO (FERIAS) >>>
         BAGAGEM DOLAR teste <-> 10.8 + 20.0;
@@ -24,7 +24,7 @@ ROTEIRO trip() >>>
         teste <-> 10 + 20;
     <<< ISENTO >>>
         EMBARCAR soma(teste + 0);
-        teste <-> EMBARCAR soma (teste + 0);
+        teste <-> EMBARCAR soma (teste + 10);
         teste <-> teste + EMBARCAR soma (teste + 0);
     <<<
 
@@ -33,7 +33,6 @@ ROTEIRO trip() >>>
     CHECKOUT("Resultado final" <> MILHAS valor <> "ok!");
 
     DESPACHAR 0;
-
     -> testando outro comentario <-
 <<< MILHAS <<<
 -> testando mais um comentario <-

@@ -34,8 +34,9 @@ typedef struct {
     Parametro** parametros;   //lista de parametros da funcao
     int qtd_parametros;       
     TabelaSimbolos* escopo;   //cada funcao tem seu proprio escopo
-    int chamada;
-    int definida;
+    int chamada;              //verificar se a função foi chamada pelo menos uma vez
+    int definida;             //verificar se a função foi definida
+    int retorno;              //verificar se tem pelo menos um retorno
 } Funcao;
 
 // Funcoes Relacionadas à Todas às Tabelas de Símblos:

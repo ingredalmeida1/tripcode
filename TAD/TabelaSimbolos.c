@@ -52,12 +52,6 @@ int verificar_simbolo_escopo_local(TabelaSimbolos *tabela_simbolos, char *identi
 
 void adicionar_simbolo(TabelaSimbolos **tabela_simbolos, char *tipo, char *nome_identificador, char *valor_inicial, int inicializado) {
 
-    // verificar se o símbolo já existe na tabela
-    // if (verificar_simbolo_existente(*tabela_simbolos, nome_identificador)) {
-    //     // printf("Erro: O símbolo '%s' já existe na tabela.\n", nome_identificador);
-    //     return 1;
-    // }
-
     int indice = (*tabela_simbolos)->tamanho;
 
     Simbolo *novo_simbolo = (Simbolo *)malloc(sizeof(Simbolo));
