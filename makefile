@@ -2,7 +2,7 @@ compile:
 	clear
 	bison -d translate.y
 	flex lex.l
-	gcc translate.tab.c TAD/TabelaSimbolos.c lex.yy.c -lfl
+	gcc translate.tab.c TAD/TabelaSimbolos.c TAD/InstrucaoTAC.c lex.yy.c -lfl
 
 run_corretos:
 	./a.out < exemplos/testes-yacc/corretos/basico.tc
@@ -19,4 +19,5 @@ run_incorretos:
 	./a.out < exemplos/testes-yacc/incorretos/repeticao.tc
 	./a.out < exemplos/testes-yacc/incorretos/funcao.tc
 
-
+run_testes:
+	./a.out < exemplos/testes-tac/basico.tc
