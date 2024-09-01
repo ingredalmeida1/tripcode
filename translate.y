@@ -10,6 +10,7 @@
 #include <string.h> 
 
 #include "TAD/TabelaSimbolos.h"
+#include "TAD/InstrucaoTAC.h"
 
 TabelaSimbolos** tabelas_simbolos = NULL; //armazenar todas as tabelas de simbolos pra poder imprimir
 int numero_de_tabelas = 0;
@@ -217,6 +218,9 @@ def_variavel:
             strcpy(msg_erro,""); //reseta msg de erro
             
             adicionar_simbolo(&escopo_atual, $2, $3, "-",1);
+
+            //adicionar ao código de três endereços -> no print 2ª linha
+            adicionar_instrucao_TAC($5, $5, $5, $3); // op, arg1 e arg2 estão em expr -> S5
         }
     ;
 
@@ -696,6 +700,7 @@ atribuicao:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
+
         }
     |
     ID_CONST ASSIGN expr DOT_COMMA 
@@ -716,7 +721,7 @@ expr:
             }
             strcpy(msg_erro,"");
 
-            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOLL") == 0) ){
+            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOOL") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Operandos devem ser de tipos numéricos (MILHAS ou DOLAR)");
                 semantic_error();
@@ -730,6 +735,9 @@ expr:
             else{
                 $$ = "DOLAR";
             }
+             
+            //adicionar ao código de três endereços
+            adicionar_instrucao_TAC($2, $1, $3, $$); // no print 1ª linha
         }
 
     | expr RELOP term   
@@ -811,6 +819,7 @@ term:
             }
             strcpy(msg_erro,"");
             $$ = simbolo->tipo;
+
         }
     | ID_CONST    
         {
@@ -965,11 +974,13 @@ void verificar_definicao_funcoes_chamadas() {
 }
 
 int main(void) {
-    yyparse();     
-    
-    printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
+    if (yyparse() == 0){
+        printf("\n\n\033[1;32mPrograma sintaticamente e semanticamente correto.\033[0m\n\n");
 
-    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
+        imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
+
+        imprimir_TAC();
+    }
 
     return 0;
 }
