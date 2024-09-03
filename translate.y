@@ -63,11 +63,12 @@ void verificar_definicao_funcoes_chamadas();
         Registros Semânticos
 ----------------------------------------------------------------------------------------------------*/
 /* especificar os tipos de valores que os tokens podem armazenar                                    */
+
 %union {
-    int inteiro;
-    float real;
-    char *string;
+    char *lexema;
+    Simbolo simbolo; // usar a estrutura símbolo pra poder armazer tipo e valor 
 }
+
 
 /*----------------------------------------------------------------------------------------------------
         Tokens
@@ -86,31 +87,30 @@ void verificar_definicao_funcoes_chamadas();
 %token OPEN_CODEBLOCK CLOSE_CODEBLOCK
 %token ASSIGN CONCAT
 %token TYPE
-%token INT FLOAT STRING BOOL ID ID_CONST
+%token INT FLOAT STRING BOOL ID
 %token OP RELOP LOGICOP LOGICOP_UNARY
 
 /* especificar o tipo do atributo armazenado no token                                               */
-%type <inteiro> INT
-%type <real>    FLOAT
-%type <string>  STRING
-%type <string>  BOOL
+%type <lexema> INT
+%type <lexema> FLOAT
+%type <lexema> STRING
+%type <lexema> BOOL
 
-%type <string>  TYPE
+%type <lexema> TYPE
 
-%type <string>  ID
-%type <string>  ID_CONST
+%type <lexema> ID
 
-%type <string> OP
-%type <string> RELOP
-%type <string> LOGICOP
-%type <string> LOGICOP_UNARY
+%type <lexema> OP
+%type <lexema> RELOP
+%type <lexema> LOGICOP
+%type <lexema> LOGICOP_UNARY
 
 /* especificar o tipo de variaveis da gramatica                                               */
-%type <string> expr
-%type <string> term
-%type <string> call_function
-%type <string> return
-%type <string> const
+%type <simbolo> expr
+%type <simbolo> term
+%type <simbolo> call_function
+%type <simbolo> return
+%type <simbolo> const
 
 /* definir variavel de partida da gramatica                                                        */
 %start tripcode
@@ -155,7 +155,7 @@ consts:
     ;
 
 const: 
-    EXTERIOR ID_CONST term 
+    EXTERIOR ID term 
         {
             strcpy(msg_erro,""); //esvazia mensagem de erro
             strcat(msg_erro, "Definição de Constante: ");
@@ -167,7 +167,9 @@ const:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            adicionar_simbolo(&escopo_atual, $3, $2, "CONSTANTE", 1);
+            printf("\nDefinicao de constante do tipo %s com valor %s", $3.tipo, $3.valor);
+            
+            adicionar_simbolo(&escopo_atual, "CONSTANTE", $3.tipo, $2, $3.valor, 1);
         }
     ;
 
@@ -188,7 +190,7 @@ dec_variavel:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            adicionar_simbolo(&escopo_atual, $2, $3, "-",0);
+            adicionar_simbolo(&escopo_atual, "VARIAVEL", $2, $3, NULL, 0);
         }
     ;
 
@@ -203,20 +205,20 @@ def_variavel:
             }
             strcpy(msg_erro,""); //reseta msg de erro
 
-            if ((strcmp($2, $5) != 0)){
+            if ((strcmp($2, $5.tipo) != 0)){
                 strcat(msg_erro, "Definição de Variável: ");
                 strcat(msg_erro, "O tipo do valor atribuido à variável '");
                 strcat(msg_erro, $3);
                 strcat(msg_erro, "' é incompatível com tipo esperado! ('");
                 strcat(msg_erro, $2);
                 strcat(msg_erro, "' <-> '");
-                strcat(msg_erro, $5);
+                strcat(msg_erro, $5.tipo);
                 strcat(msg_erro, "' => X)\n");
                 semantic_error();
             }
             strcpy(msg_erro,""); //reseta msg de erro
             
-            adicionar_simbolo(&escopo_atual, $2, $3, "-",1);
+            adicionar_simbolo(&escopo_atual, "VARIAVEL", $2, $3, $5.valor, 1);
         }
     ;
 
@@ -253,7 +255,8 @@ function_header:
     CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK 
     {
         set_tipo(&funcao_atual, $3);
-        adicionar_simbolo(&escopo_atual, $3, funcao_atual->identificador, "FUNCAO",3);
+        
+        adicionar_simbolo(&escopo_atual, "FUNCAO", $3, funcao_atual->identificador, NULL, 1); //inicializado 
 
         prototipo = 0; //voltar a flag para falso
     }
@@ -434,7 +437,7 @@ stmt:
 for:
     DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK 
         {
-            if (strcmp($4, "MILHAS") != 0 || strcmp($7, "MILHAS") != 0 || strcmp($10, "MILHAS") != 0){
+            if (strcmp($4.tipo, "MILHAS") != 0 || strcmp($7.tipo, "MILHAS") != 0 || strcmp($10.tipo, "MILHAS") != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Bloco de Repeticao DECOLAR: todos termos devem ser do tipo 'MILHAS'\n");
                 semantic_error();
@@ -459,10 +462,10 @@ for:
 while:
     TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
         {
-            if (strcmp($3, "BOOL") != 0){
+            if (strcmp($3.tipo, "BOOL") != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Bloco de Repeticao TURISTANDO: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
-                strcat(msg_erro, $3); 
+                strcat(msg_erro, $3.tipo); 
                 strcat(msg_erro, "'\n"); 
                 semantic_error();
             }
@@ -484,10 +487,10 @@ while:
 if: 
     ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
         {
-            if (strcmp($3, "BOOL") != 0){
+            if (strcmp($3.tipo, "BOOL") != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Bloco Condicional ALFANDEGA: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
-                strcat(msg_erro, $3); 
+                strcat(msg_erro, $3.tipo); 
                 strcat(msg_erro, "'\n"); 
                 semantic_error();
             }
@@ -624,7 +627,7 @@ call_function:
 
             (*funcao)->chamada = 1;
 
-            $$ = (*funcao)->tipo_retorno;
+            $$.tipo = (*funcao)->tipo_retorno;
         } 
     ;
 
@@ -641,7 +644,7 @@ list_params_real:
 param_real:
     expr 
         {
-            tipos_parametros_reais[qtd_parametros_reais] = $1;
+            tipos_parametros_reais[qtd_parametros_reais] = $1.tipo;
             qtd_parametros_reais += 1;
         }
     ;
@@ -649,7 +652,7 @@ param_real:
 return:
     DESPACHAR expr DOT_COMMA 
         {
-            if((strcmp($2, funcao_atual->tipo_retorno) != 0)){
+            if((strcmp($2.tipo, funcao_atual->tipo_retorno) != 0)){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Retorno função '");
                 strcat(msg_erro, funcao_atual->identificador);
@@ -676,17 +679,17 @@ atribuicao:
             }
             strcpy(msg_erro,"");
 
-            if (strcmp(simbolo->valor, "CONSTANTE") == 0){
+            if (strcmp(simbolo->descricao, "CONSTANTE") == 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Atribuição: Não é possível fazer reatribuição de CONSTANTE\n"); 
                 semantic_error();
             }
             strcpy(msg_erro,"");
 
-            if (strcmp(simbolo->tipo, $3) != 0){
+            if (strcmp(simbolo->tipo, $3.tipo) != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Atribuição: Não é possível atribuir um valor do tipo '");
-                strcat(msg_erro, $3);  
+                strcat(msg_erro, $3.tipo);  
                 strcat(msg_erro, "' a uma variavel do tipo '"); 
                 strcat(msg_erro, simbolo->tipo); 
                 strcat(msg_erro, "'\n"); 
@@ -696,27 +699,22 @@ atribuicao:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
-        }
-    |
-    ID_CONST ASSIGN expr DOT_COMMA 
-        { 
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "Atribuição: Não é possível fazer reatribuição de CONSTANTE\n"); 
-                semantic_error();
+
+            printf("\n Atributos da expressao: %s, %s, %s", $3.identificador, $3.tipo, $3.valor);
         }
     ;
 
 expr: 
     expr OP term   
         { 
-            if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
+            if ( (strcmp($1.tipo, "VOUCHER") == 0) || (strcmp($3.tipo, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Ainda não está disponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
                 semantic_error();
             }
             strcpy(msg_erro,"");
 
-            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOLL") == 0) ){
+            if ( (strcmp($1.tipo, "BOOL") == 0) || (strcmp($3.tipo, "BOLL") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Operandos devem ser de tipos numéricos (MILHAS ou DOLAR)");
                 semantic_error();
@@ -724,17 +722,17 @@ expr:
             strcpy(msg_erro,"");
             
             //o resultado só vai ser do tipo MILHAS se os dois operandos forem do tipo MILHAS (inclusive na divisao)
-            if ( (strcmp($1, "MILHAS") == 0) && (strcmp($3, "MILHAS") == 0) ){
-                $$ = "MILHAS";
+            if ( (strcmp($1.tipo, "MILHAS") == 0) && (strcmp($3.tipo, "MILHAS") == 0) ){
+                $$.tipo = "MILHAS";
             }
             else{
-                $$ = "DOLAR";
+                $$.tipo = "DOLAR";
             }
         }
 
     | expr RELOP term   
         { 
-            if ( (strcmp($1, "VOUCHER") == 0) || (strcmp($3, "VOUCHER") == 0) ){
+            if ( (strcmp($1.tipo, "VOUCHER") == 0) || (strcmp($3.tipo, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Relacional: Ainda não está diponível para variáveis do tipo VOUCHER =(");
                 semantic_error();
@@ -742,7 +740,7 @@ expr:
             strcpy(msg_erro,"");
 
 
-            if ( (strcmp($1, "BOOL") == 0) || (strcmp($3, "BOLL") == 0) ){
+            if ( (strcmp($1.tipo, "BOOL") == 0) || (strcmp($3.tipo, "BOLL") == 0) ){
                 if ( (strcmp($2, "#") != 0) && (strcmp($2, "=") != 0) ) //se não está vendo se igual nem se diferente
                     strcpy(msg_erro,"");
                     strcat(msg_erro, "Operação Relacionados: Para que os operandos sejam booleanos o operados tem que ser '=' ou '#'");
@@ -751,12 +749,12 @@ expr:
             strcpy(msg_erro,"");
 
             //para valores numéricos não tem restrição
-            $$ = "BOOL"; 
+            $$.tipo = "BOOL"; 
         }
 
     | expr LOGICOP term 
         { 
-            if ((strcmp($1, "BOOL") != 0) || (strcmp($3, "BOOL") != 0)){
+            if ((strcmp($1.tipo, "BOOL") != 0) || (strcmp($3.tipo, "BOOL") != 0)){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
                 semantic_error();
@@ -767,67 +765,60 @@ expr:
     
     | expr LOGICOP_UNARY 
             {
-                if (strcmp($1, "BOOL") != 0) {
+                if (strcmp($1.tipo, "BOOL") != 0) {
                     strcpy(msg_erro,"");
                     strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
-                    strcat(msg_erro, $1); 
+                    strcat(msg_erro, $1.tipo); 
                     strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
                     semantic_error();
                 }
                 strcpy(msg_erro,"");
                 
-                $$ = $1;
+                $$ = $1; 
             }
-    | term {$$ = $1;}
+    | term {$$ = $1;} //repassa o simbolo
     | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;}
     ;
 
 term: 
-    INT             {$$ = "MILHAS";}
-    | FLOAT         {$$ = "DOLAR";}
-    | STRING        {$$ = "VOUCHER";}
-    | BOOL          {$$ = "BOOL";}
-    | call_function {$$ = $1;}
-    | ID            
-        {
-            //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
-            Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
-            if (simbolo == NULL){
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "A variável '"); 
-                strcat(msg_erro, $1); 
-                strcat(msg_erro, "' não foi previamente declarada!'\n"); 
-                semantic_error();
-            }
+    INT {
+        $$ = (Simbolo){ .identificador= NULL, .tipo = "MILHAS", .valor = $1 };
+    }
+    | FLOAT {
+        $$ = (Simbolo){ .identificador= NULL, .tipo = "DOLAR", .valor = $1 };
+    }
+    | STRING {
+        $$ = (Simbolo){ .identificador= NULL, .tipo = "VOUCHER", .valor = $1 };
+    }
+    | BOOL {
+        $$ = (Simbolo){ .identificador= NULL, .tipo = "BOOL", .valor = $1 };
+    }
+
+    | call_function { 
+        $$ = (Simbolo){ .identificador= NULL, .tipo = $1.tipo, .valor = NULL };
+    }
+    | ID {
+        Simbolo *simbolo = buscar_simbolo(escopo_atual, $1);
+        if (simbolo == NULL) {
             strcpy(msg_erro,"");
-            
-            //pra poder usar uma variável ela precisar ter sido inicializada
-            if (simbolo->inicializado == 0){
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "A variável '"); 
-                strcat(msg_erro, $1); 
-                strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
-                semantic_error();
-            }
-            strcpy(msg_erro,"");
-            $$ = simbolo->tipo;
+            strcat(msg_erro, "A variável '"); 
+            strcat(msg_erro, $1); 
+            strcat(msg_erro, "' não foi previamente declarada!\n"); 
+            semantic_error();
         }
-    | ID_CONST    
-        {
-            //sempre que for usar um identificador tem que coneferir se ele existe no escopo interno ou externo e quardar seu tipo pra fazer verificacao de tipo
-            Simbolo *simbolo = buscar_simbolo(escopo_atual,  $1);
-            if (simbolo == NULL){
-                strcpy(msg_erro,"");
-                strcat(msg_erro, "A constante '"); 
-                strcat(msg_erro, $1); 
-                strcat(msg_erro, "' não foi previamente definida!'\n"); 
-                semantic_error();
-            }
+
+        if (simbolo->inicializado == 0) {
             strcpy(msg_erro,"");
-            
-            $$ = simbolo->tipo;
+            strcat(msg_erro, "A variável '"); 
+            strcat(msg_erro, $1); 
+            strcat(msg_erro, "' não foi previamente definida/inicializada!\n"); 
+            semantic_error();
         }
+
+        $$ = (*simbolo); //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
+    }
     ;
+
 
 //relacionado com checkin e checkout
 types:
@@ -874,7 +865,8 @@ results:
 result:
     STRING
     | param_form
-    ;
+    ; 
+
 
 %%
 /*----------------------------------------------------------------------------------------------------
@@ -915,11 +907,22 @@ int identificador_disponivel(char *identificador) {
     }
 
     //percorreter tabela de simbolos do bloco local para vê se identificador já foi usado no escopo local:
-    //se escopo local nao for o global tem que conferir se já existe constante com mesmo identificador?
     if (verificar_simbolo_escopo_local(escopo_atual, identificador)) {
         strcat(msg_erro, "' já está sendo usado!\n");
         return 1;
     }
+
+    //se escopo local nao for o global tem que conferir se já existe constante com mesmo identificador no escobo global
+    if (escopo_atual->anterior != NULL) {
+        // Percorre a tabela de símbolos do escopo global para verificar se o identificador já foi usado para uma constante:
+        TabelaSimbolos *escopo_global = tabelas_simbolos[0];
+        
+        if (verificar_constante(escopo_global, identificador)) {
+            strcat(msg_erro, "' já está sendo usado para identificar uma constante!\n");
+            return 1;
+        }
+    }
+
     return 0;
 }
 
