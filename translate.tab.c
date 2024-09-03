@@ -1948,7 +1948,7 @@ yyreduce:
             else{
                 (yyval.simbolo).tipo = "DOLAR";
             }
-            (yyval.simbolo).valor = "temp"; //?
+            (yyval.simbolo).valor = new_temp(); //?
 
             //adicionar ao código de três endereços
             adicionar_instrucao_TAC((yyvsp[-1].lexema), (yyvsp[-2].simbolo).valor, (yyvsp[0].simbolo).valor, (yyval.simbolo).valor); 

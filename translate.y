@@ -729,7 +729,7 @@ expr:
             else{
                 $$.tipo = "DOLAR";
             }
-            $$.valor = "temp"; //?
+            $$.valor = new_temp(); 
 
             //adicionar ao código de três endereços
             adicionar_instrucao_TAC($2, $1.valor, $3.valor, $$.valor); 
@@ -756,7 +756,7 @@ expr:
 
             //para valores numéricos não tem restrição
             $$.tipo = "BOOL";
-            $$.valor = "temp"; //? 
+            $$.valor = new_temp();
         }
 
     | expr LOGICOP term 
@@ -768,7 +768,7 @@ expr:
             }
             strcpy(msg_erro,"");
             $$.tipo = $1.tipo;
-            $$.valor = "temp"; //?
+            $$.valor = new_temp();
         }
     
     | expr LOGICOP_UNARY 
@@ -783,7 +783,7 @@ expr:
                 strcpy(msg_erro,"");
                 
                 $$.tipo = $1.tipo;
-                $$.valor = "temp"; //depois olhar se teria como já criar com um contator tipo temp1
+                $$.valor = new_temp(); //depois olhar se teria como já criar com um contator tipo temp1
             }
 
     | term {$$ = $1;} //repassa o tipo e o valor

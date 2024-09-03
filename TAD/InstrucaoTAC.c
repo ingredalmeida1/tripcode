@@ -5,6 +5,14 @@
 TACInstrucao lista_instrucoes[MAX_INSTRUCOES];
 int num_instrucoes = 0;
 
+int temp_counter = 0; 
+
+char* new_temp() {
+    char *temp = (char *)malloc(10); 
+    sprintf(temp, "t%d", temp_counter++); 
+    return temp; 
+}
+
 void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2, const char *result) {
     if (num_instrucoes < MAX_INSTRUCOES) {
         TACInstrucao instr = {0};
