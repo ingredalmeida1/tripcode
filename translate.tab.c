@@ -1919,7 +1919,7 @@ yyreduce:
             simbolo->valor = (yyvsp[-1].simbolo).valor; // ou só coloca strdup("?"); //saber o valor certinho em tempo de execução
 
             //acessar atributos da variavel expressao:
-            // printf("\n Atributos da expressao: %s, %s", $3.tipo, $3.valor);
+             //printf("\n Atributos da expressao: %s, %s", $3.tipo, $3.valor);
         }
 #line 1925 "translate.tab.c"
     break;
@@ -1948,7 +1948,7 @@ yyreduce:
             else{
                 (yyval.simbolo).tipo = "DOLAR";
             }
-            (yyval.simbolo).valor = new_temp(); //?
+            (yyval.simbolo).valor = new_temp(); 
 
             //adicionar ao código de três endereços
             adicionar_instrucao_TAC((yyvsp[-1].lexema), (yyvsp[-2].simbolo).valor, (yyvsp[0].simbolo).valor, (yyval.simbolo).valor); 
@@ -1978,7 +1978,7 @@ yyreduce:
 
             //para valores numéricos não tem restrição
             (yyval.simbolo).tipo = "BOOL";
-            (yyval.simbolo).valor = "temp"; //? 
+            (yyval.simbolo).valor = new_temp();
         }
 #line 1984 "translate.tab.c"
     break;
@@ -1993,7 +1993,7 @@ yyreduce:
             }
             strcpy(msg_erro,"");
             (yyval.simbolo).tipo = (yyvsp[-2].simbolo).tipo;
-            (yyval.simbolo).valor = "temp"; //?
+            (yyval.simbolo).valor = new_temp();
         }
 #line 1999 "translate.tab.c"
     break;
@@ -2011,7 +2011,7 @@ yyreduce:
                 strcpy(msg_erro,"");
                 
                 (yyval.simbolo).tipo = (yyvsp[-1].simbolo).tipo;
-                (yyval.simbolo).valor = "temp"; //depois olhar se teria como já criar com um contator tipo temp1
+                (yyval.simbolo).valor = new_temp(); //depois olhar se teria como já criar com um contator tipo temp1
             }
 #line 2017 "translate.tab.c"
     break;

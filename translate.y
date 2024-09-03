@@ -701,7 +701,7 @@ atribuicao:
             simbolo->valor = $3.valor; // ou só coloca strdup("?"); //saber o valor certinho em tempo de execução
 
             //acessar atributos da variavel expressao:
-            // printf("\n Atributos da expressao: %s, %s", $3.tipo, $3.valor);
+             //printf("\n Atributos da expressao: %s, %s", $3.tipo, $3.valor);
         }
     ;
 

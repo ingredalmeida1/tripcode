@@ -24,7 +24,7 @@ void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2,
     }
 }
 
-void imprimir_TAC() {
+/*void imprimir_TAC() {
     printf("\n------------------------------ Código de Três Endereços ------------------------------\n\n");
 
     for (int i = 0; i < num_instrucoes; i++) {
@@ -36,4 +36,23 @@ void imprimir_TAC() {
                lista_instrucoes[i].op,
                lista_instrucoes[i].arg2);
     }
+}*/
+
+void imprimir_TAC() {
+
+   FILE *file = fopen("codigo_tac.txt", "w"); 
+
+    fprintf(file, "\n------------------------------ Código de Três Endereços ------------------------------\n\n");
+
+    for (int i = 0; i < num_instrucoes; i++) {
+        fprintf(file, "%d: ", i + 1);
+        
+        fprintf(file, "%s = %s %s %s\n",
+                lista_instrucoes[i].result,
+                lista_instrucoes[i].arg1,
+                lista_instrucoes[i].op,
+                lista_instrucoes[i].arg2);
+    }
+
+    fclose(file);
 }
