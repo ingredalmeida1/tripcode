@@ -637,15 +637,15 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,   132,   132,   132,   153,   154,   158,   177,   178,   179,
-     183,   198,   226,   227,   232,   231,   255,   267,   268,   272,
-     273,   277,   326,   325,   353,   354,   359,   358,   393,   426,
-     427,   431,   432,   433,   434,   439,   438,   464,   463,   489,
-     507,   488,   516,   515,   529,   533,   534,   535,   536,   537,
-     539,   541,   543,   538,   585,   585,   585,   586,   587,   592,
-     591,   635,   636,   640,   641,   645,   653,   670,   708,   733,
-     755,   766,   779,   780,   784,   787,   790,   793,   797,   800,
-     825,   829,   830,   834,   841,   845,   846,   850,   858,   861,
-     862,   866,   867
+     183,   198,   226,   227,   232,   231,   256,   268,   269,   273,
+     274,   278,   327,   326,   354,   355,   360,   359,   394,   427,
+     428,   432,   433,   434,   435,   440,   439,   465,   464,   490,
+     508,   489,   517,   516,   530,   534,   535,   536,   537,   538,
+     540,   542,   544,   539,   579,   579,   579,   580,   581,   586,
+     585,   630,   631,   635,   636,   640,   648,   667,   706,   731,
+     753,   764,   777,   778,   782,   785,   788,   791,   795,   798,
+     823,   827,   828,   832,   839,   843,   844,   848,   856,   859,
+     860,   864,   865
 };
 #endif
 
@@ -1385,8 +1385,8 @@ yyreduce:
                 semantic_error();
             }
             strcpy(msg_erro,""); //reseta msg de erro
-
-            printf("\nDefinicao de constante do tipo %s com valor %s", (yyvsp[0].simbolo).tipo, (yyvsp[0].simbolo).valor);
+                        
+            // printf("\nDefinicao de constante do tipo %s com valor %s", $3.tipo, $3.valor);
             
             adicionar_simbolo(&escopo_atual, "CONSTANTE", (yyvsp[0].simbolo).tipo, (yyvsp[-1].lexema), (yyvsp[0].simbolo).valor, 1);
         }
@@ -1463,11 +1463,11 @@ yyreduce:
     break;
 
   case 16: /* function_header_end: CLOSE_PARENTHESES OPEN_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 256 "translate.y"
+#line 257 "translate.y"
     {
         set_tipo(&funcao_atual, (yyvsp[-1].lexema));
         
-        adicionar_simbolo(&escopo_atual, "FUNCAO", (yyvsp[-1].lexema), funcao_atual->identificador, NULL, 1); //inicializado 
+        adicionar_simbolo(&escopo_atual, "FUNCAO", (yyvsp[-1].lexema), funcao_atual->identificador, NULL, 0); //inicializado 
 
         prototipo = 0; //voltar a flag para falso
     }
@@ -1475,7 +1475,7 @@ yyreduce:
     break;
 
   case 21: /* param_form: TYPE ID  */
-#line 278 "translate.y"
+#line 279 "translate.y"
         {
             if (prototipo){
                 adicionar_parametro(&funcao_atual, (yyvsp[0].lexema), (yyvsp[-1].lexema));
@@ -1524,7 +1524,7 @@ yyreduce:
     break;
 
   case 22: /* $@3: %empty  */
-#line 326 "translate.y"
+#line 327 "translate.y"
         {
             Funcao *nova_funcao = NULL;
             inicializar_funcao(&nova_funcao, "TRIP"); //pra poder verificar se tem pelo menos um retorno e se o tipo é MILHAS
@@ -1542,7 +1542,7 @@ yyreduce:
     break;
 
   case 23: /* main: ROTEIRO TRIP OPEN_PARENTHESES CLOSE_PARENTHESES OPEN_CODEBLOCK $@3 stmt stmts CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 340 "translate.y"
+#line 341 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
@@ -1557,7 +1557,7 @@ yyreduce:
     break;
 
   case 26: /* $@4: %empty  */
-#line 359 "translate.y"
+#line 360 "translate.y"
         {
             Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-1].lexema), numero_de_funcoes); 
             if (funcao == NULL){
@@ -1592,7 +1592,7 @@ yyreduce:
     break;
 
   case 28: /* function_end: CLOSE_CODEBLOCK TYPE CLOSE_CODEBLOCK  */
-#line 394 "translate.y"
+#line 395 "translate.y"
         {
             if (definicao){
 
@@ -1626,8 +1626,8 @@ yyreduce:
     break;
 
   case 35: /* $@5: %empty  */
-#line 439 "translate.y"
-        {
+#line 440 "translate.y"
+        { 
             if (strcmp((yyvsp[-8].simbolo).tipo, "MILHAS") != 0 || strcmp((yyvsp[-5].simbolo).tipo, "MILHAS") != 0 || strcmp((yyvsp[-2].simbolo).tipo, "MILHAS") != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Bloco de Repeticao DECOLAR: todos termos devem ser do tipo 'MILHAS'\n");
@@ -1647,7 +1647,7 @@ yyreduce:
     break;
 
   case 36: /* for: DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK $@5 stmt stmts CLOSE_CODEBLOCK  */
-#line 456 "translate.y"
+#line 457 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
@@ -1656,7 +1656,7 @@ yyreduce:
     break;
 
   case 37: /* $@6: %empty  */
-#line 464 "translate.y"
+#line 465 "translate.y"
         {
             if (strcmp((yyvsp[-2].simbolo).tipo, "BOOL") != 0){
                 strcpy(msg_erro,"");
@@ -1678,7 +1678,7 @@ yyreduce:
     break;
 
   case 38: /* while: TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK $@6 stmt stmts CLOSE_CODEBLOCK  */
-#line 482 "translate.y"
+#line 483 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
@@ -1687,7 +1687,7 @@ yyreduce:
     break;
 
   case 39: /* $@7: %empty  */
-#line 489 "translate.y"
+#line 490 "translate.y"
         {
             if (strcmp((yyvsp[-2].simbolo).tipo, "BOOL") != 0){
                 strcpy(msg_erro,"");
@@ -1709,7 +1709,7 @@ yyreduce:
     break;
 
   case 40: /* $@8: %empty  */
-#line 507 "translate.y"
+#line 508 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
@@ -1718,7 +1718,7 @@ yyreduce:
     break;
 
   case 42: /* $@9: %empty  */
-#line 516 "translate.y"
+#line 517 "translate.y"
         {
             TabelaSimbolos *nova_tabela = NULL;
             inicializar_tabela(&nova_tabela, escopo_atual, "ISENTO");
@@ -1731,7 +1731,7 @@ yyreduce:
     break;
 
   case 43: /* else: ISENTO OPEN_CODEBLOCK $@9 stmt stmts CLOSE_CODEBLOCK  */
-#line 525 "translate.y"
+#line 526 "translate.y"
         {
             // restaura o escopo anterior como o escopo atual
             escopo_atual = escopo_atual->anterior;
@@ -1740,19 +1740,19 @@ yyreduce:
     break;
 
   case 50: /* $@10: %empty  */
-#line 539 "translate.y"
+#line 540 "translate.y"
         {qtd_tipos_checkin = 0;}
 #line 1746 "translate.tab.c"
     break;
 
   case 51: /* $@11: %empty  */
-#line 541 "translate.y"
+#line 542 "translate.y"
         { qtd_ids_checkin=0; }
 #line 1752 "translate.tab.c"
     break;
 
   case 52: /* $@12: %empty  */
-#line 543 "translate.y"
+#line 544 "translate.y"
             {
                 if (qtd_tipos_checkin != qtd_ids_checkin){
                     strcpy(msg_erro,"");
@@ -1783,42 +1783,35 @@ yyreduce:
                     }
                     strcpy(msg_erro,"");
 
-                    //pra poder usar uma variável ela precisar ter sido inicializada
-                    if (simbolo->inicializado == 0){
-                        strcpy(msg_erro,"");
-                        strcat(msg_erro, "A variável '"); 
-                        strcat(msg_erro, ids_checkin[i]); 
-                        strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
-                        semantic_error();
-                    }
-                    strcpy(msg_erro,"");
+                    simbolo->inicializado == 1;
+                    simbolo->valor = strdup("?"); //vai ser inicializada mas não sei o valor em tempo de compilação
                 }
             }
-#line 1798 "translate.tab.c"
+#line 1791 "translate.tab.c"
     break;
 
   case 54: /* $@13: %empty  */
-#line 585 "translate.y"
+#line 579 "translate.y"
                                 {checkout = 1;}
-#line 1804 "translate.tab.c"
+#line 1797 "translate.tab.c"
     break;
 
   case 55: /* $@14: %empty  */
-#line 585 "translate.y"
+#line 579 "translate.y"
                                                             {checkout = 0;}
-#line 1810 "translate.tab.c"
+#line 1803 "translate.tab.c"
     break;
 
   case 59: /* $@15: %empty  */
-#line 592 "translate.y"
+#line 586 "translate.y"
         {
             qtd_parametros_reais = 0; //sempre reiniciando o contador vai sobreescrevendo
         }
-#line 1818 "translate.tab.c"
+#line 1811 "translate.tab.c"
     break;
 
   case 60: /* call_function: EMBARCAR ID OPEN_PARENTHESES $@15 params_real CLOSE_PARENTHESES  */
-#line 596 "translate.y"
+#line 590 "translate.y"
         {
             Funcao **funcao = buscar_funcao(funcoes, (yyvsp[-4].lexema), numero_de_funcoes); 
 
@@ -1854,22 +1847,23 @@ yyreduce:
             (*funcao)->chamada = 1;
 
             (yyval.simbolo).tipo = (*funcao)->tipo_retorno;
+            (yyval.simbolo).valor = strdup("?"); //com o retorno da funcao vai armazenar o valor mas em tempo de compilacao não da pra saber qual
         }
-#line 1859 "translate.tab.c"
+#line 1853 "translate.tab.c"
     break;
 
   case 65: /* param_real: expr  */
-#line 646 "translate.y"
+#line 641 "translate.y"
         {
             tipos_parametros_reais[qtd_parametros_reais] = (yyvsp[0].simbolo).tipo;
             qtd_parametros_reais += 1;
         }
-#line 1868 "translate.tab.c"
+#line 1862 "translate.tab.c"
     break;
 
   case 66: /* return: DESPACHAR expr DOT_COMMA  */
-#line 654 "translate.y"
-        {
+#line 649 "translate.y"
+        {   
             if((strcmp((yyvsp[-1].simbolo).tipo, funcao_atual->tipo_retorno) != 0)){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Retorno função '");
@@ -1881,12 +1875,14 @@ yyreduce:
             }
 
             funcao_atual->retorno = 1;
+
+            //onde armazenar o valor do retorno? 
         }
-#line 1886 "translate.tab.c"
+#line 1882 "translate.tab.c"
     break;
 
   case 67: /* atribuicao: ID ASSIGN expr DOT_COMMA  */
-#line 671 "translate.y"
+#line 668 "translate.y"
         { 
             Simbolo *simbolo = buscar_simbolo(escopo_atual,  (yyvsp[-3].lexema));
             if (simbolo == NULL){
@@ -1918,15 +1914,16 @@ yyreduce:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
+            simbolo->valor = strdup("?"); //saber o valor em tempo de execução
 
             printf("\n Atributos da expressao: %s, %s, %s", (yyvsp[-1].simbolo).identificador, (yyvsp[-1].simbolo).tipo, (yyvsp[-1].simbolo).valor);
         }
-#line 1925 "translate.tab.c"
+#line 1922 "translate.tab.c"
     break;
 
   case 68: /* expr: expr OP term  */
-#line 709 "translate.y"
-        { 
+#line 707 "translate.y"
+        {
             if ( (strcmp((yyvsp[-2].simbolo).tipo, "VOUCHER") == 0) || (strcmp((yyvsp[0].simbolo).tipo, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Ainda não está disponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
@@ -1949,11 +1946,11 @@ yyreduce:
                 (yyval.simbolo).tipo = "DOLAR";
             }
         }
-#line 1953 "translate.tab.c"
+#line 1950 "translate.tab.c"
     break;
 
   case 69: /* expr: expr RELOP term  */
-#line 734 "translate.y"
+#line 732 "translate.y"
         { 
             if ( (strcmp((yyvsp[-2].simbolo).tipo, "VOUCHER") == 0) || (strcmp((yyvsp[0].simbolo).tipo, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
@@ -1974,11 +1971,11 @@ yyreduce:
             //para valores numéricos não tem restrição
             (yyval.simbolo).tipo = "BOOL"; 
         }
-#line 1978 "translate.tab.c"
+#line 1975 "translate.tab.c"
     break;
 
   case 70: /* expr: expr LOGICOP term  */
-#line 756 "translate.y"
+#line 754 "translate.y"
         { 
             if ((strcmp((yyvsp[-2].simbolo).tipo, "BOOL") != 0) || (strcmp((yyvsp[0].simbolo).tipo, "BOOL") != 0)){
                 strcpy(msg_erro,"");
@@ -1988,11 +1985,11 @@ yyreduce:
             strcpy(msg_erro,"");
             (yyval.simbolo) = (yyvsp[-2].simbolo);
         }
-#line 1992 "translate.tab.c"
+#line 1989 "translate.tab.c"
     break;
 
   case 71: /* expr: expr LOGICOP_UNARY  */
-#line 767 "translate.y"
+#line 765 "translate.y"
             {
                 if (strcmp((yyvsp[-1].simbolo).tipo, "BOOL") != 0) {
                     strcpy(msg_erro,"");
@@ -2005,63 +2002,63 @@ yyreduce:
                 
                 (yyval.simbolo) = (yyvsp[-1].simbolo); 
             }
-#line 2009 "translate.tab.c"
+#line 2006 "translate.tab.c"
     break;
 
   case 72: /* expr: term  */
-#line 779 "translate.y"
+#line 777 "translate.y"
            {(yyval.simbolo) = (yyvsp[0].simbolo);}
-#line 2015 "translate.tab.c"
+#line 2012 "translate.tab.c"
     break;
 
   case 73: /* expr: OPEN_PARENTHESES term CLOSE_PARENTHESES  */
-#line 780 "translate.y"
+#line 778 "translate.y"
                                               {(yyval.simbolo) = (yyvsp[-1].simbolo);}
-#line 2021 "translate.tab.c"
+#line 2018 "translate.tab.c"
     break;
 
   case 74: /* term: INT  */
-#line 784 "translate.y"
+#line 782 "translate.y"
         {
         (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = "MILHAS", .valor = (yyvsp[0].lexema) };
     }
-#line 2029 "translate.tab.c"
+#line 2026 "translate.tab.c"
     break;
 
   case 75: /* term: FLOAT  */
-#line 787 "translate.y"
+#line 785 "translate.y"
             {
         (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = "DOLAR", .valor = (yyvsp[0].lexema) };
     }
-#line 2037 "translate.tab.c"
+#line 2034 "translate.tab.c"
     break;
 
   case 76: /* term: STRING  */
-#line 790 "translate.y"
+#line 788 "translate.y"
              {
         (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = "VOUCHER", .valor = (yyvsp[0].lexema) };
     }
-#line 2045 "translate.tab.c"
+#line 2042 "translate.tab.c"
     break;
 
   case 77: /* term: BOOL  */
-#line 793 "translate.y"
+#line 791 "translate.y"
            {
         (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = "BOOL", .valor = (yyvsp[0].lexema) };
     }
-#line 2053 "translate.tab.c"
+#line 2050 "translate.tab.c"
     break;
 
   case 78: /* term: call_function  */
-#line 797 "translate.y"
+#line 795 "translate.y"
                     { 
-        (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = (yyvsp[0].simbolo).tipo, .valor = NULL };
+        (yyval.simbolo) = (Simbolo){ .identificador= NULL, .tipo = (yyvsp[0].simbolo).tipo, .valor = strdup("?") }; //só vou saber o valor que retorna em tempo de execucao
     }
-#line 2061 "translate.tab.c"
+#line 2058 "translate.tab.c"
     break;
 
   case 79: /* term: ID  */
-#line 800 "translate.y"
+#line 798 "translate.y"
          {
         Simbolo *simbolo = buscar_simbolo(escopo_atual, (yyvsp[0].lexema));
         if (simbolo == NULL) {
@@ -2082,29 +2079,29 @@ yyreduce:
 
         (yyval.simbolo) = (*simbolo); //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
     }
-#line 2086 "translate.tab.c"
+#line 2083 "translate.tab.c"
     break;
 
   case 83: /* type: TYPE  */
-#line 835 "translate.y"
+#line 833 "translate.y"
         {      
             tipos_checkin[qtd_tipos_checkin] = (yyvsp[0].lexema);
             qtd_tipos_checkin += 1;
         }
-#line 2095 "translate.tab.c"
+#line 2092 "translate.tab.c"
     break;
 
   case 87: /* id: ID  */
-#line 851 "translate.y"
+#line 849 "translate.y"
         {      
             ids_checkin[qtd_ids_checkin] = (yyvsp[0].lexema);
             qtd_ids_checkin += 1;
         }
-#line 2104 "translate.tab.c"
+#line 2101 "translate.tab.c"
     break;
 
 
-#line 2108 "translate.tab.c"
+#line 2105 "translate.tab.c"
 
       default: break;
     }
@@ -2297,7 +2294,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 871 "translate.y"
+#line 869 "translate.y"
 
 /*----------------------------------------------------------------------------------------------------
         Funcoes em C

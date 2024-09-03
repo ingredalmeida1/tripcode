@@ -166,15 +166,15 @@ const:
                 semantic_error();
             }
             strcpy(msg_erro,""); //reseta msg de erro
-
-            printf("\nDefinicao de constante do tipo %s com valor %s", $3.tipo, $3.valor);
+                        
+            // printf("\nDefinicao de constante do tipo %s com valor %s", $3.tipo, $3.valor);
             
             adicionar_simbolo(&escopo_atual, "CONSTANTE", $3.tipo, $2, $3.valor, 1);
         }
     ;
 
 variaveis: 
-    variaveis  dec_variavel 
+    variaveis dec_variavel 
     | variaveis def_variavel
     |
     ;
@@ -248,6 +248,7 @@ function_header:
         prototipo = 1; //mudar a flag para verdadeiro para que os parametros sejam adicionados na funcao atual
 
     }
+
     params_form function_header_end
     ;
 
@@ -256,7 +257,7 @@ function_header:
     {
         set_tipo(&funcao_atual, $3);
         
-        adicionar_simbolo(&escopo_atual, "FUNCAO", $3, funcao_atual->identificador, NULL, 1); //inicializado 
+        adicionar_simbolo(&escopo_atual, "FUNCAO", $3, funcao_atual->identificador, NULL, 0); //inicializado 
 
         prototipo = 0; //voltar a flag para falso
     }
@@ -436,7 +437,7 @@ stmt:
 
 for:
     DECOLAR OPEN_PARENTHESES ORIGEM term COMMA DESTINO term COMMA ESCALA term CLOSE_PARENTHESES OPEN_CODEBLOCK 
-        {
+        { 
             if (strcmp($4.tipo, "MILHAS") != 0 || strcmp($7.tipo, "MILHAS") != 0 || strcmp($10.tipo, "MILHAS") != 0){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Bloco de Repeticao DECOLAR: todos termos devem ser do tipo 'MILHAS'\n");
@@ -570,15 +571,8 @@ command:
                     }
                     strcpy(msg_erro,"");
 
-                    //pra poder usar uma variável ela precisar ter sido inicializada
-                    if (simbolo->inicializado == 0){
-                        strcpy(msg_erro,"");
-                        strcat(msg_erro, "A variável '"); 
-                        strcat(msg_erro, ids_checkin[i]); 
-                        strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
-                        semantic_error();
-                    }
-                    strcpy(msg_erro,"");
+                    simbolo->inicializado == 1;
+                    simbolo->valor = strdup("?"); //vai ser inicializada mas não sei o valor em tempo de compilação
                 }
             }
         CLOSE_PARENTHESES DOT_COMMA
@@ -628,6 +622,7 @@ call_function:
             (*funcao)->chamada = 1;
 
             $$.tipo = (*funcao)->tipo_retorno;
+            $$.valor = strdup("?"); //com o retorno da funcao vai armazenar o valor mas em tempo de compilacao não da pra saber qual
         } 
     ;
 
@@ -651,7 +646,7 @@ param_real:
 
 return:
     DESPACHAR expr DOT_COMMA 
-        {
+        {   
             if((strcmp($2.tipo, funcao_atual->tipo_retorno) != 0)){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Retorno função '");
@@ -663,6 +658,8 @@ return:
             }
 
             funcao_atual->retorno = 1;
+
+            //onde armazenar o valor do retorno? 
         }
     ;
 
@@ -699,6 +696,7 @@ atribuicao:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
+            simbolo->valor = strdup("?"); //saber o valor em tempo de execução
 
             printf("\n Atributos da expressao: %s, %s, %s", $3.identificador, $3.tipo, $3.valor);
         }
@@ -706,7 +704,7 @@ atribuicao:
 
 expr: 
     expr OP term   
-        { 
+        {
             if ( (strcmp($1.tipo, "VOUCHER") == 0) || (strcmp($3.tipo, "VOUCHER") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Ainda não está disponível manipular variáveis do tipo VOUCHER com operações aritméticas =(");
@@ -795,7 +793,7 @@ term:
     }
 
     | call_function { 
-        $$ = (Simbolo){ .identificador= NULL, .tipo = $1.tipo, .valor = NULL };
+        $$ = (Simbolo){ .identificador= NULL, .tipo = $1.tipo, .valor = strdup("?") }; //só vou saber o valor que retorna em tempo de execucao
     }
     | ID {
         Simbolo *simbolo = buscar_simbolo(escopo_atual, $1);

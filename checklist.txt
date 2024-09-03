@@ -1,35 +1,8 @@
-## Atribuição de valores
-    - se temos 'MILHAS x;' isso já vai ser salvo na tabela de símbolos. basta agora analisar a expr
-    - nesse caso o valor do que está sendo atribuído e comparar, pelo yacc mesmo, se os tipos são iguais
-
-## Atribuição de operações aritméticas
-    - acho que é o mesmo caso da atribuição de valores
-
-## Conferir tipos de parâmetros
-    - temos que garantir que o tipo e quantidade está certa
-    - primeiro precisamos buscar a função na TS <na tabela de funcoes> porque ao encontrar vamos ter acesso a todas as infos necessárias
-    - se não achou:
-        - não teve protótipo definido e retorna erro
-    - se achou:
-        - primeiro conferimos se o número de parâmetros está correto
-        - segundo conferimos, podemos fazer uma comparação para cada parâmetro (meio que usando dois ponteiros)
-          e se um já não der certo, retorna erro
-        - tentar personalizar o erro: retornar qual função e o tipo de erro (se na quantidade ou o parâmetro e se foi no tipo ou indice)
-    - obs: a ideia é que os parâmetros da struct sejam os formais e eu passe para essa função que confere essas informações
-           e uma lista com os reais (as vezes pode até instanciar uma função atoa só pra passar pra conferir) <acho uma boa criar uma funcao temporaria com as informacoes de definicao e comparar com o prototipo>
-
-## Conferir expressões
-    >>> se expr op term:
-        - Verificar se o operador pode ser aplicado aos tipos envolvidos (somar uma str e um float)
-    
-    >>> se (expr):
-        - Mesma verificação de acima porque nesse caso o parênteses não influencia na conversão de tipo
-
 Checklit:
 ✔ Declarar/Definir Variavel:
   ✔ se existe funcao com mesmo identificador
   ✔ se já exite identificador no escopo local (os demais não precisa conferir pq ai só vai substituir, né)
-  ✔ mudar pra identificador de constante ser sempre letra maisucula
+  ✔ se já existe constante com mesmo identificador
   ✔ na definiciao,se o tipo do valor atribuido é compativiel com o tipo definido
 
 ✔ Usar variavel:
@@ -68,5 +41,5 @@ Checklit:
   ✔ condicoes if, while -> booleano
   ✔ for -> milhas
   
-✔ Parametros CHECKIN - conferir se as variaveis existem
+✔ Parametros CHECKIN - conferir se as variaveis existem e definir que foram inicializadas
 ✔ Parametros CHECKOUT - conferir se variaveis existem e se foram inicializadas

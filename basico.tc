@@ -1,5 +1,5 @@
 -> testando comentario <-
-EXTERIOR TESTE 10 
+EXTERIOR teste 10 
 
 BAGAGEM VOUCHER valor <-> "leticia";
 BAGAGEM VOUCHER julia;
@@ -9,7 +9,7 @@ ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>> DOLAR <<<
 
 ROTEIRO trip() >>> 
 
-    BAGAGEM MILHAS teste <-> 6;
+    BAGAGEM MILHAS teste;
 
     CHECKIN([MILHAS, VOUCHER], teste, valor);
 
@@ -21,7 +21,7 @@ ROTEIRO trip() >>>
     <<<
 
     ALFANDEGA (20>0) >>>
-        TESTE <-> 10 + 20;
+        teste <-> 10 + 20;
     <<< ISENTO >>>
         EMBARCAR soma(10 + 0);
         teste <-> EMBARCAR soma (teste + 10);

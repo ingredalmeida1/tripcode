@@ -217,7 +217,7 @@ void inicializar_tabela_simbolos_funcao(Funcao ***funcao, TabelaSimbolos *anteri
 
     //adiciona parametros da funcao na tabela de simbolos
     for (int i = 0; i < (**funcao)->qtd_parametros; i++){
-        adicionar_simbolo(&tabela_funcao,"PARAMETRO",(**funcao)->parametros[i]->tipo, (**funcao)->parametros[i]->identificador, NULL, 1); //parametros necessariamente vao ter sido inicializados?
+        adicionar_simbolo(&tabela_funcao,"PARAMETRO",(**funcao)->parametros[i]->tipo, (**funcao)->parametros[i]->identificador, "?", 1); //parametros necessariamente vao ter sido inicializados?
     }
 
     (**funcao)->escopo = tabela_funcao;
