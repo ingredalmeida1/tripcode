@@ -6,6 +6,7 @@ ROTEIRO trip() >>>
 
     BAGAGEM MILHAS valor1 <-> a + b;
     BAGAGEM MILHAS valor2 <-> 4 + 3;
+    BAGAGEM MILHAS valor3 <-> valor1 + 2;
 
     DESPACHAR 0;
 
