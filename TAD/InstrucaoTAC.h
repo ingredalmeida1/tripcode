@@ -14,4 +14,6 @@ void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2,
 
 void imprimir_TAC();
 
-char* new_temp();
+char* novo_temp();
+
+char* atual_temp();

@@ -7,9 +7,15 @@ int num_instrucoes = 0;
 
 int temp_counter = 0; 
 
-char* new_temp() {
+char* novo_temp() {
     char *temp = (char *)malloc(10); 
     sprintf(temp, "t%d", temp_counter++); 
+    return temp; 
+}
+
+char* atual_temp() {
+    char *temp = (char *)malloc(10); 
+    sprintf(temp, "t%d", temp_counter - 1); 
     return temp; 
 }
 
@@ -24,25 +30,9 @@ void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2,
     }
 }
 
-/*void imprimir_TAC() {
-    printf("\n------------------------------ Código de Três Endereços ------------------------------\n\n");
-
-    for (int i = 0; i < num_instrucoes; i++) {
-        printf("%d: ", i + 1);
-        
-        printf("%s = %s %s %s\n",
-               lista_instrucoes[i].result,
-               lista_instrucoes[i].arg1,
-               lista_instrucoes[i].op,
-               lista_instrucoes[i].arg2);
-    }
-}*/
-
 void imprimir_TAC() {
 
-   FILE *file = fopen("codigo_tac.txt", "w"); 
-
-    fprintf(file, "\n------------------------------ Código de Três Endereços ------------------------------\n\n");
+    FILE *file = fopen("codigo_tac.txt", "w"); 
 
     for (int i = 0; i < num_instrucoes; i++) {
         fprintf(file, "%d: ", i + 1);

@@ -1437,7 +1437,7 @@ yyreduce:
             adicionar_simbolo(&escopo_atual, "VARIAVEL", (yyvsp[-4].lexema), (yyvsp[-3].lexema), (yyvsp[-1].simbolo).valor, 1);
             
             //adicionar ao código de três endereços
-            //adicionar_instrucao_TAC($2, $1.valor, $3.valor, $$.valor); 
+            adicionar_instrucao_TAC("", atual_temp(), "", (yyvsp[-3].lexema));
         }
 #line 1443 "translate.tab.c"
     break;
@@ -1948,7 +1948,7 @@ yyreduce:
             else{
                 (yyval.simbolo).tipo = "DOLAR";
             }
-            (yyval.simbolo).valor = new_temp(); 
+            (yyval.simbolo).valor = novo_temp(); 
 
             //adicionar ao código de três endereços
             adicionar_instrucao_TAC((yyvsp[-1].lexema), (yyvsp[-2].simbolo).valor, (yyvsp[0].simbolo).valor, (yyval.simbolo).valor); 
@@ -1978,7 +1978,7 @@ yyreduce:
 
             //para valores numéricos não tem restrição
             (yyval.simbolo).tipo = "BOOL";
-            (yyval.simbolo).valor = new_temp();
+            (yyval.simbolo).valor = novo_temp();
         }
 #line 1984 "translate.tab.c"
     break;
@@ -1993,7 +1993,7 @@ yyreduce:
             }
             strcpy(msg_erro,"");
             (yyval.simbolo).tipo = (yyvsp[-2].simbolo).tipo;
-            (yyval.simbolo).valor = new_temp();
+            (yyval.simbolo).valor = novo_temp();
         }
 #line 1999 "translate.tab.c"
     break;
@@ -2011,7 +2011,7 @@ yyreduce:
                 strcpy(msg_erro,"");
                 
                 (yyval.simbolo).tipo = (yyvsp[-1].simbolo).tipo;
-                (yyval.simbolo).valor = new_temp(); //depois olhar se teria como já criar com um contator tipo temp1
+                (yyval.simbolo).valor = novo_temp(); //depois olhar se teria como já criar com um contator tipo temp1
             }
 #line 2017 "translate.tab.c"
     break;
