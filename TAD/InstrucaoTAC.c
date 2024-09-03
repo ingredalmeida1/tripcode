@@ -16,7 +16,12 @@ char* novo_temp() {
 char* atual_temp() {
     char *temp = (char *)malloc(10); 
     sprintf(temp, "t%d", temp_counter - 1); 
-    return temp; 
+    if(temp<0){
+        return 0;
+    }else{
+        return temp;
+    }
+     
 }
 
 void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2, const char *result) {
@@ -37,10 +42,10 @@ void imprimir_TAC() {
     for (int i = 0; i < num_instrucoes; i++) {
         fprintf(file, "%d: ", i + 1);
 
-        if(strlen(lista_instrucoes[i].arg2) == 0 && strlen(lista_instrucoes[i].op) == 0){
+        if(strlen(lista_instrucoes[i].arg1) == 0 && strlen(lista_instrucoes[i].arg2) == 0){
             fprintf(file, "%s %s\n",
                 lista_instrucoes[i].result,
-                lista_instrucoes[i].arg1);
+                lista_instrucoes[i].op);
         }else{
             fprintf(file, "%s = %s %s %s\n",
                 lista_instrucoes[i].result,

@@ -662,7 +662,7 @@ return:
             funcao_atual->retorno = 1;
 
             // adicionar retorno no TAC
-            adicionar_instrucao_TAC("", $2.valor, "", "RETURN"); 
+            adicionar_instrucao_TAC($2.valor,"", "", "RETURN"); 
         }
     ;
 

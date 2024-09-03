@@ -1879,7 +1879,7 @@ yyreduce:
             funcao_atual->retorno = 1;
 
             // adicionar retorno no TAC
-            adicionar_instrucao_TAC("", (yyvsp[-1].simbolo).valor, "", "RETURN"); 
+            adicionar_instrucao_TAC((yyvsp[-1].simbolo).valor,"", "", "RETURN"); 
         }
 #line 1885 "translate.tab.c"
     break;
