@@ -66,7 +66,7 @@ void verificar_definicao_funcoes_chamadas();
 
 %union {
     char *lexema;
-    Simbolo simbolo; // usar a estrutura símbolo pra poder armazenar tipo e valor 
+    Simbolo simbolo; // reaproveitar estrutura símbolo pra armazenar tipo (analise semantica) e valor (codigo tres endereceos)
 }
 
 
@@ -448,8 +448,6 @@ for:
             inicializar_tabela(&nova_tabela, escopo_atual, "DECOLAR");
             adicionar_nova_tabela(&tabelas_simbolos, nova_tabela, &numero_de_tabelas);
 
-            //ADICIONAR ORIGEM COMO UMA VARIAVEL NA TABELA? teria que mudar a gramática
-
             // atualiza o escopo atual para a nova tabela
             escopo_atual = nova_tabela;
         }
@@ -696,10 +694,10 @@ atribuicao:
 
             //se foi possível fazer atribuição foi armazenado um valor na variável então ela foi inicializada
             simbolo->inicializado = 1;
-            simbolo->valor = strdup("?"); //saber o valor em tempo de execução
+            simbolo->valor = $3.valor; // ou só coloca strdup("?"); //saber o valor certinho em tempo de execução
 
             //acessar atributos da variavel expressao:
-            // printf("\n Atributos da expressao: %s, %s, %s", $3.identificador, $3.tipo, $3.valor);
+            // printf("\n Atributos da expressao: %s, %s", $3.tipo, $3.valor);
         }
     ;
 
@@ -727,6 +725,7 @@ expr:
             else{
                 $$.tipo = "DOLAR";
             }
+            $$.valor = "temp"; //?
         }
 
     | expr RELOP term   
@@ -748,7 +747,8 @@ expr:
             strcpy(msg_erro,"");
 
             //para valores numéricos não tem restrição
-            $$.tipo = "BOOL"; 
+            $$.tipo = "BOOL";
+            $$.valor = "temp"; //? 
         }
 
     | expr LOGICOP term 
@@ -759,7 +759,8 @@ expr:
                 semantic_error();
             }
             strcpy(msg_erro,"");
-            $$ = $1;
+            $$.tipo = $1.tipo;
+            $$.valor = "temp"; //?
         }
     
     | expr LOGICOP_UNARY 
@@ -773,28 +774,30 @@ expr:
                 }
                 strcpy(msg_erro,"");
                 
-                $$ = $1; 
+                $$.tipo = $1.tipo;
+                $$.valor = "temp"; //depois olhar se teria como já criar com um contator tipo temp1
             }
-    | term {$$ = $1;} //repassa o simbolo
-    | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;}
+
+    | term {$$ = $1;} //repassa o tipo e o valor
+    | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;} //repassa o tipo e o valor
     ;
 
 term: 
     INT {
-        $$ = (Simbolo){ .identificador= NULL, .tipo = "MILHAS", .valor = $1 };
+        $$ = (Simbolo){ .tipo = "MILHAS", .valor = $1 };
     }
     | FLOAT {
-        $$ = (Simbolo){ .identificador= NULL, .tipo = "DOLAR", .valor = $1 };
+        $$ = (Simbolo){ .tipo = "DOLAR", .valor = $1 };
     }
     | STRING {
-        $$ = (Simbolo){ .identificador= NULL, .tipo = "VOUCHER", .valor = $1 };
+        $$ = (Simbolo){ .tipo = "VOUCHER", .valor = $1 };
     }
     | BOOL {
-        $$ = (Simbolo){ .identificador= NULL, .tipo = "BOOL", .valor = $1 };
+        $$ = (Simbolo){ .tipo = "BOOL", .valor = $1 };
     }
 
     | call_function { 
-        $$ = (Simbolo){ .identificador= NULL, .tipo = $1.tipo, .valor = strdup("?") }; //só vou saber o valor que retorna em tempo de execucao
+        $$ = (Simbolo){ .tipo = $1.tipo, .valor = $1.valor }; 
     }
     | ID {
         Simbolo *simbolo = buscar_simbolo(escopo_atual, $1);
@@ -814,7 +817,7 @@ term:
             semantic_error();
         }
 
-        $$ = (*simbolo); //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
+        $$ = (Simbolo){ .tipo = simbolo->tipo, .valor = simbolo->identificador }; //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
     }
     ;
 

@@ -110,7 +110,7 @@ union YYSTYPE
 #line 67 "translate.y"
 
     char *lexema;
-    Simbolo simbolo; // usar a estrutura símbolo pra poder armazer tipo e valor 
+    Simbolo simbolo; // reaproveitar estrutura símbolo pra armazenar tipo (analise semantica) e valor (codigo tres endereceos)
 
 #line 116 "translate.tab.h"
 
