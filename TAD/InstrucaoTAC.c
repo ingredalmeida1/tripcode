@@ -36,12 +36,18 @@ void imprimir_TAC() {
 
     for (int i = 0; i < num_instrucoes; i++) {
         fprintf(file, "%d: ", i + 1);
-        
-        fprintf(file, "%s = %s %s %s\n",
+
+        if(strlen(lista_instrucoes[i].arg2) == 0 && strlen(lista_instrucoes[i].op) == 0){
+            fprintf(file, "%s %s\n",
+                lista_instrucoes[i].result,
+                lista_instrucoes[i].arg1);
+        }else{
+            fprintf(file, "%s = %s %s %s\n",
                 lista_instrucoes[i].result,
                 lista_instrucoes[i].arg1,
                 lista_instrucoes[i].op,
                 lista_instrucoes[i].arg2);
+        }
     }
 
     fclose(file);
