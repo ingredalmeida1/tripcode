@@ -222,7 +222,8 @@ def_variavel:
             adicionar_simbolo(&escopo_atual, "VARIAVEL", $2, $3, $5.valor, 1);
             
             //adicionar ao código de três endereços com temp atual
-            adicionar_instrucao_TAC("", atual_temp(), "", $3);
+
+            adicionar_instrucao_TAC("", $5.valor, "", $3);
         }
     ;
 

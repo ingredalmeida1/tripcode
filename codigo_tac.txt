@@ -1,3 +1,7 @@
-1: t0 = 5 + 6
-2: valor = t0  
-3: RETURN 0
+1: a = 5  
+2: b = 6  
+3: t0 = a + b
+4: valor1 = t0  
+5: t1 = 4 + 3
+6: valor2 = t1  
+7: RETURN 0

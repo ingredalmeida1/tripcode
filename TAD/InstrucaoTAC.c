@@ -16,12 +16,7 @@ char* novo_temp() {
 char* atual_temp() {
     char *temp = (char *)malloc(10); 
     sprintf(temp, "t%d", temp_counter - 1); 
-    if(temp<0){
-        return 0;
-    }else{
-        return temp;
-    }
-     
+    return temp;
 }
 
 void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2, const char *result) {
