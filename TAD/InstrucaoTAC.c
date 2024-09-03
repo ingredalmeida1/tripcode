@@ -17,7 +17,7 @@ void adicionar_instrucao_TAC(const char *op, const char *arg1, const char *arg2,
 }
 
 void imprimir_TAC() {
-    printf("\n----------------------- Código de Três Endereços -----------------------\n\n");
+    printf("\n------------------------------ Código de Três Endereços ------------------------------\n\n");
 
     for (int i = 0; i < num_instrucoes; i++) {
         printf("%d: ", i + 1);

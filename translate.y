@@ -221,8 +221,8 @@ def_variavel:
             
             adicionar_simbolo(&escopo_atual, "VARIAVEL", $2, $3, $5.valor, 1);
             
-            //adicionar ao código de três endereços -> no print 2ª linha
-            //adicionar_instrucao_TAC($5.valor, $5.valor, $5.valor, $3.valor); // op, arg1 e arg2 estão em expr -> S5   
+            //adicionar ao código de três endereços
+            //adicionar_instrucao_TAC($2, $1.valor, $3.valor, $$.valor); 
         }
     ;
 
@@ -732,7 +732,8 @@ expr:
             $$.valor = "temp"; //?
 
             //adicionar ao código de três endereços
-            //adicionar_instrucao_TAC($2, $1, $3, $$); // no print linha 1            
+            adicionar_instrucao_TAC($2, $1.valor, $3.valor, $$.valor); 
+
         }
 
     | expr RELOP term   
