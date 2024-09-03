@@ -66,7 +66,7 @@ void verificar_definicao_funcoes_chamadas();
 
 %union {
     char *lexema;
-    Simbolo simbolo; // usar a estrutura símbolo pra poder armazer tipo e valor 
+    Simbolo simbolo; // usar a estrutura símbolo pra poder armazenar tipo e valor 
 }
 
 
@@ -698,7 +698,8 @@ atribuicao:
             simbolo->inicializado = 1;
             simbolo->valor = strdup("?"); //saber o valor em tempo de execução
 
-            printf("\n Atributos da expressao: %s, %s, %s", $3.identificador, $3.tipo, $3.valor);
+            //acessar atributos da variavel expressao:
+            // printf("\n Atributos da expressao: %s, %s, %s", $3.identificador, $3.tipo, $3.valor);
         }
     ;
 
@@ -884,13 +885,14 @@ void yyerror() {
 }
 
 void semantic_error() {
-     // imprimir mensagem de erro na cor vermelha
-     fprintf(stderr, "\n\033[1;31mErro semântico próximo à linha %d:\033[0m\n\033[31m---> %s\033[0m\n", yylineno-1, msg_erro);
-     
-     // printf("\n\n\033[1;31mPrograma semanticamente incorreto.\033[0m\n\n");
-     printf("\n\n");
+    
+    // imprimir mensagem de erro na cor vermelha
+    fprintf(stderr, "\n\033[1;31mErro semântico próximo à linha %d:\033[0m\n\033[31m---> %s\033[0m\n", yylineno-1, msg_erro);
+    
+    // printf("\n\n\033[1;31mPrograma semanticamente incorreto.\033[0m\n\n");
+    printf("\n\n");
 
-     exit(0);
+    exit(0);
 }
 
 int identificador_disponivel(char *identificador) {
@@ -967,10 +969,10 @@ void verificar_definicao_funcoes_chamadas() {
 
 int main(void) {
     yyparse();     
-    
-    printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
+            
+        printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
 
-    imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
+        imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
 
     return 0;
 }
