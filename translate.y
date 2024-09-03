@@ -220,10 +220,9 @@ def_variavel:
             strcpy(msg_erro,""); //reseta msg de erro
             
             adicionar_simbolo(&escopo_atual, "VARIAVEL", $2, $3, $5.valor, 1);
-            /*
+            
             //adicionar ao código de três endereços -> no print 2ª linha
-            adicionar_instrucao_TAC($5, $5, $5, $3); // op, arg1 e arg2 estão em expr -> S5
-            */
+            //adicionar_instrucao_TAC($5.valor, $5.valor, $5.valor, $3.valor); // op, arg1 e arg2 estão em expr -> S5   
         }
     ;
 
@@ -825,7 +824,6 @@ term:
         $$ = (*simbolo); //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
     }
     ;
-
 
 //relacionado com checkin e checkout
 types:
