@@ -112,8 +112,7 @@ float             {inteiro}+\.{digit}+
 string            \"([^\\\"]|\\.)*\"|\'([^\\']|\\.)*\'
 boolean           {ferias}|{diautil}
 
-id                ({lower_letter})(_|{letter}|{digit})*
-id_const          {upper_letter}+
+id                ({letter})(_|{letter}|{digit})*
 
 /* --- estrutura do codigo --------------------------------------------------------------------------*/
 dot_comma         \;
@@ -178,20 +177,19 @@ invalid            {all_characters}+|.
 {atribuicao}             { printf("%s", yytext); return ASSIGN;}
 {concat}                 { printf("%s", yytext); return CONCAT;}
 
-{op}                     { printf("%s", yytext); yylval.string = strdup(yytext); return OP;}
-{relop}                  { printf("%s", yytext); yylval.string = strdup(yytext); return RELOP;}
-{logicop}                { printf("%s", yytext); yylval.string = strdup(yytext); return LOGICOP;}
-{logicop_unary}          { printf("%s", yytext); yylval.string = strdup(yytext); return LOGICOP_UNARY;}
+{op}                     { printf("%s", yytext); yylval.lexema = strdup(yytext); return OP;}
+{relop}                  { printf("%s", yytext); yylval.lexema = strdup(yytext); return RELOP;}
+{logicop}                { printf("%s", yytext); yylval.lexema = strdup(yytext); return LOGICOP;}
+{logicop_unary}          { printf("%s", yytext); yylval.lexema = strdup(yytext); return LOGICOP_UNARY;}
 
-{type}                   { printf("%s", yytext); yylval.string = strdup(yytext); return TYPE;}
+{type}                   { printf("%s", yytext); yylval.lexema = strdup(yytext); return TYPE;}
 
-{inteiro}                { printf("%s", yytext); yylval.inteiro = atoi(yytext); return INT;}
-{float}                  { printf("%s", yytext); yylval.real = atof(yytext); return FLOAT;}
-{string}                 { printf("%s", yytext); yylval.string = strdup(yytext); return STRING;}
-{boolean}                { printf("%s", yytext); yylval.string = strdup(yytext); return BOOL;}
+{inteiro}                { printf("%s", yytext); yylval.lexema = strdup(yytext); return INT;}
+{float}                  { printf("%s", yytext); yylval.lexema = strdup(yytext); return FLOAT;}
+{string}                 { printf("%s", yytext); yylval.lexema = strdup(yytext); return STRING;}
+{boolean}                { printf("%s", yytext); yylval.lexema = strdup(yytext); return BOOL;}
 
-{id}                     { printf("%s", yytext); yylval.string = strdup(yytext); return ID; }
-{id_const}               { printf("%s", yytext); yylval.string = strdup(yytext); return ID_CONST; }
+{id}                     { printf("%s", yytext); yylval.lexema = strdup(yytext); return ID; }
 
 {invalid}                { printf("%s", yytext); 
 

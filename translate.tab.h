@@ -95,11 +95,10 @@ extern int yydebug;
     STRING = 290,                  /* STRING  */
     BOOL = 291,                    /* BOOL  */
     ID = 292,                      /* ID  */
-    ID_CONST = 293,                /* ID_CONST  */
-    OP = 294,                      /* OP  */
-    RELOP = 295,                   /* RELOP  */
-    LOGICOP = 296,                 /* LOGICOP  */
-    LOGICOP_UNARY = 297            /* LOGICOP_UNARY  */
+    OP = 293,                      /* OP  */
+    RELOP = 294,                   /* RELOP  */
+    LOGICOP = 295,                 /* LOGICOP  */
+    LOGICOP_UNARY = 296            /* LOGICOP_UNARY  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -108,13 +107,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 67 "translate.y"
+#line 68 "translate.y"
 
-    int inteiro;
-    float real;
-    char *string;
+    char *lexema;
+    Simbolo simbolo; // usar a estrutura símbolo pra poder armazenar tipo e valor 
 
-#line 118 "translate.tab.h"
+#line 116 "translate.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
