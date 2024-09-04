@@ -1,0 +1,13 @@
+ROTEIRO trip () >>> 
+    -> Declarações de variáveis <-
+    BAGAGEM VOUCHER curso <-> "Ciência da Computação";
+    BAGAGEM MILHAS idade <-> 15;
+    BAGAGEM STATUS verdadeiro <-> FERIAS;
+    
+    -> '=' é comparação em TripCode <-
+    BAGAGEM STATUS falso = DIAUTIL;
+
+    DESPACHAR 0;
+
+<<< MILHAS <<<
+-> Fim do programa <-

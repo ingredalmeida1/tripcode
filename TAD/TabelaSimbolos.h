@@ -6,13 +6,13 @@
 #define TABELA_SIMBOLOS_H
 
 typedef struct {
-    int  indice;           //armazenar o indice na tabela de simbolos para otimizar o acesso interno e a manipulação das informações.
-    char *descricao;       //se é variavel, constante ou funcao 
-    char *tipo;            //armazenar como string e usar strcmp para conferir                 
+    int  indice;              //armazenar o indice na tabela de simbolos para otimizar o acesso interno e a manipulação das informações.
+    char *descricao;          //se é variavel, constante ou funcao 
+    char *tipo;               //armazenar como string e usar strcmp para conferir                 
     char *identificador;  
     char* valor;
-    int inicializado;      // 0 se não inicializado, 1 se inicializado  -> conferir se antes de usar a variável já voi armazenado valor nela  
-} Simbolo; //cada simbolo possui um identificador e um tipo associado 
+    int inicializado;         // 0 se não inicializado, 1 se inicializado  -> conferir se antes de usar a variável já voi armazenado valor nela  
+} Simbolo;                    //cada simbolo possui um identificador e um tipo associado 
 
 typedef struct TabelaSimbolos TabelaSimbolos;
 

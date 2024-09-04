@@ -7,6 +7,7 @@ Checklit:
 
 ✔ Usar variavel:
   ✔ verificar se a variavel foi declarada/definida: se existe na tabela de simbolos do escopo local ou de escopos acima
+  ✔ Verificar se variável foi inicializada antes de ser usada (mas não consegue garantir em todos os casos pois podem depender do fluxo de execucao)
 
 ✔ Prototipo Funcao:
   ✔ se já existe o indentificador na tabela global
@@ -28,15 +29,13 @@ Checklit:
   	 ao final percorrer funcoes e vê se todas que foram chamadas foram definidas )
   ✔ quantidade dos parametros
   ✔ tipo dos parametros 
-
-✔ Verificar se variável foi inicializada antes de ser usada
   
 ✔ Verificacao Tipos
   ✔ quando faz atribuicao
     - conferir se a variável é constante (const), pois se for  ela não deve ser reatribuída após a sua inicialização.
   ✔ operação pode ser aplicada aos tipos
     ✔ operadores aritméticos (+, -, *, /, %): operandos têm que ser de tipos numéricos (DOLAR ou MILHAS)
-    ✔ operadores de comparação (=, #, <, >, <=, >=): se os operandos têm tipos compatíveis, ou seja, é permitido comparar tipos numéricos entre si, mas comparar tipos diferentes como int e char* deve gerar um erro e o tipo resultante é o tipo BOOL
+    ✔ operadores de comparação (=, #, <, >, <=, >=): se os operandos têm tipos compatíveis, ou seja, é permitido comparar tipos numéricos entre si, mas comparar tipos diferentes como int e char* deve gerar um erro e o tipo resultante é o tipo STATUS
     ✔ operadores lógicos (AND, OR, NOT): os operandos devem ser de tipo booleano 
   ✔ condicoes if, while -> booleano
   ✔ for -> milhas

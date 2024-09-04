@@ -66,8 +66,8 @@ void verificar_definicao_funcoes_chamadas();
 /* especificar os tipos de valores que os tokens podem armazenar                                    */
 
 %union {
-    char *lexema;
-    Simbolo simbolo; // reaproveitar estrutura símbolo pra armazenar tipo (analise semantica) e valor (codigo tres endereceos)
+    char *lexema;    // tokens
+    Simbolo simbolo; // variaveis
 }
 
 
@@ -210,11 +210,11 @@ def_variavel:
                 strcat(msg_erro, "Definição de Variável: ");
                 strcat(msg_erro, "O tipo do valor atribuido à variável '");
                 strcat(msg_erro, $3);
-                strcat(msg_erro, "' é incompatível com tipo esperado! ('");
+                strcat(msg_erro, "' é incompatível com tipo esperado!\n('");
                 strcat(msg_erro, $2);
                 strcat(msg_erro, "' <-> '");
                 strcat(msg_erro, $5.tipo);
-                strcat(msg_erro, "' => X)\n");
+                strcat(msg_erro, "' => Erro =(\n");
                 semantic_error();
             }
             strcpy(msg_erro,""); //reseta msg de erro
@@ -303,7 +303,7 @@ param_form:
 
                 if (strcmp(simbolo->tipo, $1) != 0){
                     strcpy(msg_erro,"");
-                    strcat(msg_erro, "Chamada comando CHECKOUT:  A variável'");
+                    strcat(msg_erro, "Chamada comando CHECKOUT:  A variável '");
                     strcat(msg_erro, $2);  
                     strcat(msg_erro, "' é uma variavel do tipo '"); 
                     strcat(msg_erro, simbolo->tipo); 
@@ -317,13 +317,13 @@ param_form:
                 //pra poder usar uma variável ela precisar ter sido inicializada
                 if (simbolo->inicializado == 0){
                     strcpy(msg_erro,"");
-                    strcat(msg_erro, "A variável '"); 
+                    strcat(msg_erro, "Chamada comando CHECKOUT: A variável '"); 
                     strcat(msg_erro, $2); 
                     strcat(msg_erro, "' não foi previamente definida/inicializada!'\n"); 
                     semantic_error();
                 }
                 strcpy(msg_erro,"");
-            }
+            } 
         }
     ;
 
@@ -466,9 +466,9 @@ for:
 while:
     TURISTANDO OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK
         {
-            if (strcmp($3.tipo, "BOOL") != 0){
+            if (strcmp($3.tipo, "STATUS") != 0){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Bloco de Repeticao TURISTANDO: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
+                strcat(msg_erro, "Bloco de Repeticao TURISTANDO: a condicao deve ser do tipo 'STATUS' e nao do tipo '");
                 strcat(msg_erro, $3.tipo); 
                 strcat(msg_erro, "'\n"); 
                 semantic_error();
@@ -491,9 +491,9 @@ while:
 if: 
     ALFANDEGA OPEN_PARENTHESES expr CLOSE_PARENTHESES OPEN_CODEBLOCK 
         {
-            if (strcmp($3.tipo, "BOOL") != 0){
+            if (strcmp($3.tipo, "STATUS") != 0){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Bloco Condicional ALFANDEGA: a condicao deve ser do tipo 'BOOL' e nao do tipo '");
+                strcat(msg_erro, "Bloco Condicional ALFANDEGA: a condicao deve ser do tipo 'STATUS' e nao do tipo '");
                 strcat(msg_erro, $3.tipo); 
                 strcat(msg_erro, "'\n"); 
                 semantic_error();
@@ -563,7 +563,7 @@ command:
 
                     if (strcmp(simbolo->tipo, tipos_checkin[i]) != 0){
                         strcpy(msg_erro,"");
-                        strcat(msg_erro, "Chamada comando CHECKOUT:  A variável'");
+                        strcat(msg_erro, "Chamada comando CHECKIN:  A variável '");
                         strcat(msg_erro, ids_checkin[i]);  
                         strcat(msg_erro, "' é uma variavel do tipo '"); 
                         strcat(msg_erro, simbolo->tipo); 
@@ -574,7 +574,7 @@ command:
                     }
                     strcpy(msg_erro,"");
 
-                    simbolo->inicializado == 1;
+                    simbolo->inicializado = 1;
                     simbolo->valor = strdup("?"); //vai ser inicializada mas não sei o valor em tempo de compilação
                 }
             }
@@ -717,7 +717,7 @@ expr:
             }
             strcpy(msg_erro,"");
 
-            if ( (strcmp($1.tipo, "BOOL") == 0) || (strcmp($3.tipo, "BOOL") == 0) ){
+            if ( (strcmp($1.tipo, "STATUS") == 0) || (strcmp($3.tipo, "STATUS") == 0) ){
                 strcpy(msg_erro,"");
                 strcat(msg_erro, "Operação Aritimética: Operandos devem ser de tipos numéricos (MILHAS ou DOLAR)");
                 semantic_error();
@@ -748,7 +748,7 @@ expr:
             strcpy(msg_erro,"");
 
 
-            if ( (strcmp($1.tipo, "BOOL") == 0) || (strcmp($3.tipo, "BOLL") == 0) ){
+            if ( (strcmp($1.tipo, "STATUS") == 0) || (strcmp($3.tipo, "STATUS") == 0) ){
                 if ( (strcmp($2, "#") != 0) && (strcmp($2, "=") != 0) ) //se não está vendo se igual nem se diferente
                     strcpy(msg_erro,"");
                     strcat(msg_erro, "Operação Relacionados: Para que os operandos sejam booleanos o operados tem que ser '=' ou '#'");
@@ -757,15 +757,15 @@ expr:
             strcpy(msg_erro,"");
 
             //para valores numéricos não tem restrição
-            $$.tipo = "BOOL";
+            $$.tipo = "STATUS";
             $$.valor = novo_temp();
         }
 
     | expr LOGICOP term 
         { 
-            if ((strcmp($1.tipo, "BOOL") != 0) || (strcmp($3.tipo, "BOOL") != 0)){
+            if ((strcmp($1.tipo, "STATUS") != 0) || (strcmp($3.tipo, "STATUS") != 0)){
                 strcpy(msg_erro,"");
-                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo BOOL\n"); 
+                strcat(msg_erro, "Operação Lógica: Operadores lógicos só podem ser aplicados ao tipo STATUS\n"); 
                 semantic_error();
             }
             strcpy(msg_erro,"");
@@ -775,11 +775,11 @@ expr:
     
     | expr LOGICOP_UNARY 
             {
-                if (strcmp($1.tipo, "BOOL") != 0) {
+                if (strcmp($1.tipo, "STATUS") != 0) {
                     strcpy(msg_erro,"");
                     strcat(msg_erro, "Operação Lógica Unária: O operador NOT não pode ser aplicado ao tipo'"); 
                     strcat(msg_erro, $1.tipo); 
-                    strcat(msg_erro, "' apenas ao tipo BOOL\n"); 
+                    strcat(msg_erro, "' apenas ao tipo STATUS\n"); 
                     semantic_error();
                 }
                 strcpy(msg_erro,"");
@@ -789,7 +789,7 @@ expr:
             }
 
     | term {$$ = $1;} //repassa o tipo e o valor
-    | OPEN_PARENTHESES term CLOSE_PARENTHESES {$$ = $2;} //repassa o tipo e o valor
+    | OPEN_PARENTHESES expr CLOSE_PARENTHESES {$$ = $2;} //repassa o tipo e o valor
     ;
 
 term: 
@@ -803,7 +803,7 @@ term:
         $$ = (Simbolo){ .tipo = "VOUCHER", .valor = $1 };
     }
     | BOOL {
-        $$ = (Simbolo){ .tipo = "BOOL", .valor = $1 };
+        $$ = (Simbolo){ .tipo = "STATUS", .valor = $1 };
     }
 
     | call_function { 
@@ -827,7 +827,7 @@ term:
             semantic_error();
         }
 
-        $$ = (Simbolo){ .tipo = simbolo->tipo, .valor = simbolo->identificador }; //já recebe o simbolo com todos os valores já armazenados na tabela de simbolos
+        $$ = (Simbolo){ .tipo = simbolo->tipo, .valor = simbolo->identificador }; 
     }
     ;
 
@@ -982,7 +982,7 @@ void verificar_definicao_funcoes_chamadas() {
 int main(void) {
     if(yyparse() == 0) {  
     
-        printf("\n\n\033[1;32mPrograma sintaticamente correto.\033[0m\n\n");
+    printf("\n\n\033[1;32mPrograma lexicamente, sintaticamente e semânticamente correto.\033[0m\n\n");
 
     imprimir_todas_tabelas_simbolos(tabelas_simbolos, numero_de_tabelas);
 

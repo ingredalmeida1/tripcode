@@ -1,0 +1,53 @@
+-> testando comentario <-
+EXTERIOR TESTE 10 
+
+BAGAGEM VOUCHER nome <-> "nome";
+BAGAGEM VOUCHER valor;
+
+ROTEIRO soma(MILHAS a) >>> MILHAS <<<
+ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>> DOLAR <<<
+
+ROTEIRO trip() >>> 
+
+    BAGAGEM MILHAS teste;
+
+    CHECKIN([MILHAS, VOUCHER], teste, valor);
+
+    TESTE <-> teste + 10;
+
+    TURISTANDO (FERIAS) >>>
+        BAGAGEM DOLAR teste <-> 10 + 20.0;
+        ALFANDEGA (teste = 20) >>>
+            POUSAR;
+        <<< 
+    <<<
+
+    ALFANDEGA (20 > 0) >>>
+        teste <-> 50 + 10;
+    <<< ISENTO >>>
+        EMBARCAR soma(10 + 0);
+        teste <-> EMBARCAR soma (teste + 10);
+        teste <-> teste + EMBARCAR soma(teste);
+    <<<
+
+    BAGAGEM VOUCHER ultima;
+
+    CHECKOUT("Resultado final" <> MILHAS teste <> "ok!");
+
+    DESPACHAR 0;
+    -> testando outro comentario <-
+<<< MILHAS <<<
+-> testando mais um comentario <-
+
+ROTEIRO soma(MILHAS a) >>>
+    BAGAGEM MILHAS teste <-> 30;
+    DECOLAR (ORIGEM 0, DESTINO 10, ESCALA 1) >>>
+        teste <-> 5 + 1;
+    <<<
+
+    DESPACHAR teste;
+<<< MILHAS <<<
+
+ROTEIRO multiplicacao(DOLAR a, DOLAR b) >>>
+    DESPACHAR a * b;
+<<< DOLAR <<<
