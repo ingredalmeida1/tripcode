@@ -1,9 +1,13 @@
-1: a = 5  
-2: b = 6  
-3: t0 = a + b
-4: valor1 = t0  
-5: t1 = 4 + 3
-6: valor2 = t1  
-7: t2 = valor1 + 2
-8: valor3 = t2  
-9: RETURN 0
+1: a = 5.1  
+2: b = 6.2  
+3: c = 20.9  
+4: d = 10.8  
+5: t0 = a + b
+6: valor1 = t0  
+7: t1 = 4.5 - 3.6
+8: valor2 = t1  
+9: t2 = c * d
+10: valor3 = t2  
+11: t3 = a / c
+12: valor4 = t3  
+13: RETURN 0
