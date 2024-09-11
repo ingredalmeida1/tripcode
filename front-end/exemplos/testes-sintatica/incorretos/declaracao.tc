@@ -1,0 +1,16 @@
+-> Declaração incorreta em TripCode <-
+
+ROTEIRO trip() >>> 
+    -> Declarações de variáveis <-
+    BAGAGEM VOUCHER curso <-> "Ciência da Computação";
+    BAGAGEM MILHAS idade <-> 15;
+    BAGAGEM DOLAR valor <-> idade + 7.5;
+    BAGAGEM STATUS verdadeiro <-> FERIAS;
+    
+    -> Não tem declarações múltiplas em TripCode <-
+    BAGAGEM MILHAS nota1, nota2;
+
+    DESPACHAR 0;
+
+<<< MILHAS <<<
+-> Fim do programa <-

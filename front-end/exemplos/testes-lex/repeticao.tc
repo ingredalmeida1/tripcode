@@ -1,0 +1,22 @@
+ROTEIRO trip() >>>
+    DECOLAR (ORIGEM 5, DESTINO 20, ESCALA 2) >>> 
+    distancia <-> distancia + 5;
+    <<<
+
+    DOLAR dolar <-> 6;
+
+    TURISTANDO (FERIAS) >>>
+        ALFANDEGA(dolar = 6) >>>
+            POUSAR;
+        <<<
+
+        distancia <-> distancia + 5;
+        dolar <-> DESCANSAR dolar;
+    <<<
+
+    TURISTAR >>>
+        distancia <-> distancia + 5;
+    <<< DURANTE (dolar < 6);
+
+    DESPACHAR 0;
+<<< MILHAS <<<

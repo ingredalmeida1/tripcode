@@ -1,0 +1,16 @@
+ROTEIRO trip() >>> 
+
+    BAGAGEM DOLAR a <-> 5.1;
+    BAGAGEM DOLAR b <-> 6.2;
+    BAGAGEM DOLAR c <-> 20.9;
+    BAGAGEM DOLAR d <-> 10.8;
+
+    BAGAGEM DOLAR valor1 <-> a + b;
+    BAGAGEM DOLAR valor2 <-> 4.5 - 3.6;
+    BAGAGEM DOLAR valor3 <-> c * d;
+    BAGAGEM DOLAR valor4 <-> a/c;
+
+
+    DESPACHAR 0;
+
+<<< DOLAR <<<

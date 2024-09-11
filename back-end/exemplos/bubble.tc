@@ -1,0 +1,39 @@
+ROTEIRO TRIP() >>>
+
+    MILHAS a <-> 3;
+    MILHAS b <-> 1;
+    MILHAS c <-> 2;
+
+    VOUCHER msg1;
+    msg1 <-> "Antes da ordenação: ";
+    CHECKOUT(VOUCHER,msg1);
+    CHECKOUT(MILHAS,a);
+    CHECKOUT(MILHAS,b);
+    CHECKOUT(MILHAS,c);
+
+    ALFANDEGA (a > b) >>>
+        MILHAS temp <-> a;
+        a <-> b;
+        b <-> temp;
+    <<< 
+
+    ALFANDEGA (b > c) >>>
+        MILHAS temp <-> b;
+        b <-> c;
+        c <-> temp;
+    <<< 
+
+    ALFANDEGA (a > b) >>>
+        MILHAS temp <-> a;
+        a <-> b;
+        b <-> temp;
+    <<< 
+
+    VOUCHER msg;
+    msg <-> "Ordenado: ";
+    CHECKOUT(VOUCHER,msg);
+    CHECKOUT(MILHAS,a);
+    CHECKOUT(MILHAS,b);
+    CHECKOUT(MILHAS,c);
+
+<<< MILHAS <<<

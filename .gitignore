@@ -1,5 +1,6 @@
-a.out
-lex.yy.c
-y.tab.c
-y.tab.h
-.vscode
+.git
+.idea/
+.vscode/
+node_modules/
+vendor/
+.log

@@ -1,0 +1,24 @@
+ROTEIRO TRIP() >>>
+
+    MILHAS soma;    
+
+    VOUCHER msg1 <-> "Minha condicional em TripCode!";
+    CHECKOUT(VOUCHER,msg1);
+
+    MILHAS x <-> 5;
+
+    ALFANDEGA (x >= 2) >>>
+        VOUCHER msg2 <-> "Valor da soma na alfândega:";
+        CHECKOUT(VOUCHER,msg2);
+
+        soma <-> 5 + 3;
+        CHECKOUT(MILHAS,soma);
+    <<< ISENTO >>>
+        VOUCHER msg3 <-> "Valor da soma no isento:";
+        CHECKOUT(VOUCHER,msg3);
+
+        soma <-> 5 + 5;
+        CHECKOUT(MILHAS,soma);
+    <<<
+
+<<< MILHAS <<<
