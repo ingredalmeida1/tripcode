@@ -1,6 +1,8 @@
 # Compilador da Linguagem Tripcode
 
-![Logo da Linguagem Tripcode](images/logo-tripcode.png) 
+<p align="center">
+  <img src="images/logo-tripcode.png" alt="Logo da Linguagem Tripcode">
+</p>
 
 Este projeto contém um compilador para a linguagem Tripcode, desenvolvido com Flex, Bison e C. O compilador é projetado para analisar toda a gramática proposta e executar um subconjunto da linguagem Tripcode, focando em condicionais, expressões aritméticas, e manipulação de variáveis. 
 
